@@ -118,6 +118,18 @@ export const useAdmin = (isAuthenticated: boolean = false) => {
         authData: authTest
       });
 
+      // Test using admin function that bypasses RLS
+      console.log('🔍 Attempting admin function query...');
+      const { data: adminFunctionData, error: adminFunctionError } = await adminSupabase
+        .rpc('get_orders_for_admin', { admin_email: ADMIN_EMAIL });
+
+      console.log('🔍 Admin function result:', {
+        success: !adminFunctionError,
+        error: adminFunctionError?.message,
+        dataCount: adminFunctionData?.length || 0,
+        data: adminFunctionData
+      });
+
       // First try a simple query to test basic access
       console.log('🔍 Attempting simple orders query...');
       const { data: simpleData, error: simpleError } = await adminSupabase
@@ -170,9 +182,21 @@ export const useAdmin = (isAuthenticated: boolean = false) => {
         const error = basicError;
       }
 
-      // For now, let's use the simple data to test if the issue is with the query complexity
-      const data = simpleData;
-      const error = simpleError;
+      // Use admin function data if available, otherwise fall back to simple data
+      let data, error;
+      if (adminFunctionData && adminFunctionData.length > 0) {
+        console.log('🔍 Using admin function data');
+        data = adminFunctionData;
+        error = adminFunctionError;
+      } else if (simpleData && simpleData.length > 0) {
+        console.log('🔍 Using simple query data');
+        data = simpleData;
+        error = simpleError;
+      } else {
+        console.log('🔍 No data from any query, using simple query result');
+        data = simpleData;
+        error = simpleError;
+      }
 
       console.log('🔍 Orders query result:', {
         success: !error,

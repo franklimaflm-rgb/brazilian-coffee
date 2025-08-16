@@ -118,16 +118,30 @@ export const useAdmin = (isAuthenticated: boolean = false) => {
         authData: authTest
       });
 
-      // Test using admin function that bypasses RLS
-      console.log('🔍 Attempting admin function query...');
+      // Use service-role admin function that bypasses authentication issues
+      console.log('🔍 Attempting service-role admin function query...');
       const { data: adminFunctionData, error: adminFunctionError } = await adminSupabase
-        .rpc('get_orders_for_admin', { admin_email: ADMIN_EMAIL });
+        .rpc('get_admin_orders');
+
+      // Parse the JSON response from the admin function
+      let parsedAdminData = null;
+      if (adminFunctionData && !adminFunctionError) {
+        try {
+          // The function returns a single JSON value, extract it
+          parsedAdminData = adminFunctionData;
+          console.log('🔍 Parsed admin function data:', parsedAdminData);
+        } catch (parseError) {
+          console.error('🚨 Error parsing admin function data:', parseError);
+        }
+      }
 
       console.log('🔍 Admin function result:', {
         success: !adminFunctionError,
         error: adminFunctionError?.message,
-        dataCount: adminFunctionData?.length || 0,
-        data: adminFunctionData
+        rawDataType: typeof adminFunctionData,
+        rawData: adminFunctionData,
+        parsedDataCount: parsedAdminData?.length || 0,
+        parsedData: parsedAdminData
       });
 
       // First try a simple query to test basic access
@@ -184,18 +198,18 @@ export const useAdmin = (isAuthenticated: boolean = false) => {
 
       // Use admin function data if available, otherwise fall back to simple data
       let data, error;
-      if (adminFunctionData && adminFunctionData.length > 0) {
-        console.log('🔍 Using admin function data');
-        data = adminFunctionData;
+      if (parsedAdminData && parsedAdminData.length > 0) {
+        console.log('🔍 Using parsed admin function data');
+        data = parsedAdminData;
         error = adminFunctionError;
       } else if (simpleData && simpleData.length > 0) {
         console.log('🔍 Using simple query data');
         data = simpleData;
         error = simpleError;
       } else {
-        console.log('🔍 No data from any query, using simple query result');
-        data = simpleData;
-        error = simpleError;
+        console.log('🔍 No data from any query, using admin function as fallback');
+        data = parsedAdminData || simpleData || [];
+        error = adminFunctionError || simpleError;
       }
 
       console.log('🔍 Orders query result:', {

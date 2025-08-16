@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { useSafeEffect, useSafeDOMOperation } from '@/hooks/useSafeEffect';
 
 // Mapbox access token
 const MAPBOX_TOKEN = 'pk.eyJ1Ijoic2FyYWgyMDA5IiwiYSI6ImNtZWU5dXh0MzBqZTAybHM5ZHk4cGFjbnEifQ.eAX9kvVinXThpyuNOUPhAw';
@@ -22,15 +23,15 @@ export const DeliveryMap = ({
   const [mapLoaded, setMapLoaded] = useState(false);
   const [mapError, setMapError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [isMounted, setIsMounted] = useState(true);
+  const { safeOperation, safeSetInnerHTML, isMounted } = useSafeDOMOperation();
 
-  useEffect(() => {
+  useSafeEffect(() => {
     if (!mapContainer.current || map.current) return;
 
     try {
       // Ensure the map container is empty before initializing
       if (mapContainer.current) {
-        mapContainer.current.innerHTML = '';
+        safeSetInnerHTML(mapContainer.current, '');
       }
 
       // Validate Mapbox token
@@ -212,53 +213,35 @@ export const DeliveryMap = ({
     }
 
     return () => {
-      setIsMounted(false);
-
       // Clean up all markers first
-      try {
+      safeOperation(() => {
         markersRef.current.forEach(marker => {
-          try {
-            marker.remove();
-          } catch (error) {
-            console.warn('Error removing marker:', error);
-          }
+          safeOperation(() => marker.remove(), 'Error removing marker');
         });
         markersRef.current = [];
-      } catch (error) {
-        console.warn('Error cleaning up markers:', error);
-      }
+      }, 'Error cleaning up markers');
 
       // Clean up map
-      try {
+      safeOperation(() => {
         if (map.current) {
-          // Remove all event listeners before removing the map
           map.current.off();
           map.current.remove();
           map.current = null;
         }
-      } catch (error) {
-        console.warn('Error during map cleanup:', error);
-        // Force cleanup even if there's an error
-        map.current = null;
-      }
+      }, 'Error during map cleanup');
 
-      // Safe container cleanup with additional checks
-      try {
+      // Safe container cleanup with delay for React reconciliation
+      safeOperation(() => {
         if (mapContainer.current) {
-          // Use a timeout to ensure React has finished its reconciliation
           setTimeout(() => {
-            try {
+            safeOperation(() => {
               if (mapContainer.current && mapContainer.current.parentNode) {
-                mapContainer.current.innerHTML = '';
+                safeSetInnerHTML(mapContainer.current, '');
               }
-            } catch (error) {
-              console.warn('Error during delayed container cleanup:', error);
-            }
+            }, 'Error during delayed container cleanup');
           }, 0);
         }
-      } catch (error) {
-        console.warn('Error during container cleanup:', error);
-      }
+      }, 'Error during container cleanup');
     };
   }, [businessLocation, deliveryRadius]);
 

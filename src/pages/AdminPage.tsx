@@ -123,11 +123,62 @@ const AdminSetupForm = ({ onCreateAdmin }: { onCreateAdmin: (email: string, pass
   );
 };
 
-const AdminLoginForm = ({ onLogin, needsSetup }: { onLogin: (email: string, password: string) => Promise<{ success: boolean; error?: string; needsSetup?: boolean }>, needsSetup?: boolean }) => {
+const AdminLoginForm = ({ onLogin, needsSetup }: { onLogin: (email: string, password: string) => Promise<{ success: boolean; error?: string; needsSetup?: boolean; diagnosticData?: any }>, needsSetup?: boolean }) => {
   const { t } = useLanguage();
   const [email, setEmail] = useState("franklinmarceloferreiradelima@gmail.com");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [lastDiagnosticData, setLastDiagnosticData] = useState<any>(null);
+
+  const generateManualDiagnostic = () => {
+    const timestamp = new Date().toISOString();
+    const diagnosticContent = `
+BRAZILIAN COFFEE ACADEMY - MANUAL DIAGNOSTIC REPORT
+Generated: ${timestamp}
+==========================================================
+
+MANUAL DIAGNOSTIC REQUESTED BY USER
+
+CURRENT STATE:
+- Email Field: ${email}
+- Password Field: ${password ? '[SET]' : '[EMPTY]'}
+- Loading State: ${isLoading}
+- Needs Setup: ${needsSetup}
+
+ENVIRONMENT CHECK:
+- Current URL: ${window.location.href}
+- User Agent: ${navigator.userAgent}
+- Local Storage Keys: ${Object.keys(localStorage).join(', ')}
+
+LAST LOGIN ATTEMPT DATA:
+${lastDiagnosticData ? JSON.stringify(lastDiagnosticData, null, 2) : 'No previous login attempt data available'}
+
+BROWSER CONSOLE LOGS:
+Please check the browser console (F12) for additional debugging information.
+
+TROUBLESHOOTING STEPS:
+1. Verify email: franklinmarceloferreiradelima@gmail.com
+2. Verify password: 4sR#viwqtUMHUym
+3. Check browser console for errors
+4. Try clearing browser cache and cookies
+5. Check network connectivity
+
+==========================================================
+End of Manual Diagnostic Report
+`;
+
+    const blob = new Blob([diagnosticContent], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `brazilian-coffee-manual-diagnostic-${timestamp.replace(/[:.]/g, '-')}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    toast.success('Diagnostic file downloaded successfully');
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -136,7 +187,15 @@ const AdminLoginForm = ({ onLogin, needsSetup }: { onLogin: (email: string, pass
     const result = await onLogin(email, password);
 
     if (!result.success) {
+      // Store diagnostic data for manual diagnostic generation
+      if (result.diagnosticData) {
+        setLastDiagnosticData(result.diagnosticData);
+      }
+
       toast.error(result.error || t('admin.messages.loginFailed'));
+
+      // Show additional diagnostic info
+      toast.info('Diagnostic file has been automatically generated and downloaded');
     }
 
     setIsLoading(false);
@@ -202,6 +261,27 @@ const AdminLoginForm = ({ onLogin, needsSetup }: { onLogin: (email: string, pass
                 t('admin.login')
               )}
             </Button>
+
+            {/* Diagnostic Button */}
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full mt-2"
+              onClick={generateManualDiagnostic}
+              disabled={isLoading}
+            >
+              📋 Generate Diagnostic File
+            </Button>
+
+            {lastDiagnosticData && (
+              <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <p className="text-sm text-yellow-800">
+                  ⚠️ Last login failed. Diagnostic file was automatically generated.
+                  <br />
+                  <span className="font-medium">Error:</span> {lastDiagnosticData.primaryError}
+                </p>
+              </div>
+            )}
           </form>
         </CardContent>
       </Card>

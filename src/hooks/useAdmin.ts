@@ -223,12 +223,100 @@ export const useAdminAuth = () => {
     }
   };
 
+  // Generate diagnostic file
+  const generateDiagnosticFile = (diagnosticData: any) => {
+    const timestamp = new Date().toISOString();
+    const diagnosticContent = `
+BRAZILIAN COFFEE ACADEMY - AUTHENTICATION DIAGNOSTIC REPORT
+Generated: ${timestamp}
+==========================================================
+
+ENVIRONMENT CONFIGURATION:
+- Supabase URL: ${ADMIN_SUPABASE_URL}
+- Supabase Key: ${ADMIN_SUPABASE_KEY.substring(0, 20)}...
+- Admin Email: ${ADMIN_EMAIL}
+- Storage Key: admin-auth-token
+
+INPUT PARAMETERS:
+- Input Email: ${diagnosticData.inputEmail}
+- Password Length: ${diagnosticData.passwordLength}
+- Email Trimmed: ${diagnosticData.emailTrimmed}
+- Email Match (case-insensitive): ${diagnosticData.emailMatchInput}
+
+AUTHENTICATION REQUEST:
+- Method: signInWithPassword
+- URL: ${ADMIN_SUPABASE_URL}/auth/v1/token
+- Headers: Content-Type: application/json, apikey: ${ADMIN_SUPABASE_KEY.substring(0, 20)}...
+- Payload: {email: "${diagnosticData.emailTrimmed}", password: "[REDACTED]"}
+
+AUTHENTICATION RESPONSE:
+- Success: ${diagnosticData.authSuccess}
+- Error: ${diagnosticData.authError || 'None'}
+- User ID: ${diagnosticData.userId || 'None'}
+- User Email: ${diagnosticData.userEmail || 'None'}
+- Email Confirmed: ${diagnosticData.emailConfirmed || 'None'}
+
+EMAIL VALIDATION:
+- User Email: ${diagnosticData.userEmail || 'None'}
+- Expected Email: ${ADMIN_EMAIL}
+- Exact Match: ${diagnosticData.emailExactMatch}
+- Is Valid Admin: ${diagnosticData.isValidAdmin}
+
+SESSION INFORMATION:
+- Session Created: ${diagnosticData.sessionCreated}
+- Session Storage: admin-auth-token
+- Auth State: ${diagnosticData.authState}
+
+ERROR DETAILS:
+- Primary Error: ${diagnosticData.primaryError || 'None'}
+- Error Type: ${diagnosticData.errorType || 'None'}
+- Stack Trace: ${diagnosticData.stackTrace || 'None'}
+
+BROWSER INFORMATION:
+- User Agent: ${navigator.userAgent}
+- URL: ${window.location.href}
+- Timestamp: ${timestamp}
+
+DEBUGGING STEPS TAKEN:
+1. Clear existing session
+2. Attempt authentication with Supabase
+3. Validate user data
+4. Check email match
+5. Set authentication state
+
+RECOMMENDATIONS:
+${diagnosticData.recommendations || 'Review authentication flow and email validation logic'}
+
+==========================================================
+End of Diagnostic Report
+`;
+
+    // Create and download the file
+    const blob = new Blob([diagnosticContent], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `brazilian-coffee-auth-diagnostic-${timestamp.replace(/[:.]/g, '-')}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   const login = async (email: string, password: string) => {
+    const diagnosticData: any = {
+      inputEmail: email,
+      passwordLength: password.length,
+      emailTrimmed: email.trim(),
+      emailMatchInput: email.toLowerCase().trim() === ADMIN_EMAIL.toLowerCase(),
+      timestamp: new Date().toISOString()
+    };
+
     try {
       console.log('🔍 ADMIN LOGIN START');
       console.log('🔍 Input Email:', email);
       console.log('🔍 Expected Email:', ADMIN_EMAIL);
-      console.log('🔍 Email Match (input):', email.toLowerCase().trim() === ADMIN_EMAIL.toLowerCase());
+      console.log('🔍 Email Match (input):', diagnosticData.emailMatchInput);
 
       // Clear any existing session first
       await adminSupabase.auth.signOut();
@@ -238,6 +326,14 @@ export const useAdminAuth = () => {
         email: email.trim(),
         password: password,
       });
+
+      // Capture authentication response data
+      diagnosticData.authSuccess = !error;
+      diagnosticData.authError = error?.message;
+      diagnosticData.userId = data.user?.id;
+      diagnosticData.userEmail = data.user?.email;
+      diagnosticData.emailConfirmed = data.user?.email_confirmed_at;
+      diagnosticData.sessionCreated = !!data.session;
 
       console.log('🔍 Auth Response:', {
         success: !error,
@@ -250,18 +346,38 @@ export const useAdminAuth = () => {
       });
 
       if (error) {
+        diagnosticData.primaryError = error.message;
+        diagnosticData.errorType = 'Authentication Error';
+        diagnosticData.recommendations = 'Check credentials and Supabase configuration';
+
         console.log('🚨 Authentication failed:', error.message);
-        return { success: false, error: error.message };
+
+        // Generate diagnostic file on failure
+        generateDiagnosticFile(diagnosticData);
+
+        return { success: false, error: error.message, diagnosticData };
       }
 
       if (!data.user) {
+        diagnosticData.primaryError = 'No user data returned';
+        diagnosticData.errorType = 'Data Error';
+        diagnosticData.recommendations = 'Check Supabase user creation and authentication flow';
+
         console.log('🚨 No user data returned');
-        return { success: false, error: 'Authentication failed - no user data' };
+
+        // Generate diagnostic file on failure
+        generateDiagnosticFile(diagnosticData);
+
+        return { success: false, error: 'Authentication failed - no user data', diagnosticData };
       }
 
       // Simple email validation
       const userEmail = data.user.email;
       const isValidAdmin = userEmail === ADMIN_EMAIL;
+
+      diagnosticData.emailExactMatch = userEmail === ADMIN_EMAIL;
+      diagnosticData.isValidAdmin = isValidAdmin;
+      diagnosticData.authState = 'Email validation completed';
 
       console.log('🔍 Admin Validation:', {
         userEmail,
@@ -274,15 +390,32 @@ export const useAdminAuth = () => {
         console.log('✅ ADMIN ACCESS GRANTED');
         setIsAuthenticated(true);
         setNeedsSetup(false);
-        return { success: true };
+        return { success: true, diagnosticData };
       } else {
+        diagnosticData.primaryError = 'Email validation failed - not admin user';
+        diagnosticData.errorType = 'Authorization Error';
+        diagnosticData.recommendations = 'Verify admin email address in database and code';
+
         console.log('❌ ADMIN ACCESS DENIED - Invalid email');
         await adminSupabase.auth.signOut();
-        return { success: false, error: 'Unauthorized: Admin access required' };
+
+        // Generate diagnostic file on failure
+        generateDiagnosticFile(diagnosticData);
+
+        return { success: false, error: 'Unauthorized: Admin access required', diagnosticData };
       }
     } catch (error) {
+      diagnosticData.primaryError = error instanceof Error ? error.message : 'Unknown error';
+      diagnosticData.errorType = 'Exception';
+      diagnosticData.stackTrace = error instanceof Error ? error.stack : 'No stack trace';
+      diagnosticData.recommendations = 'Check network connectivity and Supabase configuration';
+
       console.error('🚨 Login Exception:', error);
-      return { success: false, error: 'Login failed - network error' };
+
+      // Generate diagnostic file on exception
+      generateDiagnosticFile(diagnosticData);
+
+      return { success: false, error: 'Login failed - network error', diagnosticData };
     }
   };
 
@@ -386,6 +519,7 @@ export const useAdminAuth = () => {
     logout,
     createAdmin,
     checkAdminExists,
-    refreshSession
+    refreshSession,
+    generateDiagnosticFile
   };
 };

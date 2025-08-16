@@ -92,7 +92,7 @@ export const QRCodeGenerator = ({
       pdf.setFontSize(10);
       pdf.text('Franklin Marcelo Ferreira de Lima', 20, 60);
       pdf.text('Phone: +44 7386797734', 20, 70);
-      pdf.text('Email: franklinmarceloderreiradelima@gmail.com', 20, 80);
+      pdf.text('Email: franklinmarceloferreiradelima@gmail.com', 20, 80);
       pdf.text('Address: Main Street, 68 - Lubenham - Market Harborough - LE16 9TG', 20, 90);
 
       // Add QR code

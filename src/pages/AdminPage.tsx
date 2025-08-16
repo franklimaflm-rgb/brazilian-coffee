@@ -27,7 +27,7 @@ import { toast } from "sonner";
 
 const AdminSetupForm = ({ onCreateAdmin }: { onCreateAdmin: (email: string, password: string) => Promise<{ success: boolean; error?: string; message?: string }> }) => {
   const { t } = useLanguage();
-  const [email, setEmail] = useState("franklinmarceloderreiradelima@gmail.com");
+  const [email, setEmail] = useState("franklinmarceloferreiradelima@gmail.com");
   const [password, setPassword] = useState("BrazilianCoffee2024!");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -78,7 +78,7 @@ const AdminSetupForm = ({ onCreateAdmin }: { onCreateAdmin: (email: string, pass
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="franklinmarceloderreiradelima@gmail.com"
+                placeholder="franklinmarceloferreiradelima@gmail.com"
                 required
                 disabled
               />
@@ -125,7 +125,7 @@ const AdminSetupForm = ({ onCreateAdmin }: { onCreateAdmin: (email: string, pass
 
 const AdminLoginForm = ({ onLogin, needsSetup }: { onLogin: (email: string, password: string) => Promise<{ success: boolean; error?: string; needsSetup?: boolean }>, needsSetup?: boolean }) => {
   const { t } = useLanguage();
-  const [email, setEmail] = useState("franklinmarceloderreiradelima@gmail.com");
+  const [email, setEmail] = useState("franklinmarceloferreiradelima@gmail.com");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -175,7 +175,7 @@ const AdminLoginForm = ({ onLogin, needsSetup }: { onLogin: (email: string, pass
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="franklinmarceloderreiradelima@gmail.com"
+                placeholder="franklinmarceloferreiradelima@gmail.com"
                 autoComplete="email"
                 required
                 disabled

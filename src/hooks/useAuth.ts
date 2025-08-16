@@ -27,7 +27,7 @@ export const useAuth = () => {
     // Get initial session
     const getInitialSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      const isAdmin = session?.user?.email === 'franklinmarceloderreiradelima@gmail.com';
+      const isAdmin = session?.user?.email === 'franklinmarceloferreiradelima@gmail.com';
       
       setAuthState({
         user: session?.user ?? null,
@@ -42,7 +42,7 @@ export const useAuth = () => {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        const isAdmin = session?.user?.email === 'franklinmarceloderreiradelima@gmail.com';
+        const isAdmin = session?.user?.email === 'franklinmarceloferreiradelima@gmail.com';
         
         setAuthState({
           user: session?.user ?? null,

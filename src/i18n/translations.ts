@@ -43,7 +43,7 @@ export const translations = {
       subtitle: "Café fresco entregue na sua porta",
       description: "Entregamos cafés especiais frescos na região de Market Harborough. Raio de entrega de 3-5km para garantir que seu café chegue quente.",
       businessInfo: "Franklin Marcelo Ferreira de Lima",
-      businessEmail: "franklinmarceloderreiradelima@gmail.com",
+      businessEmail: "franklinmarceloferreiradelima@gmail.com",
       businessPhone: "+44 7386797734",
       businessAddress: "Main Street, 68 - Lubenham - Market Harborough - Leicestershire - England - LE16 9TG",
       orderForm: {
@@ -204,7 +204,7 @@ export const translations = {
       subtitle: "Fresh coffee delivered to your door",
       description: "We deliver fresh specialty coffee in the Market Harborough area. 3-5km delivery radius to ensure your coffee arrives hot.",
       businessInfo: "Franklin Marcelo Ferreira de Lima",
-      businessEmail: "franklinmarceloderreiradelima@gmail.com",
+      businessEmail: "franklinmarceloferreiradelima@gmail.com",
       businessPhone: "+44 7386797734",
       businessAddress: "Main Street, 68 - Lubenham - Market Harborough - Leicestershire - England - LE16 9TG",
       orderForm: {

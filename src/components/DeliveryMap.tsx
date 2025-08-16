@@ -25,63 +25,45 @@ export const DeliveryMap = ({
   const [isLoading, setIsLoading] = useState(true);
   const { safeOperation, safeSetInnerHTML, isMounted } = useSafeDOMOperation();
 
-  useSafeEffect(() => {
+  useEffect(() => {
     if (!mapContainer.current || map.current) return;
 
-    try {
-      // Ensure the map container is empty before initializing
-      if (mapContainer.current) {
-        safeSetInnerHTML(mapContainer.current, '');
-      }
+    console.log('🗺️ Initializing Mapbox map...');
 
+    try {
       // Validate Mapbox token
       if (!MAPBOX_TOKEN || MAPBOX_TOKEN.includes('example')) {
+        console.error('🚨 Invalid Mapbox token');
         throw new Error('Invalid Mapbox token');
       }
 
+      console.log('🗺️ Setting Mapbox access token...');
       mapboxgl.accessToken = MAPBOX_TOKEN;
 
+      console.log('🗺️ Creating Mapbox map instance...');
       map.current = new mapboxgl.Map({
         container: mapContainer.current,
         style: 'mapbox://styles/mapbox/satellite-v9',
         center: businessLocation,
-        zoom: window.innerWidth < 768 ? 11 : 12, // Adjust zoom for mobile
-        attributionControl: true,
-        // Mobile-friendly settings
-        touchZoomRotate: true,
-        touchPitch: false,
-        dragRotate: false,
-        pitchWithRotate: false,
-        // Enhanced mobile performance optimizations
-        antialias: false,
-        preserveDrawingBuffer: false,
-        renderWorldCopies: false,
-        maxTileCacheSize: window.innerWidth < 768 ? 50 : 100, // Reduce cache on mobile
-        transformRequest: (url, resourceType) => {
-          // Optimize tile loading for mobile
-          if (resourceType === 'Tile' && window.innerWidth < 768) {
-            return {
-              url: url,
-              headers: { 'Cache-Control': 'max-age=3600' }
-            };
-          }
-        }
+        zoom: 12,
+        attributionControl: true
       });
 
-      // Add navigation controls with mobile optimization
+      console.log('🗺️ Map instance created successfully');
+
+      // Add navigation controls
+      console.log('🗺️ Adding navigation controls...');
       const navControl = new mapboxgl.NavigationControl({
         showCompass: false,
-        showZoom: true,
-        visualizePitch: false
+        showZoom: true
       });
-      map.current.addControl(navControl, window.innerWidth < 768 ? 'bottom-right' : 'top-right');
+      map.current.addControl(navControl, 'top-right');
 
-      // Add fullscreen control for better mobile experience
-      if (window.innerWidth >= 768) {
-        map.current.addControl(new mapboxgl.FullscreenControl(), 'top-right');
-      }
+      // Add fullscreen control
+      map.current.addControl(new mapboxgl.FullscreenControl(), 'top-right');
 
       map.current.on('load', () => {
+        console.log('🗺️ Map loaded successfully!');
         setMapLoaded(true);
         setIsLoading(false);
 
@@ -201,47 +183,40 @@ export const DeliveryMap = ({
       });
 
       map.current.on('error', (e) => {
-        console.error('Mapbox error:', e);
+        console.error('🚨 Mapbox error:', e);
         setMapError(true);
         setIsLoading(false);
       });
 
     } catch (error) {
-      console.error('Failed to initialize Mapbox:', error);
+      console.error('🚨 Failed to initialize Mapbox:', error);
       setMapError(true);
       setIsLoading(false);
     }
 
     return () => {
-      // Clean up all markers first
-      safeOperation(() => {
-        markersRef.current.forEach(marker => {
-          safeOperation(() => marker.remove(), 'Error removing marker');
-        });
-        markersRef.current = [];
-      }, 'Error cleaning up markers');
+      console.log('🗺️ Cleaning up map...');
+
+      // Clean up markers
+      markersRef.current.forEach(marker => {
+        try {
+          marker.remove();
+        } catch (e) {
+          console.warn('Error removing marker:', e);
+        }
+      });
+      markersRef.current = [];
 
       // Clean up map
-      safeOperation(() => {
-        if (map.current) {
-          map.current.off();
+      if (map.current) {
+        try {
           map.current.remove();
           map.current = null;
+          console.log('🗺️ Map cleaned up successfully');
+        } catch (e) {
+          console.warn('Error during map cleanup:', e);
         }
-      }, 'Error during map cleanup');
-
-      // Safe container cleanup with delay for React reconciliation
-      safeOperation(() => {
-        if (mapContainer.current) {
-          setTimeout(() => {
-            safeOperation(() => {
-              if (mapContainer.current && mapContainer.current.parentNode) {
-                safeSetInnerHTML(mapContainer.current, '');
-              }
-            }, 'Error during delayed container cleanup');
-          }, 0);
-        }
-      }, 'Error during container cleanup');
+      }
     };
   }, [businessLocation, deliveryRadius]);
 

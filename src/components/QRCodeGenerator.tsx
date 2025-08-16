@@ -185,7 +185,7 @@ export const QRCodeGenerator = ({
             className="flex items-center gap-2"
           >
             <FileText className="w-4 h-4" />
-            Download PDF
+            {t('qrcode.downloadPdf')}
           </Button>
         </div>
       </CardContent>

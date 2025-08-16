@@ -26,6 +26,7 @@ import {
 import { toast } from "sonner";
 
 const AdminLoginForm = ({ onLogin }: { onLogin: (email: string, password: string) => Promise<{ success: boolean; error?: string }> }) => {
+  const { t } = useLanguage();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -33,13 +34,13 @@ const AdminLoginForm = ({ onLogin }: { onLogin: (email: string, password: string
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     const result = await onLogin(email, password);
-    
+
     if (!result.success) {
-      toast.error(result.error || 'Login failed');
+      toast.error(result.error || t('admin.messages.loginFailed'));
     }
-    
+
     setIsLoading(false);
   };
 
@@ -49,14 +50,14 @@ const AdminLoginForm = ({ onLogin }: { onLogin: (email: string, password: string
         <CardHeader className="text-center">
           <div className="flex items-center justify-center mb-4">
             <Coffee className="w-8 h-8 text-primary mr-2" />
-            <span className="text-2xl font-bold">Admin Panel</span>
+            <span className="text-2xl font-bold">{t('admin.title')}</span>
           </div>
-          <CardTitle>Brazilian Coffee Academy</CardTitle>
+          <CardTitle>{t('admin.subtitle')}</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t('admin.email')}</Label>
               <Input
                 id="email"
                 type="email"
@@ -67,7 +68,7 @@ const AdminLoginForm = ({ onLogin }: { onLogin: (email: string, password: string
               />
             </div>
             <div>
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t('admin.password')}</Label>
               <Input
                 id="password"
                 type="password"
@@ -80,10 +81,10 @@ const AdminLoginForm = ({ onLogin }: { onLogin: (email: string, password: string
               {isLoading ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Logging in...
+                  {t('admin.loggingIn')}
                 </>
               ) : (
-                'Login'
+                t('admin.login')
               )}
             </Button>
           </form>
@@ -94,22 +95,24 @@ const AdminLoginForm = ({ onLogin }: { onLogin: (email: string, password: string
 };
 
 const OrderStatusBadge = ({ status }: { status: string }) => {
+  const { t } = useLanguage();
+
   const getStatusConfig = (status: string) => {
     switch (status) {
       case 'pending':
-        return { color: 'bg-yellow-100 text-yellow-800', icon: Clock, label: 'Pending' };
+        return { color: 'bg-yellow-100 text-yellow-800', icon: Clock, label: t('admin.orderStatuses.pending') };
       case 'confirmed':
-        return { color: 'bg-blue-100 text-blue-800', icon: CheckCircle, label: 'Confirmed' };
+        return { color: 'bg-blue-100 text-blue-800', icon: CheckCircle, label: t('admin.orderStatuses.confirmed') };
       case 'preparing':
-        return { color: 'bg-orange-100 text-orange-800', icon: Coffee, label: 'Preparing' };
+        return { color: 'bg-orange-100 text-orange-800', icon: Coffee, label: t('admin.orderStatuses.preparing') };
       case 'out_for_delivery':
-        return { color: 'bg-purple-100 text-purple-800', icon: Truck, label: 'Out for Delivery' };
+        return { color: 'bg-purple-100 text-purple-800', icon: Truck, label: t('admin.orderStatuses.out_for_delivery') };
       case 'delivered':
-        return { color: 'bg-green-100 text-green-800', icon: CheckCircle, label: 'Delivered' };
+        return { color: 'bg-green-100 text-green-800', icon: CheckCircle, label: t('admin.orderStatuses.delivered') };
       case 'cancelled':
-        return { color: 'bg-red-100 text-red-800', icon: AlertCircle, label: 'Cancelled' };
+        return { color: 'bg-red-100 text-red-800', icon: AlertCircle, label: t('admin.orderStatuses.cancelled') };
       default:
-        return { color: 'bg-gray-100 text-gray-800', icon: Clock, label: 'Unknown' };
+        return { color: 'bg-gray-100 text-gray-800', icon: Clock, label: t('admin.orderStatuses.unknown') };
     }
   };
 
@@ -125,7 +128,7 @@ const OrderStatusBadge = ({ status }: { status: string }) => {
 };
 
 const AdminDashboard = () => {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const { orders, loading, updateOrderStatus, getOrderStats, getTodaysOrders } = useAdmin();
   const { logout } = useAdminAuth();
   const [selectedOrder, setSelectedOrder] = useState<string | null>(null);
@@ -136,9 +139,9 @@ const AdminDashboard = () => {
   const handleStatusUpdate = async (orderId: string, newStatus: OrderStatus) => {
     const result = await updateOrderStatus(orderId, newStatus);
     if (result.success) {
-      toast.success('Order status updated successfully');
+      toast.success(t('admin.messages.statusUpdated'));
     } else {
-      toast.error(result.error || 'Failed to update order status');
+      toast.error(result.error || t('admin.messages.statusUpdateFailed'));
     }
   };
 
@@ -155,7 +158,7 @@ const AdminDashboard = () => {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" />
-          <p>Loading orders...</p>
+          <p>{t('admin.messages.loadingOrders')}</p>
         </div>
       </div>
     );
@@ -170,14 +173,14 @@ const AdminDashboard = () => {
             <div className="flex items-center gap-2 sm:gap-3">
               <Coffee className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
               <div>
-                <h1 className="text-lg sm:text-xl lg:text-2xl font-bold">Admin Dashboard</h1>
-                <p className="text-xs sm:text-sm text-muted-foreground">Brazilian Coffee Academy</p>
+                <h1 className="text-lg sm:text-xl lg:text-2xl font-bold">{t('admin.title')}</h1>
+                <p className="text-xs sm:text-sm text-muted-foreground">{t('admin.subtitle')}</p>
               </div>
             </div>
             <Button onClick={logout} variant="outline" size="sm" className="h-9 sm:h-10 text-sm touch-manipulation">
               <LogOut className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-              <span className="hidden sm:inline">Logout</span>
-              <span className="sm:hidden">Exit</span>
+              <span className="hidden sm:inline">{t('admin.logout')}</span>
+              <span className="sm:hidden">{t('admin.logout')}</span>
             </Button>
           </div>
         </div>
@@ -190,7 +193,7 @@ const AdminDashboard = () => {
             <CardContent className="p-3 sm:p-4 lg:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs sm:text-sm text-muted-foreground">Total Orders</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">{t('admin.totalOrders')}</p>
                   <p className="text-lg sm:text-xl lg:text-2xl font-bold">{stats.total}</p>
                 </div>
                 <Package className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-primary" />
@@ -202,7 +205,7 @@ const AdminDashboard = () => {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Today's Orders</p>
+                  <p className="text-sm text-muted-foreground">{t('admin.todaysOrders')}</p>
                   <p className="text-2xl font-bold">{todaysOrders.length}</p>
                 </div>
                 <Calendar className="w-8 h-8 text-primary" />
@@ -214,7 +217,7 @@ const AdminDashboard = () => {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Pending Orders</p>
+                  <p className="text-sm text-muted-foreground">{t('admin.pendingOrders')}</p>
                   <p className="text-2xl font-bold">{stats.pending}</p>
                 </div>
                 <Clock className="w-8 h-8 text-yellow-600" />
@@ -226,7 +229,7 @@ const AdminDashboard = () => {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Total Revenue</p>
+                  <p className="text-sm text-muted-foreground">{t('admin.totalRevenue')}</p>
                   <p className="text-2xl font-bold">{formatCurrency(stats.totalRevenue)}</p>
                 </div>
                 <DollarSign className="w-8 h-8 text-green-600" />
@@ -240,7 +243,7 @@ const AdminDashboard = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Package className="w-5 h-5" />
-              Recent Orders
+              {t('admin.recentOrders')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -248,7 +251,7 @@ const AdminDashboard = () => {
               {orders.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
                   <Package className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                  <p>No orders yet</p>
+                  <p>{t('admin.noOrders')}</p>
                 </div>
               ) : (
                 orders.map((order) => (
@@ -256,7 +259,7 @@ const AdminDashboard = () => {
                     <div className="flex items-start justify-between mb-4">
                       <div>
                         <div className="flex items-center gap-3 mb-2">
-                          <h3 className="font-semibold">Order #{order.order_number}</h3>
+                          <h3 className="font-semibold">{t('admin.orderNumber')}{order.order_number}</h3>
                           <OrderStatusBadge status={order.status || 'pending'} />
                         </div>
                         <p className="text-sm text-muted-foreground">
@@ -266,7 +269,7 @@ const AdminDashboard = () => {
                       <div className="text-right">
                         <p className="font-semibold">{formatCurrency(order.total_amount)}</p>
                         <p className="text-sm text-muted-foreground">
-                          Delivery: {formatCurrency(order.delivery_fee)}
+                          {t('admin.delivery')} {formatCurrency(order.delivery_fee)}
                         </p>
                       </div>
                     </div>
@@ -275,7 +278,7 @@ const AdminDashboard = () => {
                     {order.customers && (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 p-3 bg-muted/50 rounded">
                         <div>
-                          <h4 className="font-medium mb-2">Customer Details</h4>
+                          <h4 className="font-medium mb-2">{t('admin.customerDetails')}</h4>
                           <div className="space-y-1 text-sm">
                             <div className="flex items-center gap-2">
                               <Users className="w-4 h-4" />
@@ -294,7 +297,7 @@ const AdminDashboard = () => {
                         
                         {order.addresses && (
                           <div>
-                            <h4 className="font-medium mb-2">Delivery Address</h4>
+                            <h4 className="font-medium mb-2">{t('admin.deliveryAddress')}</h4>
                             <div className="flex items-start gap-2 text-sm">
                               <MapPin className="w-4 h-4 mt-0.5" />
                               <div>
@@ -305,7 +308,7 @@ const AdminDashboard = () => {
                                 <p>{order.addresses.city}, {order.addresses.postcode}</p>
                                 {order.addresses.distance_from_business && (
                                   <p className="text-muted-foreground">
-                                    Distance: {order.addresses.distance_from_business}km
+                                    {t('admin.distance')} {order.addresses.distance_from_business}km
                                   </p>
                                 )}
                               </div>
@@ -317,7 +320,7 @@ const AdminDashboard = () => {
 
                     {/* Order Items */}
                     <div className="mb-4">
-                      <h4 className="font-medium mb-2">Order Items</h4>
+                      <h4 className="font-medium mb-2">{t('admin.orderItems')}</h4>
                       <div className="space-y-2">
                         {order.order_items.map((item) => (
                           <div key={item.id} className="flex items-center justify-between text-sm">
@@ -338,7 +341,7 @@ const AdminDashboard = () => {
 
                     {/* Status Update */}
                     <div className="flex items-center gap-3">
-                      <Label htmlFor={`status-${order.id}`} className="text-sm">Update Status:</Label>
+                      <Label htmlFor={`status-${order.id}`} className="text-sm">{t('admin.updateStatus')}</Label>
                       <Select
                         value={order.status || 'pending'}
                         onValueChange={(value: OrderStatus) => handleStatusUpdate(order.id, value)}
@@ -347,12 +350,12 @@ const AdminDashboard = () => {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="pending">Pending</SelectItem>
-                          <SelectItem value="confirmed">Confirmed</SelectItem>
-                          <SelectItem value="preparing">Preparing</SelectItem>
-                          <SelectItem value="out_for_delivery">Out for Delivery</SelectItem>
-                          <SelectItem value="delivered">Delivered</SelectItem>
-                          <SelectItem value="cancelled">Cancelled</SelectItem>
+                          <SelectItem value="pending">{t('admin.orderStatuses.pending')}</SelectItem>
+                          <SelectItem value="confirmed">{t('admin.orderStatuses.confirmed')}</SelectItem>
+                          <SelectItem value="preparing">{t('admin.orderStatuses.preparing')}</SelectItem>
+                          <SelectItem value="out_for_delivery">{t('admin.orderStatuses.out_for_delivery')}</SelectItem>
+                          <SelectItem value="delivered">{t('admin.orderStatuses.delivered')}</SelectItem>
+                          <SelectItem value="cancelled">{t('admin.orderStatuses.cancelled')}</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -360,7 +363,7 @@ const AdminDashboard = () => {
                     {order.special_instructions && (
                       <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded">
                         <p className="text-sm">
-                          <strong>Special Instructions:</strong> {order.special_instructions}
+                          <strong>{t('admin.specialInstructions')}</strong> {order.special_instructions}
                         </p>
                       </div>
                     )}

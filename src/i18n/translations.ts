@@ -92,21 +92,66 @@ export const translations = {
       description: "Escaneie o QR code abaixo para acessar nosso menu de delivery",
       downloadPng: "Download PNG",
       downloadSvg: "Download SVG",
+      downloadPdf: "Download PDF",
       howToUse: "Como usar:",
       step1: "Abra a câmera do seu celular",
       step2: "Aponte para o QR code",
       step3: "Toque no link que aparecer",
       step4: "Faça seu pedido online",
       printVersion: "Versão para Impressão",
-      socialVersion: "Versão para Redes Sociais"
+      socialVersion: "Versão para Redes Sociais",
+      siteUrl: "URL do Site:",
+      scanToOrder: "Escaneie para Pedir"
     },
     
+    // Admin Panel
+    admin: {
+      title: "Painel Administrativo",
+      subtitle: "Brazilian Coffee Academy",
+      login: "Entrar",
+      logout: "Sair",
+      email: "Email",
+      password: "Senha",
+      loggingIn: "Entrando...",
+      dashboard: "Dashboard",
+      totalOrders: "Total de Pedidos",
+      todaysOrders: "Pedidos de Hoje",
+      pendingOrders: "Pedidos Pendentes",
+      totalRevenue: "Receita Total",
+      recentOrders: "Pedidos Recentes",
+      noOrders: "Nenhum pedido ainda",
+      orderNumber: "Pedido #",
+      customerDetails: "Detalhes do Cliente",
+      deliveryAddress: "Endereço de Entrega",
+      orderItems: "Itens do Pedido",
+      updateStatus: "Atualizar Status:",
+      specialInstructions: "Instruções Especiais:",
+      distance: "Distância:",
+      delivery: "Entrega:",
+      orderStatuses: {
+        pending: "Pendente",
+        confirmed: "Confirmado",
+        preparing: "Preparando",
+        out_for_delivery: "Saiu para Entrega",
+        delivered: "Entregue",
+        cancelled: "Cancelado",
+        unknown: "Desconhecido"
+      },
+      messages: {
+        statusUpdated: "Status do pedido atualizado com sucesso",
+        statusUpdateFailed: "Falha ao atualizar status do pedido",
+        invalidCredentials: "Credenciais inválidas",
+        loginFailed: "Falha no login",
+        loadingOrders: "Carregando pedidos..."
+      }
+    },
+
     // Language Selector
     language: {
       portuguese: "Português",
       english: "English"
     },
-    
+
     // Footer
     footer: {
       contact: "Contato",
@@ -208,21 +253,66 @@ export const translations = {
       description: "Scan the QR code below to access our delivery menu",
       downloadPng: "Download PNG",
       downloadSvg: "Download SVG",
+      downloadPdf: "Download PDF",
       howToUse: "How to use:",
       step1: "Open your phone's camera",
       step2: "Point at the QR code",
       step3: "Tap the link that appears",
       step4: "Place your order online",
       printVersion: "Print Version",
-      socialVersion: "Social Media Version"
+      socialVersion: "Social Media Version",
+      siteUrl: "Website URL:",
+      scanToOrder: "Scan to Order"
     },
     
+    // Admin Panel
+    admin: {
+      title: "Admin Dashboard",
+      subtitle: "Brazilian Coffee Academy",
+      login: "Login",
+      logout: "Logout",
+      email: "Email",
+      password: "Password",
+      loggingIn: "Logging in...",
+      dashboard: "Dashboard",
+      totalOrders: "Total Orders",
+      todaysOrders: "Today's Orders",
+      pendingOrders: "Pending Orders",
+      totalRevenue: "Total Revenue",
+      recentOrders: "Recent Orders",
+      noOrders: "No orders yet",
+      orderNumber: "Order #",
+      customerDetails: "Customer Details",
+      deliveryAddress: "Delivery Address",
+      orderItems: "Order Items",
+      updateStatus: "Update Status:",
+      specialInstructions: "Special Instructions:",
+      distance: "Distance:",
+      delivery: "Delivery:",
+      orderStatuses: {
+        pending: "Pending",
+        confirmed: "Confirmed",
+        preparing: "Preparing",
+        out_for_delivery: "Out for Delivery",
+        delivered: "Delivered",
+        cancelled: "Cancelled",
+        unknown: "Unknown"
+      },
+      messages: {
+        statusUpdated: "Order status updated successfully",
+        statusUpdateFailed: "Failed to update order status",
+        invalidCredentials: "Invalid credentials",
+        loginFailed: "Login failed",
+        loadingOrders: "Loading orders..."
+      }
+    },
+
     // Language Selector
     language: {
       portuguese: "Português",
       english: "English"
     },
-    
+
     // Footer
     footer: {
       contact: "Contact",

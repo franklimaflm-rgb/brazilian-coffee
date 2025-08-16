@@ -44,7 +44,7 @@ const QRCodePage = () => {
                 url={siteUrl}
                 size={window.innerWidth < 640 ? 280 : 320}
                 title="Café Academy"
-                description="Escaneie para acessar o menu"
+                description={t('qrcode.scanToOrder')}
               />
               
               {/* Smaller QR Codes */}
@@ -125,7 +125,7 @@ const QRCodePage = () => {
               {/* URL Display */}
               <Card>
                 <CardContent className="p-6">
-                  <h4 className="font-semibold text-foreground mb-2">URL do Site:</h4>
+                  <h4 className="font-semibold text-foreground mb-2">{t('qrcode.siteUrl')}</h4>
                   <div className="p-3 bg-muted rounded-lg">
                     <code className="text-sm text-foreground break-all">{siteUrl}</code>
                   </div>

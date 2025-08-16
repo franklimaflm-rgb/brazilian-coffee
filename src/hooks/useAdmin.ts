@@ -250,8 +250,9 @@ export const useAdminAuth = () => {
 
       const authData = await response.json();
 
-      // Verify this is Franklin's admin account
-      if (authData.user?.email === 'franklinmarceloderreiradelima@gmail.com') {
+      // Verify this is Franklin's admin account (check both possible email formats)
+      if (authData.user?.email === 'franklinmarceloferreiradelima@gmail.com' ||
+          authData.user?.email === 'franklinmarceloderreiradelima@gmail.com') {
         // Store the session manually
         if (authData.access_token) {
           localStorage.setItem('supabase.auth.token', JSON.stringify(authData));
@@ -314,7 +315,8 @@ export const useAdminAuth = () => {
         const storedSession = localStorage.getItem('supabase.auth.token');
         if (storedSession) {
           const sessionData = JSON.parse(storedSession);
-          const isAdmin = sessionData.user?.email === 'franklinmarceloderreiradelima@gmail.com';
+          const isAdmin = sessionData.user?.email === 'franklinmarceloferreiradelima@gmail.com' ||
+                          sessionData.user?.email === 'franklinmarceloderreiradelima@gmail.com';
 
           setIsAuthenticated(isAdmin);
           setIsLoading(false);

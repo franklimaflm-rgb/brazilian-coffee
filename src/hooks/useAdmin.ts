@@ -219,13 +219,26 @@ export const useAdminAuth = () => {
 
   const login = async (email: string, password: string) => {
     try {
+      // Debug: Log environment variables and URL construction
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+      const authUrl = `${supabaseUrl}/auth/v1/token?grant_type=password`;
+
+      console.log('🔍 Environment Debug:', {
+        supabaseUrl,
+        supabaseKey: supabaseKey ? `${supabaseKey.substring(0, 20)}...` : 'undefined',
+        authUrl,
+        email,
+        passwordLength: password.length
+      });
+
       // Direct HTTP authentication to bypass any client-side issues
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+      const response = await fetch(authUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          'apikey': supabaseKey,
+          'Authorization': `Bearer ${supabaseKey}`,
         },
         body: JSON.stringify({
           email,

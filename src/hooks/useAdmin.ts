@@ -3,11 +3,12 @@ import { supabase } from '@/integrations/supabase/client';
 import { Database } from '@/integrations/supabase/types';
 import { createClient } from '@supabase/supabase-js';
 
+// Flexible Order type for testing - can handle simple or complex queries
 type Order = Database['public']['Tables']['orders']['Row'] & {
-  customers: Database['public']['Tables']['customers']['Row'] | null;
-  addresses: Database['public']['Tables']['addresses']['Row'] | null;
-  order_items: (Database['public']['Tables']['order_items']['Row'] & {
-    coffee_products: Database['public']['Tables']['coffee_products']['Row'] | null;
+  customers?: Database['public']['Tables']['customers']['Row'] | null;
+  addresses?: Database['public']['Tables']['addresses']['Row'] | null;
+  order_items?: (Database['public']['Tables']['order_items']['Row'] & {
+    coffee_products?: Database['public']['Tables']['coffee_products']['Row'] | null;
   })[];
 };
 
@@ -108,9 +109,9 @@ export const useAdmin = (isAuthenticated: boolean = false) => {
         throw simpleError;
       }
 
-      // If simple query works, try the complex query
-      console.log('🔍 Attempting complex orders query...');
-      const { data, error } = await adminSupabase
+      // If simple query works, try a basic query with just customers
+      console.log('🔍 Attempting basic orders query with customers...');
+      const { data: basicData, error: basicError } = await adminSupabase
         .from('orders')
         .select(`
           *,
@@ -119,31 +120,31 @@ export const useAdmin = (isAuthenticated: boolean = false) => {
             name,
             email,
             phone
-          ),
-          addresses!delivery_address_id (
-            id,
-            address_line_1,
-            address_line_2,
-            city,
-            county,
-            postcode,
-            is_within_delivery_zone,
-            distance_from_business
-          ),
-          order_items (
-            id,
-            quantity,
-            unit_price,
-            total_price,
-            coffee_products (
-              id,
-              name_en,
-              name_pt,
-              price
-            )
           )
         `)
         .order('created_at', { ascending: false });
+
+      console.log('🔍 Basic query with customers result:', {
+        success: !basicError,
+        error: basicError?.message,
+        dataCount: basicData?.length || 0,
+        data: basicData
+      });
+
+      if (basicError) {
+        console.error('🚨 Basic query failed, falling back to simple data:', basicError);
+        // Use simple data if complex query fails
+        const data = simpleData;
+        const error = null;
+      } else {
+        // Use basic data if it works
+        const data = basicData;
+        const error = basicError;
+      }
+
+      // For now, let's use the simple data to test if the issue is with the query complexity
+      const data = simpleData;
+      const error = simpleError;
 
       console.log('🔍 Orders query result:', {
         success: !error,
@@ -199,6 +200,7 @@ export const useAdmin = (isAuthenticated: boolean = false) => {
   };
 
   const getOrderStats = () => {
+    console.log('🔍 Calculating stats for orders:', orders.length);
     const stats = {
       total: orders.length,
       pending: orders.filter(o => o.status === 'pending').length,
@@ -212,6 +214,7 @@ export const useAdmin = (isAuthenticated: boolean = false) => {
         .reduce((sum, order) => sum + order.total_amount, 0)
     };
 
+    console.log('🔍 Order stats calculated:', stats);
     return stats;
   };
 

@@ -13,6 +13,7 @@ let _supabaseInstance: ReturnType<typeof createClient<Database>> | null = null;
 
 export const supabase = (() => {
   if (!_supabaseInstance) {
+    console.log('🔍 Creating main Supabase client instance');
     _supabaseInstance = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
       auth: {
         storage: localStorage,
@@ -28,11 +29,10 @@ export const supabase = (() => {
       window.__supabaseClients.push('main-client');
 
       // Log client info for debugging (not a warning since it's intentional)
-      if (window.__supabaseClients.length > 1) {
-        console.info('ℹ️ Multiple Supabase clients active (intentional):', window.__supabaseClients);
-        console.info('Main client: main-auth-token | Admin client: admin-auth-token');
-      }
+      console.log('ℹ️ Supabase clients active:', window.__supabaseClients);
     }
+  } else {
+    console.log('🔍 Reusing existing main Supabase client instance');
   }
   return _supabaseInstance;
 })();

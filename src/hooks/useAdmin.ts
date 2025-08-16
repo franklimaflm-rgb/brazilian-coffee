@@ -23,6 +23,7 @@ let _adminSupabaseInstance: ReturnType<typeof createClient> | null = null;
 
 const adminSupabase = (() => {
   if (!_adminSupabaseInstance) {
+    console.log('🔍 Creating admin Supabase client instance');
     _adminSupabaseInstance = createClient(
       ADMIN_SUPABASE_URL,
       ADMIN_SUPABASE_KEY,
@@ -42,11 +43,10 @@ const adminSupabase = (() => {
       window.__supabaseClients.push('admin-client');
 
       // Log client info for debugging (not a warning since it's intentional)
-      if (window.__supabaseClients.length > 1) {
-        console.info('ℹ️ Admin client initialized with isolated storage');
-        console.info('This dual-client setup is intentional for admin/user separation');
-      }
+      console.log('ℹ️ Admin client initialized. Total clients:', window.__supabaseClients);
     }
+  } else {
+    console.log('🔍 Reusing existing admin Supabase client instance');
   }
   return _adminSupabaseInstance;
 })();
@@ -56,6 +56,14 @@ export const useAdmin = (isAuthenticated: boolean = false) => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Debug logging for orders state changes
+  useEffect(() => {
+    console.log('🔍 Orders state changed:', {
+      ordersCount: orders.length,
+      orders: orders.map(o => ({ id: o.id, order_number: o.order_number, status: o.status }))
+    });
+  }, [orders]);
 
   // Function to ensure admin is authenticated before making queries
   const ensureAdminAuthenticated = async () => {
@@ -81,6 +89,27 @@ export const useAdmin = (isAuthenticated: boolean = false) => {
         isAdmin: session?.user?.email === ADMIN_EMAIL
       });
 
+      // First try a simple query to test basic access
+      console.log('🔍 Attempting simple orders query...');
+      const { data: simpleData, error: simpleError } = await adminSupabase
+        .from('orders')
+        .select('id, order_number, status, total_amount, created_at')
+        .order('created_at', { ascending: false });
+
+      console.log('🔍 Simple query result:', {
+        success: !simpleError,
+        error: simpleError?.message,
+        dataCount: simpleData?.length || 0,
+        data: simpleData
+      });
+
+      if (simpleError) {
+        console.error('🚨 Simple query failed:', simpleError);
+        throw simpleError;
+      }
+
+      // If simple query works, try the complex query
+      console.log('🔍 Attempting complex orders query...');
       const { data, error } = await adminSupabase
         .from('orders')
         .select(`
@@ -119,11 +148,20 @@ export const useAdmin = (isAuthenticated: boolean = false) => {
       console.log('🔍 Orders query result:', {
         success: !error,
         error: error?.message,
-        dataCount: data?.length || 0
+        dataCount: data?.length || 0,
+        rawData: data,
+        dataType: typeof data,
+        isArray: Array.isArray(data)
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('🚨 Database query error:', error);
+        throw error;
+      }
+
+      console.log('🔍 Setting orders state with data:', data);
       setOrders(data || []);
+      console.log('🔍 Orders state should now be updated');
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch orders';
       console.error('🚨 Orders fetch error:', err);

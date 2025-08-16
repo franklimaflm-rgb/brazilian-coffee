@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAdmin, useAdminAuth, OrderStatus } from "@/hooks/useAdmin";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -326,6 +326,17 @@ const AdminDashboard = ({ isAuthenticated }: { isAuthenticated: boolean }) => {
   const { language, t } = useLanguage();
   const { orders, loading, error, updateOrderStatus, getOrderStats, getTodaysOrders, fetchOrders } = useAdmin(isAuthenticated);
   const { logout } = useAdminAuth();
+
+  // Debug logging for UI state
+  useEffect(() => {
+    console.log('🔍 AdminDashboard render state:', {
+      isAuthenticated,
+      ordersCount: orders.length,
+      loading,
+      error,
+      orders: orders.map(o => ({ id: o.id, order_number: o.order_number }))
+    });
+  }, [isAuthenticated, orders, loading, error]);
   const [selectedOrder, setSelectedOrder] = useState<string | null>(null);
 
   const stats = getOrderStats();

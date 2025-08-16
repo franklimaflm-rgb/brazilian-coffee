@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Database } from '@/integrations/supabase/types';
+import { useAuth } from './useAuth';
 
 type Order = Database['public']['Tables']['orders']['Row'] & {
   customers: Database['public']['Tables']['customers']['Row'] | null;
@@ -13,6 +14,7 @@ type Order = Database['public']['Tables']['orders']['Row'] & {
 export type OrderStatus = 'pending' | 'confirmed' | 'preparing' | 'out_for_delivery' | 'delivered' | 'cancelled';
 
 export const useAdmin = () => {
+  const { isAdmin, session } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -67,19 +69,22 @@ export const useAdmin = () => {
 
   const updateOrderStatus = async (orderId: string, status: OrderStatus) => {
     try {
-      const { error } = await supabase
-        .from('orders')
-        .update({ 
-          status,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', orderId);
+      // Check admin authorization
+      if (!isAdmin) {
+        throw new Error('Unauthorized: Admin access required');
+      }
+
+      // Use secure function for order status updates
+      const { data, error } = await supabase.rpc('update_order_status', {
+        p_order_id: orderId,
+        p_new_status: status,
+      });
 
       if (error) throw error;
-      
+
       // Update local state
-      setOrders(prev => prev.map(order => 
-        order.id === orderId 
+      setOrders(prev => prev.map(order =>
+        order.id === orderId
           ? { ...order, status, updated_at: new Date().toISOString() }
           : order
       ));

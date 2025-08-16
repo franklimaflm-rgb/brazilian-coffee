@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from './useAuth';
 import { Database } from '@/integrations/supabase/types';
 
 type Customer = Database['public']['Tables']['customers']['Insert'];
@@ -39,6 +40,7 @@ export interface OrderResult {
 }
 
 export const useOrders = () => {
+  const { getOrCreateCustomer } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -49,42 +51,18 @@ export const useOrders = () => {
     try {
       // Start a transaction-like process
       
-      // 1. Create or get customer
-      let customerId: string;
-      
-      // Check if customer exists
-      const { data: existingCustomer } = await supabase
-        .from('customers')
-        .select('id')
-        .eq('email', orderData.customer.email)
-        .single();
+      // 1. Create or get customer using secure function
+      const customerResult = await getOrCreateCustomer({
+        name: orderData.customer.name,
+        email: orderData.customer.email,
+        phone: orderData.customer.phone,
+      });
 
-      if (existingCustomer) {
-        customerId = existingCustomer.id;
-        
-        // Update customer info
-        await supabase
-          .from('customers')
-          .update({
-            name: orderData.customer.name,
-            phone: orderData.customer.phone,
-          })
-          .eq('id', customerId);
-      } else {
-        // Create new customer
-        const { data: newCustomer, error: customerError } = await supabase
-          .from('customers')
-          .insert({
-            name: orderData.customer.name,
-            email: orderData.customer.email,
-            phone: orderData.customer.phone,
-          })
-          .select('id')
-          .single();
-
-        if (customerError) throw customerError;
-        customerId = newCustomer.id;
+      if (!customerResult.success) {
+        throw new Error(customerResult.error || 'Failed to create customer');
       }
+
+      const customerId = customerResult.customerId;
 
       // 2. Create address
       const { data: newAddress, error: addressError } = await supabase

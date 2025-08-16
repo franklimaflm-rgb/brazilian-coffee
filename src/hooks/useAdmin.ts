@@ -57,6 +57,15 @@ export const useAdmin = (isAuthenticated: boolean = false) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Function to ensure admin is authenticated before making queries
+  const ensureAdminAuthenticated = async () => {
+    const { data: { session } } = await adminSupabase.auth.getSession();
+    if (!session || session.user?.email !== ADMIN_EMAIL) {
+      throw new Error('Admin not authenticated');
+    }
+    return session;
+  };
+
   const fetchOrders = async () => {
     try {
       setLoading(true);
@@ -64,9 +73,9 @@ export const useAdmin = (isAuthenticated: boolean = false) => {
 
       console.log('🔍 FETCHING ORDERS - Admin authenticated:', isAuthenticated);
 
-      // Check current session
-      const { data: { session } } = await adminSupabase.auth.getSession();
-      console.log('🔍 Admin session:', {
+      // Ensure admin is authenticated before making queries
+      const session = await ensureAdminAuthenticated();
+      console.log('🔍 Admin session verified:', {
         hasSession: !!session,
         userEmail: session?.user?.email,
         isAdmin: session?.user?.email === ADMIN_EMAIL
@@ -126,6 +135,9 @@ export const useAdmin = (isAuthenticated: boolean = false) => {
 
   const updateOrderStatus = async (orderId: string, status: OrderStatus) => {
     try {
+      // Ensure admin is authenticated before making updates
+      await ensureAdminAuthenticated();
+
       // Use secure function for order status updates
       const { data, error } = await adminSupabase.rpc('update_order_status', {
         p_order_id: orderId,
@@ -183,7 +195,14 @@ export const useAdmin = (isAuthenticated: boolean = false) => {
       return;
     }
 
-    fetchOrders();
+    // Add a small delay to ensure authentication is fully established
+    const fetchWithDelay = async () => {
+      // Wait a bit for authentication to be fully established
+      await new Promise(resolve => setTimeout(resolve, 500));
+      fetchOrders();
+    };
+
+    fetchWithDelay();
 
     // Set up real-time subscription using admin client
     const subscription = adminSupabase

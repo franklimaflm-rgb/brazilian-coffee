@@ -51,81 +51,40 @@ export const useOrders = () => {
     try {
       // Start a transaction-like process
       
-      // 1. Create or get customer using secure function
-      const customerResult = await getOrCreateCustomer({
-        name: orderData.customer.name,
-        email: orderData.customer.email,
-        phone: orderData.customer.phone,
-      });
-
-      if (!customerResult.success) {
-        throw new Error(customerResult.error || 'Failed to create customer');
-      }
-
-      const customerId = customerResult.customerId;
-
-      // 2. Create address
-      const { data: newAddress, error: addressError } = await supabase
-        .from('addresses')
-        .insert({
-          customer_id: customerId,
-          address_line_1: orderData.address.address_line_1,
-          address_line_2: orderData.address.address_line_2,
-          city: orderData.address.city,
-          county: orderData.address.county,
-          postcode: orderData.address.postcode,
-          country: orderData.address.country || 'United Kingdom',
-          is_within_delivery_zone: true, // We've already validated this
-        })
-        .select('id')
-        .single();
-
-      if (addressError) throw addressError;
-
-      // 3. Calculate totals
-      const subtotal = orderData.items.reduce(
-        (sum, item) => sum + (item.unit_price * item.quantity),
-        0
-      );
-      const total = subtotal + orderData.delivery_fee;
-
-      // 4. Create order
-      const { data: newOrder, error: orderError } = await supabase
-        .from('orders')
-        .insert({
-          customer_id: customerId,
-          delivery_address_id: newAddress.id,
-          subtotal,
-          delivery_fee: orderData.delivery_fee,
-          total_amount: total,
-          special_instructions: orderData.special_instructions,
-          estimated_delivery_time: orderData.estimated_delivery_time,
-          status: 'pending',
-        })
-        .select('id, order_number')
-        .single();
-
-      if (orderError) throw orderError;
-
-      // 5. Create order items
-      const orderItems = orderData.items.map(item => ({
-        order_id: newOrder.id,
+      // Use the secure create_order function for anonymous order creation
+      const coffeeItems = orderData.items.map(item => ({
         coffee_product_id: item.coffee_product_id,
         quantity: item.quantity,
-        unit_price: item.unit_price,
-        total_price: item.unit_price * item.quantity,
       }));
 
-      const { error: itemsError } = await supabase
-        .from('order_items')
-        .insert(orderItems);
+      const { data: orderId, error } = await supabase.rpc('create_order', {
+        p_customer_email: orderData.customer.email,
+        p_customer_name: orderData.customer.name,
+        p_customer_phone: orderData.customer.phone,
+        p_address_line_1: orderData.address.address_line_1,
+        p_coffee_items: coffeeItems,
+        p_address_line_2: orderData.address.address_line_2,
+        p_city: orderData.address.city || 'Market Harborough',
+        p_county: orderData.address.county || 'Leicestershire',
+        p_postcode: orderData.address.postcode || 'LE16',
+        p_country: orderData.address.country || 'United Kingdom',
+        p_special_instructions: orderData.special_instructions,
+        p_delivery_fee: orderData.delivery_fee,
+      });
 
-      if (itemsError) throw itemsError;
+      if (error) throw error;
+
+      // Get the order number for confirmation
+      const { data: orderDetails } = await supabase
+        .from('orders')
+        .select('order_number')
+        .eq('id', orderId)
+        .single();
 
       return {
         success: true,
-        order_id: newOrder.id,
-        order_number: newOrder.order_number,
+        order_id: orderId,
+        order_number: orderDetails?.order_number || 'BC000000',
       };
 
     } catch (err) {

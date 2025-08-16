@@ -148,18 +148,7 @@ export const useAuth = () => {
   // Get or create customer for anonymous orders
   const getOrCreateCustomer = async (customerData: CustomerData) => {
     try {
-      // First try to get existing customer
-      const { data: existingCustomer } = await supabase
-        .from('customers')
-        .select('id')
-        .eq('email', customerData.email)
-        .single();
-
-      if (existingCustomer) {
-        return { success: true, customerId: existingCustomer.id };
-      }
-
-      // Create new customer using secure function
+      // Use the secure register_customer function which handles both cases
       const { data: customerId, error } = await supabase.rpc('register_customer', {
         p_name: customerData.name,
         p_email: customerData.email,

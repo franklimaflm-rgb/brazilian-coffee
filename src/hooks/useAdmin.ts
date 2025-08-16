@@ -69,8 +69,15 @@ export const useAdmin = (isAuthenticated: boolean = false) => {
   // Function to ensure admin is authenticated before making queries
   const ensureAdminAuthenticated = async () => {
     const { data: { session } } = await adminSupabase.auth.getSession();
+    console.log('🔍 Session check for database query:', {
+      hasSession: !!session,
+      userEmail: session?.user?.email,
+      expectedEmail: ADMIN_EMAIL,
+      isValidAdmin: session?.user?.email === ADMIN_EMAIL
+    });
+
     if (!session || session.user?.email !== ADMIN_EMAIL) {
-      throw new Error('Admin not authenticated');
+      throw new Error(`Admin not authenticated. Session: ${!!session}, Email: ${session?.user?.email}`);
     }
     return session;
   };
@@ -88,6 +95,17 @@ export const useAdmin = (isAuthenticated: boolean = false) => {
         hasSession: !!session,
         userEmail: session?.user?.email,
         isAdmin: session?.user?.email === ADMIN_EMAIL
+      });
+
+      // Test authentication context in database query
+      console.log('🔍 Testing authentication context...');
+      const { data: authTest, error: authTestError } = await adminSupabase
+        .rpc('get_current_user_info');
+
+      console.log('🔍 Auth context test:', {
+        success: !authTestError,
+        error: authTestError?.message,
+        authData: authTest
       });
 
       // First try a simple query to test basic access

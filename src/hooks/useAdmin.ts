@@ -32,7 +32,7 @@ export const useAdmin = () => {
             email,
             phone
           ),
-          addresses (
+          addresses!delivery_address_id (
             id,
             address_line_1,
             address_line_2,
@@ -165,36 +165,63 @@ export const useAdminAuth = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  const adminCredentials = {
-    email: 'franklinmarceloderreiradelima@gmail.com',
-    // In a real app, this would be handled more securely
-    password: 'admin123'
-  };
-
   const login = async (email: string, password: string) => {
     try {
-      if (email === adminCredentials.email && password === adminCredentials.password) {
+      // Sign in to Supabase with Franklin's credentials
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        return { success: false, error: error.message };
+      }
+
+      // Verify this is Franklin's admin account
+      if (data.user?.email === 'franklinmarceloderreiradelima@gmail.com') {
         setIsAuthenticated(true);
-        localStorage.setItem('admin_authenticated', 'true');
         return { success: true };
       } else {
-        return { success: false, error: 'Invalid credentials' };
+        // Sign out if not admin
+        await supabase.auth.signOut();
+        return { success: false, error: 'Unauthorized: Admin access required' };
       }
     } catch (error) {
       return { success: false, error: 'Login failed' };
     }
   };
 
-  const logout = () => {
-    setIsAuthenticated(false);
-    localStorage.removeItem('admin_authenticated');
+  const logout = async () => {
+    try {
+      await supabase.auth.signOut();
+      setIsAuthenticated(false);
+    } catch (error) {
+      console.error('Logout error:', error);
+      setIsAuthenticated(false);
+    }
   };
 
   useEffect(() => {
-    // Check if admin is already authenticated
-    const isAuth = localStorage.getItem('admin_authenticated') === 'true';
-    setIsAuthenticated(isAuth);
-    setIsLoading(false);
+    // Check current Supabase session
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      const isAdmin = session?.user?.email === 'franklinmarceloderreiradelima@gmail.com';
+      setIsAuthenticated(isAdmin);
+      setIsLoading(false);
+    };
+
+    checkSession();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        const isAdmin = session?.user?.email === 'franklinmarceloderreiradelima@gmail.com';
+        setIsAuthenticated(isAdmin);
+        setIsLoading(false);
+      }
+    );
+
+    return () => subscription.unsubscribe();
   }, []);
 
   return {

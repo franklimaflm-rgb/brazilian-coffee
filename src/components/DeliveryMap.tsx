@@ -26,6 +26,11 @@ export const DeliveryMap = ({
     if (!mapContainer.current || map.current) return;
 
     try {
+      // Ensure the map container is empty before initializing
+      if (mapContainer.current) {
+        mapContainer.current.innerHTML = '';
+      }
+
       // Validate Mapbox token
       if (!MAPBOX_TOKEN || MAPBOX_TOKEN.includes('example')) {
         throw new Error('Invalid Mapbox token');
@@ -205,6 +210,10 @@ export const DeliveryMap = ({
       if (map.current) {
         map.current.remove();
         map.current = null;
+      }
+      // Ensure container is cleaned up
+      if (mapContainer.current) {
+        mapContainer.current.innerHTML = '';
       }
     };
   }, [businessLocation, deliveryRadius]);

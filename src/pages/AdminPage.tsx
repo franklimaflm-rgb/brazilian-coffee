@@ -74,6 +74,7 @@ const AdminLoginForm = ({ onLogin }: { onLogin: (email: string, password: string
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
                 required
               />
             </div>

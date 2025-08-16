@@ -64,6 +64,7 @@ const AdminLoginForm = ({ onLogin }: { onLogin: (email: string, password: string
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="franklinmarceloderreiradelima@gmail.com"
+                autoComplete="email"
                 required
               />
             </div>

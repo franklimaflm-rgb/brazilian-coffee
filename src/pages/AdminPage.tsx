@@ -165,34 +165,35 @@ const AdminDashboard = () => {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="border-b border-border bg-card">
-        <div className="container mx-auto px-6 py-4">
+        <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Coffee className="w-8 h-8 text-primary" />
+            <div className="flex items-center gap-2 sm:gap-3">
+              <Coffee className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
               <div>
-                <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-                <p className="text-sm text-muted-foreground">Brazilian Coffee Academy</p>
+                <h1 className="text-lg sm:text-xl lg:text-2xl font-bold">Admin Dashboard</h1>
+                <p className="text-xs sm:text-sm text-muted-foreground">Brazilian Coffee Academy</p>
               </div>
             </div>
-            <Button onClick={logout} variant="outline" size="sm">
-              <LogOut className="w-4 h-4 mr-2" />
-              Logout
+            <Button onClick={logout} variant="outline" size="sm" className="h-9 sm:h-10 text-sm touch-manipulation">
+              <LogOut className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Logout</span>
+              <span className="sm:hidden">Exit</span>
             </Button>
           </div>
         </div>
       </div>
 
-      <div className="container mx-auto px-6 py-8">
+      <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 lg:py-8">
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-8">
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="p-3 sm:p-4 lg:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">Total Orders</p>
-                  <p className="text-2xl font-bold">{stats.total}</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Total Orders</p>
+                  <p className="text-lg sm:text-xl lg:text-2xl font-bold">{stats.total}</p>
                 </div>
-                <Package className="w-8 h-8 text-primary" />
+                <Package className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-primary" />
               </div>
             </CardContent>
           </Card>

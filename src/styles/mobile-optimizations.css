@@ -1,0 +1,297 @@
+/* Mobile-First Responsive Optimizations for Brazilian Coffee Academy */
+
+/* Touch-friendly interactions */
+.touch-manipulation {
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Improved touch targets for mobile */
+@media (max-width: 768px) {
+  /* Ensure minimum 44px touch targets */
+  button, 
+  .btn, 
+  [role="button"],
+  input[type="submit"],
+  input[type="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Optimize form inputs for mobile */
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="password"],
+  textarea,
+  select {
+    font-size: 16px; /* Prevents zoom on iOS */
+    min-height: 44px;
+    padding: 12px 16px;
+  }
+
+  /* Better spacing for mobile forms */
+  .form-group {
+    margin-bottom: 1rem;
+  }
+
+  /* Optimize card layouts for mobile */
+  .card {
+    margin-bottom: 1rem;
+  }
+
+  /* Improve readability on small screens */
+  .text-responsive {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* Mobile-optimized navigation */
+  .mobile-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    background: white;
+    border-top: 1px solid #e5e7eb;
+    padding: 8px 16px;
+  }
+}
+
+/* Tablet optimizations */
+@media (min-width: 768px) and (max-width: 1024px) {
+  /* Optimize admin panel for tablets */
+  .admin-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  /* Better spacing for tablet forms */
+  .tablet-form {
+    padding: 1.5rem;
+  }
+
+  /* Optimize coffee cards for tablet */
+  .coffee-grid-tablet {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+/* Performance optimizations for mobile */
+@media (max-width: 768px) {
+  /* Reduce animations on mobile for better performance */
+  .reduce-motion {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  /* Optimize images for mobile */
+  img {
+    max-width: 100%;
+    height: auto;
+    image-rendering: optimizeSpeed;
+  }
+
+  /* Reduce box shadows on mobile for performance */
+  .mobile-shadow {
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* iOS Safari specific fixes */
+@supports (-webkit-touch-callout: none) {
+  /* Fix iOS Safari viewport issues */
+  .ios-fix {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Fix iOS Safari input styling */
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  textarea {
+    -webkit-appearance: none;
+    border-radius: 0;
+  }
+
+  /* Fix iOS Safari button styling */
+  button,
+  input[type="submit"],
+  input[type="button"] {
+    -webkit-appearance: none;
+    border-radius: 6px;
+  }
+}
+
+/* Android Chrome specific optimizations */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  /* Optimize for Android Chrome */
+  .android-optimize {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* High DPI display optimizations */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  /* Optimize for retina displays */
+  .retina-optimize {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* Accessibility improvements for mobile */
+@media (max-width: 768px) {
+  /* Larger focus indicators for mobile */
+  *:focus {
+    outline: 3px solid #3b82f6;
+    outline-offset: 2px;
+  }
+
+  /* Better contrast for mobile readability */
+  .mobile-contrast {
+    color: #1f2937;
+    background-color: #ffffff;
+  }
+
+  /* Larger clickable areas */
+  .mobile-clickable {
+    padding: 12px 16px;
+    margin: 4px 0;
+  }
+}
+
+/* Landscape orientation optimizations */
+@media (max-width: 768px) and (orientation: landscape) {
+  /* Optimize for mobile landscape */
+  .landscape-optimize {
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  /* Reduce header height in landscape */
+  .mobile-header {
+    padding: 8px 16px;
+  }
+
+  /* Optimize map height for landscape */
+  .map-landscape {
+    height: 40vh;
+    min-height: 200px;
+  }
+}
+
+/* Print optimizations */
+@media print {
+  /* Hide interactive elements when printing */
+  .no-print {
+    display: none !important;
+  }
+
+  /* Optimize text for printing */
+  body {
+    font-size: 12pt;
+    line-height: 1.4;
+    color: black;
+    background: white;
+  }
+}
+
+/* Dark mode optimizations for mobile */
+@media (prefers-color-scheme: dark) and (max-width: 768px) {
+  /* Optimize dark mode for mobile */
+  .dark-mobile {
+    background-color: #111827;
+    color: #f9fafb;
+  }
+
+  /* Reduce blue light for mobile dark mode */
+  .dark-mobile-text {
+    color: #e5e7eb;
+  }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  /* Respect user's motion preferences */
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Network-aware optimizations */
+@media (max-width: 768px) {
+  /* Optimize for slower connections */
+  .slow-connection {
+    background-image: none;
+    box-shadow: none;
+    border-radius: 4px;
+  }
+
+  /* Lazy load optimization */
+  .lazy-load {
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .lazy-load.loaded {
+    opacity: 1;
+  }
+}
+
+/* Utility classes for mobile-first design */
+.mobile-only {
+  display: block;
+}
+
+.tablet-up {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .mobile-only {
+    display: none;
+  }
+
+  .tablet-up {
+    display: block;
+  }
+}
+
+/* Mobile-optimized spacing utilities */
+.mobile-p-2 { padding: 0.5rem; }
+.mobile-p-3 { padding: 0.75rem; }
+.mobile-p-4 { padding: 1rem; }
+
+.mobile-m-2 { margin: 0.5rem; }
+.mobile-m-3 { margin: 0.75rem; }
+.mobile-m-4 { margin: 1rem; }
+
+/* Mobile-optimized text utilities */
+.mobile-text-sm { font-size: 0.875rem; }
+.mobile-text-base { font-size: 1rem; }
+.mobile-text-lg { font-size: 1.125rem; }
+
+/* Mobile-optimized grid utilities */
+.mobile-grid-1 { grid-template-columns: 1fr; }
+.mobile-grid-2 { grid-template-columns: repeat(2, 1fr); }
+
+@media (min-width: 640px) {
+  .sm-grid-2 { grid-template-columns: repeat(2, 1fr); }
+  .sm-grid-3 { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (min-width: 1024px) {
+  .lg-grid-4 { grid-template-columns: repeat(4, 1fr); }
+}

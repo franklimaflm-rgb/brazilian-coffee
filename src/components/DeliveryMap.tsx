@@ -37,27 +37,41 @@ export const DeliveryMap = ({
         container: mapContainer.current,
         style: 'mapbox://styles/mapbox/satellite-v9',
         center: businessLocation,
-        zoom: 12,
+        zoom: window.innerWidth < 768 ? 11 : 12, // Adjust zoom for mobile
         attributionControl: true,
         // Mobile-friendly settings
         touchZoomRotate: true,
         touchPitch: false,
         dragRotate: false,
         pitchWithRotate: false,
-        // Performance optimizations
+        // Enhanced mobile performance optimizations
         antialias: false,
-        preserveDrawingBuffer: false
+        preserveDrawingBuffer: false,
+        renderWorldCopies: false,
+        maxTileCacheSize: window.innerWidth < 768 ? 50 : 100, // Reduce cache on mobile
+        transformRequest: (url, resourceType) => {
+          // Optimize tile loading for mobile
+          if (resourceType === 'Tile' && window.innerWidth < 768) {
+            return {
+              url: url,
+              headers: { 'Cache-Control': 'max-age=3600' }
+            };
+          }
+        }
       });
 
-      // Add navigation controls
-      map.current.addControl(new mapboxgl.NavigationControl({
+      // Add navigation controls with mobile optimization
+      const navControl = new mapboxgl.NavigationControl({
         showCompass: false,
         showZoom: true,
         visualizePitch: false
-      }), 'top-right');
+      });
+      map.current.addControl(navControl, window.innerWidth < 768 ? 'bottom-right' : 'top-right');
 
       // Add fullscreen control for better mobile experience
-      map.current.addControl(new mapboxgl.FullscreenControl(), 'top-right');
+      if (window.innerWidth >= 768) {
+        map.current.addControl(new mapboxgl.FullscreenControl(), 'top-right');
+      }
 
       map.current.on('load', () => {
         setMapLoaded(true);
@@ -275,8 +289,11 @@ export const DeliveryMap = ({
     <div className="w-full">
       <div
         ref={mapContainer}
-        className="w-full h-80 md:h-96 rounded-lg border border-border overflow-hidden shadow-sm relative"
-        style={{ minHeight: '320px' }}
+        className="w-full h-64 sm:h-80 lg:h-96 rounded-lg border border-border overflow-hidden shadow-sm relative touch-manipulation"
+        style={{
+          minHeight: '256px',
+          touchAction: 'pan-x pan-y'
+        }}
       >
         {isLoading && !mapError && (
           <div className="absolute inset-0 bg-muted/50 flex items-center justify-center z-10">

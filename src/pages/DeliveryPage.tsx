@@ -166,76 +166,82 @@ const DeliveryPage = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <div className="container mx-auto px-6 py-12">
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 lg:py-12">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-foreground mb-4">
+        <div className="text-center mb-8 sm:mb-12">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-3 sm:mb-4">
             {t('delivery.title')}
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-6">
+          <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto mb-4 sm:mb-6 px-2">
             {t('delivery.description')}
           </p>
-          
+
           {/* Business Info */}
-          <div className="flex flex-wrap justify-center gap-4 text-sm text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <Phone className="w-4 h-4" />
-              {t('delivery.businessPhone')}
+          <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
+            <div className="flex items-center justify-center gap-2">
+              <Phone className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="break-all sm:break-normal">{t('delivery.businessPhone')}</span>
             </div>
-            <div className="flex items-center gap-2">
-              <Mail className="w-4 h-4" />
-              {t('delivery.businessEmail')}
+            <div className="flex items-center justify-center gap-2">
+              <Mail className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="break-all sm:break-normal">{t('delivery.businessEmail')}</span>
             </div>
-            <div className="flex items-center gap-2">
-              <MapPin className="w-4 h-4" />
-              Lubenham, Market Harborough
+            <div className="flex items-center justify-center gap-2">
+              <MapPin className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span>Lubenham, Market Harborough</span>
             </div>
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-8">
+        <div className="grid lg:grid-cols-2 gap-6 lg:gap-8">
           {/* Order Form */}
           <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl">{t('delivery.orderForm.title')}</CardTitle>
+            <CardHeader className="pb-4 sm:pb-6">
+              <CardTitle className="text-xl sm:text-2xl">{t('delivery.orderForm.title')}</CardTitle>
             </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-6">
+            <CardContent className="px-4 sm:px-6">
+              <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
                 {/* Customer Information */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold">{t('delivery.orderForm.customerInfo')}</h3>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-3 sm:space-y-4">
+                  <h3 className="text-base sm:text-lg font-semibold">{t('delivery.orderForm.customerInfo')}</h3>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div>
-                      <Label htmlFor="name">{t('delivery.orderForm.name')}</Label>
+                      <Label htmlFor="name" className="text-sm font-medium">{t('delivery.orderForm.name')}</Label>
                       <Input
                         id="name"
                         value={orderForm.name}
                         onChange={(e) => setOrderForm({...orderForm, name: e.target.value})}
                         required
+                        className="h-11 text-base"
+                        placeholder={t('delivery.orderForm.name')}
                       />
                     </div>
-                    
+
                     <div>
-                      <Label htmlFor="phone">{t('delivery.orderForm.phone')}</Label>
+                      <Label htmlFor="phone" className="text-sm font-medium">{t('delivery.orderForm.phone')}</Label>
                       <Input
                         id="phone"
                         type="tel"
                         value={orderForm.phone}
                         onChange={(e) => setOrderForm({...orderForm, phone: e.target.value})}
                         required
+                        className="h-11 text-base"
+                        placeholder="+44 7XXX XXXXXX"
                       />
                     </div>
                   </div>
-                  
+
                   <div>
-                    <Label htmlFor="email">{t('delivery.orderForm.email')}</Label>
+                    <Label htmlFor="email" className="text-sm font-medium">{t('delivery.orderForm.email')}</Label>
                     <Input
                       id="email"
                       type="email"
                       value={orderForm.email}
                       onChange={(e) => setOrderForm({...orderForm, email: e.target.value})}
                       required
+                      className="h-11 text-base"
+                      placeholder="your.email@example.com"
                     />
                   </div>
                 </div>

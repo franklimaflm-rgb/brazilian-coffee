@@ -16,33 +16,33 @@ const QRCodePage = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <div className="container mx-auto px-6 py-12">
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 lg:py-12">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
-          <div className="text-center mb-12">
+          <div className="text-center mb-8 sm:mb-12">
             <Button
               variant="ghost"
               onClick={() => navigate(-1)}
-              className="mb-6 flex items-center gap-2"
+              className="mb-4 sm:mb-6 flex items-center gap-2 h-11 touch-manipulation"
             >
               <ArrowLeft className="w-4 h-4" />
               {t('coffee.backToMenu')}
             </Button>
-            
-            <h1 className="text-4xl font-bold text-foreground mb-4">
+
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-3 sm:mb-4">
               {t('qrcode.title')}
             </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto px-2">
               {t('qrcode.description')}
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
             {/* Main QR Code */}
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               <QRCodeGenerator
                 url={siteUrl}
-                size={320}
+                size={window.innerWidth < 640 ? 280 : 320}
                 title="Café Academy"
                 description="Escaneie para acessar o menu"
               />

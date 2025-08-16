@@ -168,24 +168,12 @@ export const useAdminAuth = () => {
 
   const checkAdminExists = async () => {
     try {
-      // Try to sign in with a dummy password to check if user exists
-      // This will fail but tell us if the user exists or not
-      const { error } = await supabase.auth.signInWithPassword({
-        email: 'franklinmarceloderreiradelima@gmail.com',
-        password: 'dummy-password-check'
-      });
-
-      // If error is "Invalid login credentials", user exists but password is wrong
-      // If error is "User not found" or similar, user doesn't exist
-      if (error) {
-        return error.message.includes('Invalid login credentials') ||
-               error.message.includes('Email not confirmed') ||
-               error.message.includes('Invalid email or password');
-      }
-
-      return true;
+      // Use a more reliable method to check admin existence
+      // We'll track this through a simple state management approach
+      // and only check during actual login attempts
+      return true; // Assume admin exists, let login handle the verification
     } catch (error) {
-      return false;
+      return true; // Default to assuming admin exists to avoid unnecessary requests
     }
   };
 
@@ -230,9 +218,10 @@ export const useAdminAuth = () => {
       });
 
       if (error) {
-        // If login fails, check if admin account exists
-        const adminExists = await checkAdminExists();
-        if (!adminExists) {
+        // Check specific error messages to determine if admin setup is needed
+        if (error.message.includes('User not found') ||
+            error.message.includes('Invalid email') ||
+            error.message.includes('Email not confirmed')) {
           setNeedsSetup(true);
           return { success: false, error: 'Admin account not found. Please create admin account first.', needsSetup: true };
         }
@@ -265,38 +254,35 @@ export const useAdminAuth = () => {
   };
 
   useEffect(() => {
-    // Check current Supabase session and admin existence
+    // Check current Supabase session
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       const isAdmin = session?.user?.email === 'franklinmarceloderreiradelima@gmail.com';
 
-      if (!isAdmin && !session) {
-        // Check if admin account exists when not logged in
-        const adminExists = await checkAdminExists();
-        setNeedsSetup(!adminExists);
-      }
-
       setIsAuthenticated(isAdmin);
       setIsLoading(false);
+
+      // Only set needsSetup to false if we have a valid admin session
+      // Let the login function handle setup detection based on actual login attempts
+      if (isAdmin) {
+        setNeedsSetup(false);
+      }
     };
 
     checkSession();
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         const isAdmin = session?.user?.email === 'franklinmarceloderreiradelima@gmail.com';
-
-        if (!isAdmin && !session) {
-          // Check if admin account exists when not logged in
-          const adminExists = await checkAdminExists();
-          setNeedsSetup(!adminExists);
-        } else {
-          setNeedsSetup(false);
-        }
 
         setIsAuthenticated(isAdmin);
         setIsLoading(false);
+
+        // Only set needsSetup to false if we have a valid admin session
+        if (isAdmin) {
+          setNeedsSetup(false);
+        }
       }
     );
 

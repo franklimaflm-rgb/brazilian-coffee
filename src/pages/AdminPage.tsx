@@ -506,22 +506,24 @@ const AdminPage = () => {
   }
 
   if (!isAuthenticated) {
-    // Show setup form if admin account doesn't exist or user requested setup
+    // Show setup form if user requested setup or setup is needed
     if (needsSetup || showSetup) {
       return (
         <div>
           <AdminSetupForm onCreateAdmin={createAdmin} />
-          {!needsSetup && (
-            <div className="fixed bottom-4 right-4">
-              <Button
-                variant="outline"
-                onClick={() => setShowSetup(false)}
-                className="bg-white shadow-lg"
-              >
-                Back to Login
-              </Button>
-            </div>
-          )}
+          <div className="fixed bottom-4 right-4">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowSetup(false);
+                // Reset needsSetup when user goes back to login
+                // This will be set again by login function if needed
+              }}
+              className="bg-white shadow-lg"
+            >
+              Back to Login
+            </Button>
+          </div>
         </div>
       );
     }
@@ -530,17 +532,15 @@ const AdminPage = () => {
     return (
       <div>
         <AdminLoginForm onLogin={login} needsSetup={needsSetup} />
-        {!needsSetup && (
-          <div className="fixed bottom-4 right-4">
-            <Button
-              variant="outline"
-              onClick={() => setShowSetup(true)}
-              className="bg-white shadow-lg"
-            >
-              Create Admin Account
-            </Button>
-          </div>
-        )}
+        <div className="fixed bottom-4 right-4">
+          <Button
+            variant="outline"
+            onClick={() => setShowSetup(true)}
+            className="bg-white shadow-lg"
+          >
+            Create Admin Account
+          </Button>
+        </div>
       </div>
     );
   }

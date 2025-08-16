@@ -13,14 +13,20 @@ type Order = Database['public']['Tables']['orders']['Row'] & {
 
 export type OrderStatus = 'pending' | 'confirmed' | 'preparing' | 'out_for_delivery' | 'delivered' | 'cancelled';
 
-// Create a dedicated admin Supabase client to avoid conflicts
+// Create a completely isolated admin Supabase client with explicit configuration
+const ADMIN_SUPABASE_URL = 'https://eticmvmetfpijbavteel.supabase.co';
+const ADMIN_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV0aWNtdm1ldGZwaWpiYXZ0ZWVsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUyMDI2OTQsImV4cCI6MjA3MDc3ODY5NH0.h6Isaa4WG-Yi8fgonQqj3czuFzGOju0AUs3QYOX_JOU';
+const ADMIN_EMAIL = 'franklinmarceloferreiradelima@gmail.com';
+
 const adminSupabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_ANON_KEY,
+  ADMIN_SUPABASE_URL,
+  ADMIN_SUPABASE_KEY,
   {
     auth: {
       persistSession: true,
       autoRefreshToken: true,
+      storage: localStorage,
+      storageKey: 'admin-auth-token', // Use unique storage key
     }
   }
 );
@@ -219,58 +225,63 @@ export const useAdminAuth = () => {
 
   const login = async (email: string, password: string) => {
     try {
-      console.log('🔍 Starting admin login for:', email);
+      console.log('🔍 ADMIN LOGIN START');
+      console.log('🔍 Input Email:', email);
+      console.log('🔍 Expected Email:', ADMIN_EMAIL);
+      console.log('🔍 Email Match (input):', email.toLowerCase().trim() === ADMIN_EMAIL.toLowerCase());
 
-      // Use the dedicated admin Supabase client for authentication
+      // Clear any existing session first
+      await adminSupabase.auth.signOut();
+
+      // Perform authentication
       const { data, error } = await adminSupabase.auth.signInWithPassword({
-        email,
-        password,
+        email: email.trim(),
+        password: password,
       });
 
-      console.log('🔍 Supabase Auth Response:', { data, error });
+      console.log('🔍 Auth Response:', {
+        success: !error,
+        error: error?.message,
+        user: data.user ? {
+          id: data.user.id,
+          email: data.user.email,
+          confirmed: data.user.email_confirmed_at
+        } : null
+      });
 
       if (error) {
-        console.log('🚨 Authentication Error:', error);
-
-        // Check specific error messages to determine if admin setup is needed
-        if (error.message.includes('User not found') ||
-            error.message.includes('Invalid email') ||
-            error.message.includes('Email not confirmed')) {
-          setNeedsSetup(true);
-          return { success: false, error: 'Admin account not found. Please create admin account first.', needsSetup: true };
-        }
+        console.log('🚨 Authentication failed:', error.message);
         return { success: false, error: error.message };
       }
 
-      console.log('🔍 User Data:', data.user);
-      console.log('🔍 User Email:', data.user?.email);
-      console.log('🔍 Expected Email:', 'franklinmarceloferreiradelima@gmail.com');
-      console.log('🔍 Email Match:', data.user?.email === 'franklinmarceloferreiradelima@gmail.com');
+      if (!data.user) {
+        console.log('🚨 No user data returned');
+        return { success: false, error: 'Authentication failed - no user data' };
+      }
 
-      // Verify this is Franklin's admin account - simplified check
-      const userEmail = data.user?.email?.toLowerCase().trim();
-      const expectedEmail = 'franklinmarceloferreiradelima@gmail.com';
+      // Simple email validation
+      const userEmail = data.user.email;
+      const isValidAdmin = userEmail === ADMIN_EMAIL;
 
-      console.log('🔍 Email Comparison:', {
+      console.log('🔍 Admin Validation:', {
         userEmail,
-        expectedEmail,
-        match: userEmail === expectedEmail,
-        userEmailLength: userEmail?.length,
-        expectedEmailLength: expectedEmail.length
+        expectedEmail: ADMIN_EMAIL,
+        isValidAdmin,
+        emailsMatch: userEmail === ADMIN_EMAIL
       });
 
-      if (userEmail === expectedEmail) {
-        console.log('✅ Admin email verified, setting authenticated state');
+      if (isValidAdmin) {
+        console.log('✅ ADMIN ACCESS GRANTED');
         setIsAuthenticated(true);
         setNeedsSetup(false);
         return { success: true };
       } else {
-        console.log('❌ Email verification failed - not admin user');
-        // Don't sign out, just deny access
+        console.log('❌ ADMIN ACCESS DENIED - Invalid email');
+        await adminSupabase.auth.signOut();
         return { success: false, error: 'Unauthorized: Admin access required' };
       }
     } catch (error) {
-      console.error('🚨 Login exception:', error);
+      console.error('🚨 Login Exception:', error);
       return { success: false, error: 'Login failed - network error' };
     }
   };
@@ -285,13 +296,18 @@ export const useAdminAuth = () => {
     }
   };
 
-  // Manual session refresh function using Supabase client
+  // Simple session refresh
   const refreshSession = async () => {
     try {
+      console.log('🔍 REFRESHING SESSION');
       const { data: { session } } = await adminSupabase.auth.getSession();
-      const isAdmin = session?.user?.email === 'franklinmarceloferreiradelima@gmail.com';
+      const isAdmin = session?.user?.email === ADMIN_EMAIL;
 
-      console.log('🔍 Session Refresh:', { session: !!session, email: session?.user?.email, isAdmin });
+      console.log('🔍 Refresh Result:', {
+        hasSession: !!session,
+        userEmail: session?.user?.email,
+        isAdmin
+      });
 
       setIsAuthenticated(isAdmin);
       setIsLoading(false);
@@ -300,20 +316,27 @@ export const useAdminAuth = () => {
         setNeedsSetup(false);
       }
     } catch (error) {
-      console.error('Session refresh error:', error);
+      console.error('🚨 Session refresh error:', error);
       setIsAuthenticated(false);
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    // Check session using dedicated admin client
+    // Simple session check
     const checkSession = async () => {
       try {
+        console.log('🔍 INITIAL SESSION CHECK');
         const { data: { session } } = await adminSupabase.auth.getSession();
-        const isAdmin = session?.user?.email === 'franklinmarceloferreiradelima@gmail.com';
 
-        console.log('🔍 Initial Session Check:', { session: !!session, email: session?.user?.email, isAdmin });
+        const isAdmin = session?.user?.email === ADMIN_EMAIL;
+
+        console.log('🔍 Session Status:', {
+          hasSession: !!session,
+          userEmail: session?.user?.email,
+          expectedEmail: ADMIN_EMAIL,
+          isAdmin
+        });
 
         setIsAuthenticated(isAdmin);
         setIsLoading(false);
@@ -322,7 +345,7 @@ export const useAdminAuth = () => {
           setNeedsSetup(false);
         }
       } catch (error) {
-        console.error('Session check error:', error);
+        console.error('🚨 Session check error:', error);
         setIsAuthenticated(false);
         setIsLoading(false);
       }
@@ -330,15 +353,18 @@ export const useAdminAuth = () => {
 
     checkSession();
 
-    // Set up auth state listener for the dedicated admin client
+    // Simple auth state listener
     const { data: { subscription } } = adminSupabase.auth.onAuthStateChange(
       (event, session) => {
-        console.log('🔍 Auth State Change:', { event, session: !!session, email: session?.user?.email });
+        console.log('🔍 AUTH STATE CHANGE:', {
+          event,
+          hasSession: !!session,
+          userEmail: session?.user?.email
+        });
 
-        const userEmail = session?.user?.email?.toLowerCase().trim();
-        const isAdmin = userEmail === 'franklinmarceloferreiradelima@gmail.com';
+        const isAdmin = session?.user?.email === ADMIN_EMAIL;
 
-        console.log('🔍 Auth State Admin Check:', { userEmail, isAdmin });
+        console.log('🔍 Admin Status:', { isAdmin });
 
         setIsAuthenticated(isAdmin);
         setIsLoading(false);

@@ -331,10 +331,10 @@ const AdminDashboard = ({ isAuthenticated }: { isAuthenticated: boolean }) => {
   useEffect(() => {
     console.log('🔍 AdminDashboard render state:', {
       isAuthenticated,
-      ordersCount: orders.length,
+      ordersCount: orders?.length || 0,
       loading,
       error,
-      orders: orders.map(o => ({ id: o.id, order_number: o.order_number }))
+      orders: orders?.map(o => ({ id: o.id, order_number: o.order_number })) || []
     });
   }, [isAuthenticated, orders, loading, error]);
   const [selectedOrder, setSelectedOrder] = useState<string | null>(null);
@@ -555,7 +555,8 @@ const AdminDashboard = ({ isAuthenticated }: { isAuthenticated: boolean }) => {
                     <div className="mb-4">
                       <h4 className="font-medium mb-2">{t('admin.orderItems')}</h4>
                       <div className="space-y-2">
-                        {order.order_items.map((item) => (
+                        {order.order_items && order.order_items.length > 0 ? (
+                          order.order_items.map((item) => (
                           <div key={item.id} className="flex items-center justify-between text-sm">
                             <div className="flex items-center gap-2">
                               <Coffee className="w-4 h-4" />
@@ -568,7 +569,12 @@ const AdminDashboard = ({ isAuthenticated }: { isAuthenticated: boolean }) => {
                             </div>
                             <span>{formatCurrency(item.total_price)}</span>
                           </div>
-                        ))}
+                          ))
+                        ) : (
+                          <div className="text-sm text-muted-foreground">
+                            {t('admin.noOrderItems', 'No order items available')}
+                          </div>
+                        )}
                       </div>
                     </div>
 

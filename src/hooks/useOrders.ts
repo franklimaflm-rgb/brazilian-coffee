@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from './useAuth';
 import { Database } from '@/integrations/supabase/types';
 
 type Customer = Database['public']['Tables']['customers']['Insert'];
@@ -40,9 +39,24 @@ export interface OrderResult {
 }
 
 export const useOrders = () => {
-  const { getOrCreateCustomer } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Independent customer creation function (no auth dependency)
+  const getOrCreateCustomer = async (customerData: { name: string; email: string; phone: string }) => {
+    try {
+      const { data, error } = await supabase.rpc('get_or_create_customer', {
+        p_name: customerData.name,
+        p_email: customerData.email,
+        p_phone: customerData.phone,
+      });
+
+      if (error) throw error;
+      return { success: true, data };
+    } catch (error: any) {
+      return { success: false, error: error.message };
+    }
+  };
 
   const submitOrder = async (orderData: OrderFormData): Promise<OrderResult> => {
     setIsSubmitting(true);

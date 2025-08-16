@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Database } from '@/integrations/supabase/types';
-import { useAuth } from './useAuth';
 
 type Order = Database['public']['Tables']['orders']['Row'] & {
   customers: Database['public']['Tables']['customers']['Row'] | null;
@@ -13,8 +12,8 @@ type Order = Database['public']['Tables']['orders']['Row'] & {
 
 export type OrderStatus = 'pending' | 'confirmed' | 'preparing' | 'out_for_delivery' | 'delivered' | 'cancelled';
 
+// Simple admin data hook that doesn't manage authentication
 export const useAdmin = () => {
-  const { isAdmin, session } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

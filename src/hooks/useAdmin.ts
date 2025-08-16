@@ -31,17 +31,15 @@ const adminSupabase = createClient(
   }
 );
 
-// Track admin client instance
+// Track admin client instance (intentional dual-client architecture)
 if (typeof window !== 'undefined') {
   window.__supabaseClients = window.__supabaseClients || [];
   window.__supabaseClients.push('admin-client');
 
-  // Warn if multiple clients detected
+  // Log client info for debugging (not a warning since it's intentional)
   if (window.__supabaseClients.length > 1) {
-    console.warn('⚠️ Multiple Supabase clients detected:', window.__supabaseClients);
-    console.warn('Main client uses storage key: main-auth-token');
-    console.warn('Admin client uses storage key: admin-auth-token');
-    console.warn('This is intentional for admin isolation but may cause warnings.');
+    console.info('ℹ️ Admin client initialized with isolated storage');
+    console.info('This dual-client setup is intentional for admin/user separation');
   }
 }
 

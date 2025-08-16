@@ -18,9 +18,11 @@ export const DeliveryMap = ({
 }: DeliveryMapProps) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
+  const markersRef = useRef<mapboxgl.Marker[]>([]);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [mapError, setMapError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isMounted, setIsMounted] = useState(true);
 
   useEffect(() => {
     if (!mapContainer.current || map.current) return;
@@ -107,6 +109,9 @@ export const DeliveryMap = ({
             </div>
           `))
           .addTo(map.current);
+
+        // Track the marker for cleanup
+        markersRef.current.push(businessMarker);
 
         // Create delivery radius circle
         const center = businessLocation;
@@ -207,6 +212,23 @@ export const DeliveryMap = ({
     }
 
     return () => {
+      setIsMounted(false);
+
+      // Clean up all markers first
+      try {
+        markersRef.current.forEach(marker => {
+          try {
+            marker.remove();
+          } catch (error) {
+            console.warn('Error removing marker:', error);
+          }
+        });
+        markersRef.current = [];
+      } catch (error) {
+        console.warn('Error cleaning up markers:', error);
+      }
+
+      // Clean up map
       try {
         if (map.current) {
           // Remove all event listeners before removing the map
@@ -220,10 +242,19 @@ export const DeliveryMap = ({
         map.current = null;
       }
 
-      // Safe container cleanup
+      // Safe container cleanup with additional checks
       try {
-        if (mapContainer.current && mapContainer.current.parentNode) {
-          mapContainer.current.innerHTML = '';
+        if (mapContainer.current) {
+          // Use a timeout to ensure React has finished its reconciliation
+          setTimeout(() => {
+            try {
+              if (mapContainer.current && mapContainer.current.parentNode) {
+                mapContainer.current.innerHTML = '';
+              }
+            } catch (error) {
+              console.warn('Error during delayed container cleanup:', error);
+            }
+          }, 0);
         }
       } catch (error) {
         console.warn('Error during container cleanup:', error);
@@ -233,7 +264,7 @@ export const DeliveryMap = ({
 
   // Handle customer location updates
   useEffect(() => {
-    if (!map.current || !mapLoaded) return;
+    if (!map.current || !mapLoaded || !isMounted) return;
 
     // Safe removal of existing customer markers
     try {
@@ -251,7 +282,7 @@ export const DeliveryMap = ({
       console.warn('Error querying customer markers:', error);
     }
 
-    if (customerLocation) {
+    if (customerLocation && isMounted) {
       const customerMarker = new mapboxgl.Marker({
         color: '#22c55e',
         scale: 1.0
@@ -273,12 +304,13 @@ export const DeliveryMap = ({
         `))
         .addTo(map.current);
 
-      // Add data attribute to identify customer markers
+      // Add data attribute and track marker
       try {
         const markerElement = customerMarker.getElement();
         if (markerElement) {
           markerElement.setAttribute('data-customer', 'true');
         }
+        markersRef.current.push(customerMarker);
       } catch (error) {
         console.warn('Error setting marker attribute:', error);
       }
@@ -297,7 +329,7 @@ export const DeliveryMap = ({
         maxZoom: 14
       });
     }
-  }, [customerLocation, mapLoaded, businessLocation]);
+  }, [customerLocation, mapLoaded, businessLocation, isMounted]);
 
   // Fallback placeholder implementation for when Mapbox fails to load
   const renderFallbackMap = () => {

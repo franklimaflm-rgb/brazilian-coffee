@@ -17,15 +17,14 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
   }
 });
 
-// Add warning detection for multiple client instances
+// Track client instances for monitoring (intentional dual-client architecture)
 if (typeof window !== 'undefined') {
-  // Track client instances
   window.__supabaseClients = window.__supabaseClients || [];
   window.__supabaseClients.push('main-client');
 
-  // Warn if multiple clients detected
+  // Log client info for debugging (not a warning since it's intentional)
   if (window.__supabaseClients.length > 1) {
-    console.warn('⚠️ Multiple Supabase clients detected:', window.__supabaseClients);
-    console.warn('This may cause authentication conflicts. Consider consolidating to a single client.');
+    console.info('ℹ️ Multiple Supabase clients active (intentional):', window.__supabaseClients);
+    console.info('Main client: main-auth-token | Admin client: admin-auth-token');
   }
 }

@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Clock, Phone, Mail, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
 import { DeliveryMap } from "@/components/DeliveryMap";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { coffeesI18n } from "@/data/coffees-i18n";
 import { useOrders, useDeliveryValidation, useCoffeeProducts } from "@/hooks/useOrders";
 import { toast } from "sonner";
@@ -398,11 +399,28 @@ const DeliveryPage = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <DeliveryMap
-                businessLocation={businessLocation}
-                customerLocation={addressValidation?.coordinates}
-                deliveryRadius={5}
-              />
+              <ErrorBoundary
+                fallback={
+                  <div className="w-full h-64 bg-gradient-to-br from-green-100 to-blue-100 rounded-lg flex items-center justify-center">
+                    <div className="text-center p-8">
+                      <div className="w-16 h-16 bg-red-500 rounded-full mx-auto mb-4 flex items-center justify-center">
+                        <div className="w-3 h-3 bg-white rounded-full"></div>
+                      </div>
+                      <h3 className="text-lg font-semibold text-gray-700 mb-2">Map Temporarily Unavailable</h3>
+                      <p className="text-sm text-gray-600 mb-4">We deliver within 5km of Lubenham, Market Harborough</p>
+                      <div className="inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs">
+                        5km Delivery Radius
+                      </div>
+                    </div>
+                  </div>
+                }
+              >
+                <DeliveryMap
+                  businessLocation={businessLocation}
+                  customerLocation={addressValidation?.coordinates}
+                  deliveryRadius={5}
+                />
+              </ErrorBoundary>
             </CardContent>
           </Card>
         </div>

@@ -18,33 +18,41 @@ const ADMIN_SUPABASE_URL = 'https://eticmvmetfpijbavteel.supabase.co';
 const ADMIN_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV0aWNtdm1ldGZwaWpiYXZ0ZWVsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUyMDI2OTQsImV4cCI6MjA3MDc3ODY5NH0.h6Isaa4WG-Yi8fgonQqj3czuFzGOju0AUs3QYOX_JOU';
 const ADMIN_EMAIL = 'franklinmarceloferreiradelima@gmail.com';
 
-const adminSupabase = createClient(
-  ADMIN_SUPABASE_URL,
-  ADMIN_SUPABASE_KEY,
-  {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-      storage: localStorage,
-      storageKey: 'admin-auth-token', // Use unique storage key
+// Create admin client with singleton pattern to avoid multiple instances
+let _adminSupabaseInstance: ReturnType<typeof createClient> | null = null;
+
+const adminSupabase = (() => {
+  if (!_adminSupabaseInstance) {
+    _adminSupabaseInstance = createClient(
+      ADMIN_SUPABASE_URL,
+      ADMIN_SUPABASE_KEY,
+      {
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true,
+          storage: localStorage,
+          storageKey: 'admin-auth-token', // Use unique storage key
+        }
+      }
+    );
+
+    // Track admin client instance (intentional dual-client architecture)
+    if (typeof window !== 'undefined') {
+      window.__supabaseClients = window.__supabaseClients || [];
+      window.__supabaseClients.push('admin-client');
+
+      // Log client info for debugging (not a warning since it's intentional)
+      if (window.__supabaseClients.length > 1) {
+        console.info('ℹ️ Admin client initialized with isolated storage');
+        console.info('This dual-client setup is intentional for admin/user separation');
+      }
     }
   }
-);
+  return _adminSupabaseInstance;
+})();
 
-// Track admin client instance (intentional dual-client architecture)
-if (typeof window !== 'undefined') {
-  window.__supabaseClients = window.__supabaseClients || [];
-  window.__supabaseClients.push('admin-client');
-
-  // Log client info for debugging (not a warning since it's intentional)
-  if (window.__supabaseClients.length > 1) {
-    console.info('ℹ️ Admin client initialized with isolated storage');
-    console.info('This dual-client setup is intentional for admin/user separation');
-  }
-}
-
-// Simple admin data hook that doesn't manage authentication
-export const useAdmin = () => {
+// Admin data hook that requires authentication
+export const useAdmin = (isAuthenticated: boolean = false) => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -52,6 +60,18 @@ export const useAdmin = () => {
   const fetchOrders = async () => {
     try {
       setLoading(true);
+      setError(null);
+
+      console.log('🔍 FETCHING ORDERS - Admin authenticated:', isAuthenticated);
+
+      // Check current session
+      const { data: { session } } = await adminSupabase.auth.getSession();
+      console.log('🔍 Admin session:', {
+        hasSession: !!session,
+        userEmail: session?.user?.email,
+        isAdmin: session?.user?.email === ADMIN_EMAIL
+      });
+
       const { data, error } = await adminSupabase
         .from('orders')
         .select(`
@@ -87,10 +107,17 @@ export const useAdmin = () => {
         `)
         .order('created_at', { ascending: false });
 
+      console.log('🔍 Orders query result:', {
+        success: !error,
+        error: error?.message,
+        dataCount: data?.length || 0
+      });
+
       if (error) throw error;
       setOrders(data || []);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch orders';
+      console.error('🚨 Orders fetch error:', err);
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -99,11 +126,6 @@ export const useAdmin = () => {
 
   const updateOrderStatus = async (orderId: string, status: OrderStatus) => {
     try {
-      // Check admin authorization
-      if (!isAdmin) {
-        throw new Error('Unauthorized: Admin access required');
-      }
-
       // Use secure function for order status updates
       const { data, error } = await adminSupabase.rpc('update_order_status', {
         p_order_id: orderId,
@@ -153,8 +175,14 @@ export const useAdmin = () => {
     });
   };
 
-  // Real-time subscription for orders
+  // Real-time subscription for orders - only when authenticated
   useEffect(() => {
+    if (!isAuthenticated) {
+      setLoading(false);
+      setOrders([]);
+      return;
+    }
+
     fetchOrders();
 
     // Set up real-time subscription using admin client
@@ -177,7 +205,7 @@ export const useAdmin = () => {
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [isAuthenticated]);
 
   return {
     orders,

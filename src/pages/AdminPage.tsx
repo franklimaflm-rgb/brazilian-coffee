@@ -322,9 +322,9 @@ const OrderStatusBadge = ({ status }: { status: string }) => {
   );
 };
 
-const AdminDashboard = () => {
+const AdminDashboard = ({ isAuthenticated }: { isAuthenticated: boolean }) => {
   const { language, t } = useLanguage();
-  const { orders, loading, updateOrderStatus, getOrderStats, getTodaysOrders } = useAdmin();
+  const { orders, loading, updateOrderStatus, getOrderStats, getTodaysOrders } = useAdmin(isAuthenticated);
   const { logout } = useAdminAuth();
   const [selectedOrder, setSelectedOrder] = useState<string | null>(null);
 
@@ -625,7 +625,7 @@ const AdminPage = () => {
     );
   }
 
-  return <AdminDashboard />;
+  return <AdminDashboard isAuthenticated={isAuthenticated} />;
 };
 
 export default AdminPage;

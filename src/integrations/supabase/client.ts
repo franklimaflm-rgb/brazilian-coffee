@@ -8,23 +8,31 @@ const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "eyJh
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
-export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
-  auth: {
-    storage: localStorage,
-    persistSession: true,
-    autoRefreshToken: true,
-    storageKey: 'main-auth-token', // Use unique storage key to avoid conflicts
-  }
-});
+// Create main client with singleton pattern to avoid multiple instances
+let _supabaseInstance: ReturnType<typeof createClient<Database>> | null = null;
 
-// Track client instances for monitoring (intentional dual-client architecture)
-if (typeof window !== 'undefined') {
-  window.__supabaseClients = window.__supabaseClients || [];
-  window.__supabaseClients.push('main-client');
+export const supabase = (() => {
+  if (!_supabaseInstance) {
+    _supabaseInstance = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+      auth: {
+        storage: localStorage,
+        persistSession: true,
+        autoRefreshToken: true,
+        storageKey: 'main-auth-token', // Use unique storage key to avoid conflicts
+      }
+    });
 
-  // Log client info for debugging (not a warning since it's intentional)
-  if (window.__supabaseClients.length > 1) {
-    console.info('ℹ️ Multiple Supabase clients active (intentional):', window.__supabaseClients);
-    console.info('Main client: main-auth-token | Admin client: admin-auth-token');
+    // Track client instances for monitoring (intentional dual-client architecture)
+    if (typeof window !== 'undefined') {
+      window.__supabaseClients = window.__supabaseClients || [];
+      window.__supabaseClients.push('main-client');
+
+      // Log client info for debugging (not a warning since it's intentional)
+      if (window.__supabaseClients.length > 1) {
+        console.info('ℹ️ Multiple Supabase clients active (intentional):', window.__supabaseClients);
+        console.info('Main client: main-auth-token | Admin client: admin-auth-token');
+      }
+    }
   }
-}
+  return _supabaseInstance;
+})();

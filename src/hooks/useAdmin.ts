@@ -236,6 +236,14 @@ export const useAdminAuth = () => {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
 
+        // Debug: Log authentication errors
+        console.log('🚨 Authentication Error:', {
+          status: response.status,
+          statusText: response.statusText,
+          errorData,
+          url: response.url
+        });
+
         // Check specific error messages to determine if admin setup is needed
         if (response.status === 400 && (
             errorData.error_description?.includes('User not found') ||
@@ -249,6 +257,12 @@ export const useAdminAuth = () => {
       }
 
       const authData = await response.json();
+
+      // Debug: Log the authentication response
+      console.log('🔍 Authentication Response:', authData);
+      console.log('🔍 User Email:', authData.user?.email);
+      console.log('🔍 Expected Email:', 'franklinmarceloferreiradelima@gmail.com');
+      console.log('🔍 Email Match:', authData.user?.email === 'franklinmarceloferreiradelima@gmail.com');
 
       // Verify this is Franklin's admin account
       if (authData.user?.email === 'franklinmarceloferreiradelima@gmail.com') {

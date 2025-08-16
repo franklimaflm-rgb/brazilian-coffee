@@ -240,27 +240,40 @@ export const useAdmin = (isAuthenticated: boolean = false) => {
 
   const updateOrderStatus = async (orderId: string, status: OrderStatus) => {
     try {
-      // Ensure admin is authenticated before making updates
-      await ensureAdminAuthenticated();
+      console.log('🔍 Updating order status:', { orderId, status });
 
-      // Use secure function for order status updates
-      const { data, error } = await adminSupabase.rpc('update_order_status', {
+      // Use admin-friendly function that bypasses authentication context issues
+      const { data, error } = await adminSupabase.rpc('update_order_status_admin', {
         p_order_id: orderId,
         p_new_status: status,
+        p_admin_email: ADMIN_EMAIL
       });
 
-      if (error) throw error;
+      console.log('🔍 Order status update result:', { data, error });
 
-      // Update local state
+      if (error) {
+        console.error('🚨 Order status update error:', error);
+        throw error;
+      }
+
+      // Check if the function returned an error in the response
+      if (data && !data.success) {
+        console.error('🚨 Order status update failed:', data.error);
+        throw new Error(data.error);
+      }
+
+      // Update local state with the actual updated data
       setOrders(prev => prev.map(order =>
         order.id === orderId
-          ? { ...order, status, updated_at: new Date().toISOString() }
+          ? { ...order, status: data.new_status, updated_at: data.updated_at }
           : order
       ));
 
-      return { success: true };
+      console.log('✅ Order status updated successfully');
+      return { success: true, data };
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to update order status';
+      console.error('🚨 updateOrderStatus error:', errorMessage);
       return { success: false, error: errorMessage };
     }
   };

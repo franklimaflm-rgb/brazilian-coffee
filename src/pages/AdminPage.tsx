@@ -25,9 +25,107 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-const AdminLoginForm = ({ onLogin }: { onLogin: (email: string, password: string) => Promise<{ success: boolean; error?: string }> }) => {
+const AdminSetupForm = ({ onCreateAdmin }: { onCreateAdmin: (email: string, password: string) => Promise<{ success: boolean; error?: string; message?: string }> }) => {
   const { t } = useLanguage();
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState("franklinmarceloderreiradelima@gmail.com");
+  const [password, setPassword] = useState("BrazilianCoffee2024!");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    const result = await onCreateAdmin(email, password);
+
+    if (result.success) {
+      toast.success(result.message || 'Admin account created successfully!');
+    } else {
+      toast.error(result.error || 'Failed to create admin account');
+    }
+
+    setIsLoading(false);
+  };
+
+  return (
+    <div className="min-h-screen bg-background flex items-center justify-center p-6">
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center">
+          <div className="flex items-center justify-center mb-4">
+            <Coffee className="w-8 h-8 text-primary mr-2" />
+            <span className="text-2xl font-bold">Admin Setup</span>
+          </div>
+          <CardTitle>Create Brazilian Coffee Academy Admin</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+            <div className="flex items-start">
+              <AlertCircle className="w-5 h-5 text-yellow-600 mr-2 mt-0.5" />
+              <div>
+                <h3 className="font-semibold text-yellow-800 mb-1">⚠️ One-Time Setup</h3>
+                <p className="text-sm text-yellow-700">
+                  This creates the admin account for Franklin.
+                  It should only be used once during initial setup.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <Label htmlFor="setup-email">Admin Email</Label>
+              <Input
+                id="setup-email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="franklinmarceloderreiradelima@gmail.com"
+                required
+                disabled
+              />
+            </div>
+            <div>
+              <Label htmlFor="setup-password">Admin Password</Label>
+              <Input
+                id="setup-password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Strong password for admin access
+              </p>
+            </div>
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Creating Admin...
+                </>
+              ) : (
+                'Create Admin Account'
+              )}
+            </Button>
+          </form>
+
+          <div className="mt-6 text-center text-sm text-muted-foreground">
+            <p>This will create the admin account with:</p>
+            <ul className="mt-2 space-y-1">
+              <li>• Full access to admin panel</li>
+              <li>• Order management capabilities</li>
+              <li>• Customer data access</li>
+              <li>• Business settings control</li>
+            </ul>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+const AdminLoginForm = ({ onLogin, needsSetup }: { onLogin: (email: string, password: string) => Promise<{ success: boolean; error?: string; needsSetup?: boolean }>, needsSetup?: boolean }) => {
+  const { t } = useLanguage();
+  const [email, setEmail] = useState("franklinmarceloderreiradelima@gmail.com");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -55,6 +153,20 @@ const AdminLoginForm = ({ onLogin }: { onLogin: (email: string, password: string
           <CardTitle>{t('admin.subtitle')}</CardTitle>
         </CardHeader>
         <CardContent>
+          {needsSetup && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+              <div className="flex items-start">
+                <AlertCircle className="w-5 h-5 text-blue-600 mr-2 mt-0.5" />
+                <div>
+                  <h3 className="font-semibold text-blue-800 mb-1">ℹ️ Admin Setup Required</h3>
+                  <p className="text-sm text-blue-700">
+                    No admin account found. Please create the admin account first, then try logging in.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <Label htmlFor="email">{t('admin.email')}</Label>
@@ -66,6 +178,7 @@ const AdminLoginForm = ({ onLogin }: { onLogin: (email: string, password: string
                 placeholder="franklinmarceloderreiradelima@gmail.com"
                 autoComplete="email"
                 required
+                disabled
               />
             </div>
             <div>
@@ -381,7 +494,8 @@ const AdminDashboard = () => {
 };
 
 const AdminPage = () => {
-  const { isAuthenticated, isLoading, login } = useAdminAuth();
+  const { isAuthenticated, isLoading, needsSetup, login, createAdmin } = useAdminAuth();
+  const [showSetup, setShowSetup] = useState(false);
 
   if (isLoading) {
     return (
@@ -392,7 +506,43 @@ const AdminPage = () => {
   }
 
   if (!isAuthenticated) {
-    return <AdminLoginForm onLogin={login} />;
+    // Show setup form if admin account doesn't exist or user requested setup
+    if (needsSetup || showSetup) {
+      return (
+        <div>
+          <AdminSetupForm onCreateAdmin={createAdmin} />
+          {!needsSetup && (
+            <div className="fixed bottom-4 right-4">
+              <Button
+                variant="outline"
+                onClick={() => setShowSetup(false)}
+                className="bg-white shadow-lg"
+              >
+                Back to Login
+              </Button>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // Show login form with setup option
+    return (
+      <div>
+        <AdminLoginForm onLogin={login} needsSetup={needsSetup} />
+        {!needsSetup && (
+          <div className="fixed bottom-4 right-4">
+            <Button
+              variant="outline"
+              onClick={() => setShowSetup(true)}
+              className="bg-white shadow-lg"
+            >
+              Create Admin Account
+            </Button>
+          </div>
+        )}
+      </div>
+    );
   }
 
   return <AdminDashboard />;

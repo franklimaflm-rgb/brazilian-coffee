@@ -164,6 +164,62 @@ export const useAdmin = () => {
 export const useAdminAuth = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [needsSetup, setNeedsSetup] = useState(false);
+
+  const checkAdminExists = async () => {
+    try {
+      // Try to sign in with a dummy password to check if user exists
+      // This will fail but tell us if the user exists or not
+      const { error } = await supabase.auth.signInWithPassword({
+        email: 'franklinmarceloderreiradelima@gmail.com',
+        password: 'dummy-password-check'
+      });
+
+      // If error is "Invalid login credentials", user exists but password is wrong
+      // If error is "User not found" or similar, user doesn't exist
+      if (error) {
+        return error.message.includes('Invalid login credentials') ||
+               error.message.includes('Email not confirmed') ||
+               error.message.includes('Invalid email or password');
+      }
+
+      return true;
+    } catch (error) {
+      return false;
+    }
+  };
+
+  const createAdmin = async (email: string, password: string) => {
+    try {
+      // Create the admin user
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            name: 'Franklin Marcelo Ferreira de Lima',
+            role: 'admin',
+            business: 'Brazilian Coffee Academy'
+          }
+        }
+      });
+
+      if (error) {
+        return { success: false, error: error.message };
+      }
+
+      if (data.user) {
+        // Sign out immediately after creation for security
+        await supabase.auth.signOut();
+        setNeedsSetup(false);
+        return { success: true, message: 'Admin account created successfully! You can now log in.' };
+      }
+
+      return { success: false, error: 'Failed to create admin account' };
+    } catch (error: any) {
+      return { success: false, error: error.message };
+    }
+  };
 
   const login = async (email: string, password: string) => {
     try {
@@ -174,12 +230,19 @@ export const useAdminAuth = () => {
       });
 
       if (error) {
+        // If login fails, check if admin account exists
+        const adminExists = await checkAdminExists();
+        if (!adminExists) {
+          setNeedsSetup(true);
+          return { success: false, error: 'Admin account not found. Please create admin account first.', needsSetup: true };
+        }
         return { success: false, error: error.message };
       }
 
       // Verify this is Franklin's admin account
       if (data.user?.email === 'franklinmarceloderreiradelima@gmail.com') {
         setIsAuthenticated(true);
+        setNeedsSetup(false);
         return { success: true };
       } else {
         // Sign out if not admin
@@ -202,10 +265,17 @@ export const useAdminAuth = () => {
   };
 
   useEffect(() => {
-    // Check current Supabase session
+    // Check current Supabase session and admin existence
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       const isAdmin = session?.user?.email === 'franklinmarceloderreiradelima@gmail.com';
+
+      if (!isAdmin && !session) {
+        // Check if admin account exists when not logged in
+        const adminExists = await checkAdminExists();
+        setNeedsSetup(!adminExists);
+      }
+
       setIsAuthenticated(isAdmin);
       setIsLoading(false);
     };
@@ -214,8 +284,17 @@ export const useAdminAuth = () => {
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (event, session) => {
         const isAdmin = session?.user?.email === 'franklinmarceloderreiradelima@gmail.com';
+
+        if (!isAdmin && !session) {
+          // Check if admin account exists when not logged in
+          const adminExists = await checkAdminExists();
+          setNeedsSetup(!adminExists);
+        } else {
+          setNeedsSetup(false);
+        }
+
         setIsAuthenticated(isAdmin);
         setIsLoading(false);
       }
@@ -227,7 +306,10 @@ export const useAdminAuth = () => {
   return {
     isAuthenticated,
     isLoading,
+    needsSetup,
     login,
-    logout
+    logout,
+    createAdmin,
+    checkAdminExists
   };
 };

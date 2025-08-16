@@ -219,88 +219,55 @@ export const useAdminAuth = () => {
 
   const login = async (email: string, password: string) => {
     try {
-      // Debug: Log environment variables and URL construction
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-      const authUrl = `${supabaseUrl}/auth/v1/token?grant_type=password`;
+      console.log('🔍 Starting admin login for:', email);
 
-      console.log('🔍 Environment Debug:', {
-        supabaseUrl,
-        supabaseKey: supabaseKey ? `${supabaseKey.substring(0, 20)}...` : 'undefined',
-        authUrl,
+      // Use the dedicated admin Supabase client for authentication
+      const { data, error } = await adminSupabase.auth.signInWithPassword({
         email,
-        passwordLength: password.length
+        password,
       });
 
-      // Direct HTTP authentication to bypass any client-side issues
-      const response = await fetch(authUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': supabaseKey,
-          'Authorization': `Bearer ${supabaseKey}`,
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
-      });
+      console.log('🔍 Supabase Auth Response:', { data, error });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-
-        // Debug: Log authentication errors
-        console.log('🚨 Authentication Error:', {
-          status: response.status,
-          statusText: response.statusText,
-          errorData,
-          url: response.url
-        });
+      if (error) {
+        console.log('🚨 Authentication Error:', error);
 
         // Check specific error messages to determine if admin setup is needed
-        if (response.status === 400 && (
-            errorData.error_description?.includes('User not found') ||
-            errorData.error_description?.includes('Invalid email') ||
-            errorData.error_description?.includes('Email not confirmed'))) {
+        if (error.message.includes('User not found') ||
+            error.message.includes('Invalid email') ||
+            error.message.includes('Email not confirmed')) {
           setNeedsSetup(true);
           return { success: false, error: 'Admin account not found. Please create admin account first.', needsSetup: true };
         }
-
-        return { success: false, error: errorData.error_description || `Authentication failed (${response.status})` };
+        return { success: false, error: error.message };
       }
 
-      const authData = await response.json();
-
-      // Debug: Log the authentication response
-      console.log('🔍 Authentication Response:', authData);
-      console.log('🔍 User Email:', authData.user?.email);
+      console.log('🔍 User Data:', data.user);
+      console.log('🔍 User Email:', data.user?.email);
       console.log('🔍 Expected Email:', 'franklinmarceloferreiradelima@gmail.com');
-      console.log('🔍 Email Match:', authData.user?.email === 'franklinmarceloferreiradelima@gmail.com');
+      console.log('🔍 Email Match:', data.user?.email === 'franklinmarceloferreiradelima@gmail.com');
 
       // Verify this is Franklin's admin account
-      if (authData.user?.email === 'franklinmarceloferreiradelima@gmail.com') {
-        // Store the session manually
-        if (authData.access_token) {
-          localStorage.setItem('supabase.auth.token', JSON.stringify(authData));
-        }
-
-        // Update state
+      if (data.user?.email === 'franklinmarceloferreiradelima@gmail.com') {
+        console.log('✅ Admin email verified, setting authenticated state');
         setIsAuthenticated(true);
         setNeedsSetup(false);
         return { success: true };
       } else {
+        console.log('❌ Email verification failed');
+        // Sign out if not admin
+        await adminSupabase.auth.signOut();
         return { success: false, error: 'Unauthorized: Admin access required' };
       }
     } catch (error) {
-      console.error('Direct auth error:', error);
+      console.error('🚨 Login exception:', error);
       return { success: false, error: 'Login failed - network error' };
     }
   };
 
   const logout = async () => {
     try {
-      // Clear stored session
-      localStorage.removeItem('supabase.auth.token');
+      await adminSupabase.auth.signOut();
       setIsAuthenticated(false);
     } catch (error) {
       console.error('Logout error:', error);
@@ -308,24 +275,19 @@ export const useAdminAuth = () => {
     }
   };
 
-  // Manual session refresh function using direct HTTP
+  // Manual session refresh function using Supabase client
   const refreshSession = async () => {
     try {
-      // Check for stored session
-      const storedSession = localStorage.getItem('supabase.auth.token');
-      if (storedSession) {
-        const sessionData = JSON.parse(storedSession);
-        const isAdmin = sessionData.user?.email === 'franklinmarceloferreiradelima@gmail.com';
+      const { data: { session } } = await adminSupabase.auth.getSession();
+      const isAdmin = session?.user?.email === 'franklinmarceloferreiradelima@gmail.com';
 
-        setIsAuthenticated(isAdmin);
-        setIsLoading(false);
+      console.log('🔍 Session Refresh:', { session: !!session, email: session?.user?.email, isAdmin });
 
-        if (isAdmin) {
-          setNeedsSetup(false);
-        }
-      } else {
-        setIsAuthenticated(false);
-        setIsLoading(false);
+      setIsAuthenticated(isAdmin);
+      setIsLoading(false);
+
+      if (isAdmin) {
+        setNeedsSetup(false);
       }
     } catch (error) {
       console.error('Session refresh error:', error);
@@ -335,23 +297,19 @@ export const useAdminAuth = () => {
   };
 
   useEffect(() => {
-    // Direct session check without any Supabase client calls
-    const checkSession = () => {
+    // Check session using dedicated admin client
+    const checkSession = async () => {
       try {
-        const storedSession = localStorage.getItem('supabase.auth.token');
-        if (storedSession) {
-          const sessionData = JSON.parse(storedSession);
-          const isAdmin = sessionData.user?.email === 'franklinmarceloferreiradelima@gmail.com';
+        const { data: { session } } = await adminSupabase.auth.getSession();
+        const isAdmin = session?.user?.email === 'franklinmarceloferreiradelima@gmail.com';
 
-          setIsAuthenticated(isAdmin);
-          setIsLoading(false);
+        console.log('🔍 Initial Session Check:', { session: !!session, email: session?.user?.email, isAdmin });
 
-          if (isAdmin) {
-            setNeedsSetup(false);
-          }
-        } else {
-          setIsAuthenticated(false);
-          setIsLoading(false);
+        setIsAuthenticated(isAdmin);
+        setIsLoading(false);
+
+        if (isAdmin) {
+          setNeedsSetup(false);
         }
       } catch (error) {
         console.error('Session check error:', error);
@@ -362,7 +320,22 @@ export const useAdminAuth = () => {
 
     checkSession();
 
-    // No auth state listener to avoid any Supabase client conflicts
+    // Set up auth state listener for the dedicated admin client
+    const { data: { subscription } } = adminSupabase.auth.onAuthStateChange(
+      (event, session) => {
+        console.log('🔍 Auth State Change:', { event, session: !!session, email: session?.user?.email });
+
+        const isAdmin = session?.user?.email === 'franklinmarceloferreiradelima@gmail.com';
+        setIsAuthenticated(isAdmin);
+        setIsLoading(false);
+
+        if (isAdmin) {
+          setNeedsSetup(false);
+        }
+      }
+    );
+
+    return () => subscription.unsubscribe();
   }, []);
 
   return {

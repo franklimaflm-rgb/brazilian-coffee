@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Database } from '@/integrations/supabase/types';
+import { createClient } from '@supabase/supabase-js';
 
 type Order = Database['public']['Tables']['orders']['Row'] & {
   customers: Database['public']['Tables']['customers']['Row'] | null;
@@ -11,6 +12,18 @@ type Order = Database['public']['Tables']['orders']['Row'] & {
 };
 
 export type OrderStatus = 'pending' | 'confirmed' | 'preparing' | 'out_for_delivery' | 'delivered' | 'cancelled';
+
+// Create a dedicated admin Supabase client to avoid conflicts
+const adminSupabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL,
+  import.meta.env.VITE_SUPABASE_ANON_KEY,
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+    }
+  }
+);
 
 // Simple admin data hook that doesn't manage authentication
 export const useAdmin = () => {
@@ -159,27 +172,23 @@ export const useAdmin = () => {
   };
 };
 
-// Hook for admin authentication
+// Hook for admin authentication - Completely isolated system
 export const useAdminAuth = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [needsSetup, setNeedsSetup] = useState(false);
 
+  // Simple admin existence check without making auth requests
   const checkAdminExists = async () => {
-    try {
-      // Use a more reliable method to check admin existence
-      // We'll track this through a simple state management approach
-      // and only check during actual login attempts
-      return true; // Assume admin exists, let login handle the verification
-    } catch (error) {
-      return true; // Default to assuming admin exists to avoid unnecessary requests
-    }
+    // Always return true to avoid any authentication requests
+    // Let the actual login attempt handle user existence detection
+    return true;
   };
 
   const createAdmin = async (email: string, password: string) => {
     try {
-      // Create the admin user
-      const { data, error } = await supabase.auth.signUp({
+      // Create the admin user using dedicated client
+      const { data, error } = await adminSupabase.auth.signUp({
         email,
         password,
         options: {
@@ -197,7 +206,7 @@ export const useAdminAuth = () => {
 
       if (data.user) {
         // Sign out immediately after creation for security
-        await supabase.auth.signOut();
+        await adminSupabase.auth.signOut();
         setNeedsSetup(false);
         return { success: true, message: 'Admin account created successfully! You can now log in.' };
       }
@@ -210,8 +219,8 @@ export const useAdminAuth = () => {
 
   const login = async (email: string, password: string) => {
     try {
-      // Sign in to Supabase with Franklin's credentials
-      const { data, error } = await supabase.auth.signInWithPassword({
+      // Use dedicated admin client to avoid conflicts
+      const { data, error } = await adminSupabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -229,12 +238,13 @@ export const useAdminAuth = () => {
 
       // Verify this is Franklin's admin account
       if (data.user?.email === 'franklinmarceloderreiradelima@gmail.com') {
+        // Manually update state instead of relying on auth listener
         setIsAuthenticated(true);
         setNeedsSetup(false);
         return { success: true };
       } else {
         // Sign out if not admin
-        await supabase.auth.signOut();
+        await adminSupabase.auth.signOut();
         return { success: false, error: 'Unauthorized: Admin access required' };
       }
     } catch (error) {
@@ -244,7 +254,7 @@ export const useAdminAuth = () => {
 
   const logout = async () => {
     try {
-      await supabase.auth.signOut();
+      await adminSupabase.auth.signOut();
       setIsAuthenticated(false);
     } catch (error) {
       console.error('Logout error:', error);
@@ -252,40 +262,47 @@ export const useAdminAuth = () => {
     }
   };
 
-  useEffect(() => {
-    // Check current Supabase session
-    const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+  // Manual session refresh function
+  const refreshSession = async () => {
+    try {
+      const { data: { session } } = await adminSupabase.auth.getSession();
       const isAdmin = session?.user?.email === 'franklinmarceloderreiradelima@gmail.com';
 
       setIsAuthenticated(isAdmin);
       setIsLoading(false);
 
-      // Only set needsSetup to false if we have a valid admin session
-      // Let the login function handle setup detection based on actual login attempts
       if (isAdmin) {
         setNeedsSetup(false);
       }
-    };
+    } catch (error) {
+      console.error('Session refresh error:', error);
+      setIsAuthenticated(false);
+    }
+  };
 
-    checkSession();
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+  useEffect(() => {
+    // Simple session check using dedicated admin client
+    const checkSession = async () => {
+      try {
+        const { data: { session } } = await adminSupabase.auth.getSession();
         const isAdmin = session?.user?.email === 'franklinmarceloderreiradelima@gmail.com';
 
         setIsAuthenticated(isAdmin);
         setIsLoading(false);
 
-        // Only set needsSetup to false if we have a valid admin session
         if (isAdmin) {
           setNeedsSetup(false);
         }
+      } catch (error) {
+        console.error('Session check error:', error);
+        setIsAuthenticated(false);
+        setIsLoading(false);
       }
-    );
+    };
 
-    return () => subscription.unsubscribe();
+    checkSession();
+
+    // No auth state listener to avoid conflicts with other auth systems
   }, []);
 
   return {
@@ -295,6 +312,7 @@ export const useAdminAuth = () => {
     login,
     logout,
     createAdmin,
-    checkAdminExists
+    checkAdminExists,
+    refreshSession
   };
 };

@@ -247,16 +247,26 @@ export const useAdminAuth = () => {
       console.log('🔍 Expected Email:', 'franklinmarceloferreiradelima@gmail.com');
       console.log('🔍 Email Match:', data.user?.email === 'franklinmarceloferreiradelima@gmail.com');
 
-      // Verify this is Franklin's admin account
-      if (data.user?.email === 'franklinmarceloferreiradelima@gmail.com') {
+      // Verify this is Franklin's admin account - simplified check
+      const userEmail = data.user?.email?.toLowerCase().trim();
+      const expectedEmail = 'franklinmarceloferreiradelima@gmail.com';
+
+      console.log('🔍 Email Comparison:', {
+        userEmail,
+        expectedEmail,
+        match: userEmail === expectedEmail,
+        userEmailLength: userEmail?.length,
+        expectedEmailLength: expectedEmail.length
+      });
+
+      if (userEmail === expectedEmail) {
         console.log('✅ Admin email verified, setting authenticated state');
         setIsAuthenticated(true);
         setNeedsSetup(false);
         return { success: true };
       } else {
-        console.log('❌ Email verification failed');
-        // Sign out if not admin
-        await adminSupabase.auth.signOut();
+        console.log('❌ Email verification failed - not admin user');
+        // Don't sign out, just deny access
         return { success: false, error: 'Unauthorized: Admin access required' };
       }
     } catch (error) {
@@ -325,7 +335,11 @@ export const useAdminAuth = () => {
       (event, session) => {
         console.log('🔍 Auth State Change:', { event, session: !!session, email: session?.user?.email });
 
-        const isAdmin = session?.user?.email === 'franklinmarceloferreiradelima@gmail.com';
+        const userEmail = session?.user?.email?.toLowerCase().trim();
+        const isAdmin = userEmail === 'franklinmarceloferreiradelima@gmail.com';
+
+        console.log('🔍 Auth State Admin Check:', { userEmail, isAdmin });
+
         setIsAuthenticated(isAdmin);
         setIsLoading(false);
 

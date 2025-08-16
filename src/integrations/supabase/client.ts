@@ -13,5 +13,19 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     storage: localStorage,
     persistSession: true,
     autoRefreshToken: true,
+    storageKey: 'main-auth-token', // Use unique storage key to avoid conflicts
   }
 });
+
+// Add warning detection for multiple client instances
+if (typeof window !== 'undefined') {
+  // Track client instances
+  window.__supabaseClients = window.__supabaseClients || [];
+  window.__supabaseClients.push('main-client');
+
+  // Warn if multiple clients detected
+  if (window.__supabaseClients.length > 1) {
+    console.warn('⚠️ Multiple Supabase clients detected:', window.__supabaseClients);
+    console.warn('This may cause authentication conflicts. Consider consolidating to a single client.');
+  }
+}

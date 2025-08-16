@@ -207,13 +207,26 @@ export const DeliveryMap = ({
     }
 
     return () => {
-      if (map.current) {
-        map.current.remove();
+      try {
+        if (map.current) {
+          // Remove all event listeners before removing the map
+          map.current.off();
+          map.current.remove();
+          map.current = null;
+        }
+      } catch (error) {
+        console.warn('Error during map cleanup:', error);
+        // Force cleanup even if there's an error
         map.current = null;
       }
-      // Ensure container is cleaned up
-      if (mapContainer.current) {
-        mapContainer.current.innerHTML = '';
+
+      // Safe container cleanup
+      try {
+        if (mapContainer.current && mapContainer.current.parentNode) {
+          mapContainer.current.innerHTML = '';
+        }
+      } catch (error) {
+        console.warn('Error during container cleanup:', error);
       }
     };
   }, [businessLocation, deliveryRadius]);
@@ -222,9 +235,21 @@ export const DeliveryMap = ({
   useEffect(() => {
     if (!map.current || !mapLoaded) return;
 
-    // Remove existing customer markers
-    const existingMarkers = document.querySelectorAll('.mapboxgl-marker[data-customer="true"]');
-    existingMarkers.forEach(marker => marker.remove());
+    // Safe removal of existing customer markers
+    try {
+      const existingMarkers = document.querySelectorAll('.mapboxgl-marker[data-customer="true"]');
+      existingMarkers.forEach(marker => {
+        try {
+          if (marker && marker.parentNode) {
+            marker.remove();
+          }
+        } catch (error) {
+          console.warn('Error removing customer marker:', error);
+        }
+      });
+    } catch (error) {
+      console.warn('Error querying customer markers:', error);
+    }
 
     if (customerLocation) {
       const customerMarker = new mapboxgl.Marker({
@@ -249,8 +274,14 @@ export const DeliveryMap = ({
         .addTo(map.current);
 
       // Add data attribute to identify customer markers
-      const markerElement = customerMarker.getElement();
-      markerElement.setAttribute('data-customer', 'true');
+      try {
+        const markerElement = customerMarker.getElement();
+        if (markerElement) {
+          markerElement.setAttribute('data-customer', 'true');
+        }
+      } catch (error) {
+        console.warn('Error setting marker attribute:', error);
+      }
 
       // Fit map to show both business and customer locations with responsive padding
       const bounds = new mapboxgl.LngLatBounds();

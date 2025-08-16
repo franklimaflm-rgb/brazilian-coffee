@@ -31,6 +31,20 @@ const adminSupabase = createClient(
   }
 );
 
+// Track admin client instance
+if (typeof window !== 'undefined') {
+  window.__supabaseClients = window.__supabaseClients || [];
+  window.__supabaseClients.push('admin-client');
+
+  // Warn if multiple clients detected
+  if (window.__supabaseClients.length > 1) {
+    console.warn('⚠️ Multiple Supabase clients detected:', window.__supabaseClients);
+    console.warn('Main client uses storage key: main-auth-token');
+    console.warn('Admin client uses storage key: admin-auth-token');
+    console.warn('This is intentional for admin isolation but may cause warnings.');
+  }
+}
+
 // Simple admin data hook that doesn't manage authentication
 export const useAdmin = () => {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -40,7 +54,7 @@ export const useAdmin = () => {
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      const { data, error } = await adminSupabase
         .from('orders')
         .select(`
           *,
@@ -93,7 +107,7 @@ export const useAdmin = () => {
       }
 
       // Use secure function for order status updates
-      const { data, error } = await supabase.rpc('update_order_status', {
+      const { data, error } = await adminSupabase.rpc('update_order_status', {
         p_order_id: orderId,
         p_new_status: status,
       });
@@ -145,9 +159,9 @@ export const useAdmin = () => {
   useEffect(() => {
     fetchOrders();
 
-    // Set up real-time subscription
-    const subscription = supabase
-      .channel('orders_changes')
+    // Set up real-time subscription using admin client
+    const subscription = adminSupabase
+      .channel('admin_orders_changes')
       .on(
         'postgres_changes',
         {

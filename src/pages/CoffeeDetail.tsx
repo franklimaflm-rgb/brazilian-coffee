@@ -3,7 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Clock, Users, Coffee, Lightbulb } from "lucide-react";
-import { getCoffeeById } from "@/data/coffees";
+import { getCoffeeByIdI18n } from "@/data/coffees-i18n";
+import { useLanguage } from "@/i18n/LanguageContext";
+import { Navigation } from "@/components/Navigation";
 
 const CoffeeDetail = () => {
   const { id } = useParams<{ id: string }>();

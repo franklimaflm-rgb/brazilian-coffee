@@ -1,8 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Coffee, BookOpen, Heart } from "lucide-react";
+import { useLanguage } from "@/i18n/LanguageContext";
 import heroImage from "@/assets/coffee-hero.jpg";
 
 export const Hero = () => {
+  const { t } = useLanguage();
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background Image */}
@@ -23,13 +25,11 @@ export const Hero = () => {
           </div>
           
           <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-            Aprenda a Fazer
-            <span className="block text-accent">Café Perfeito</span>
+            {t('hero.title')}
           </h1>
           
           <p className="text-xl md:text-2xl mb-8 text-gray-200 max-w-2xl mx-auto leading-relaxed">
-            Descubra os segredos por trás dos melhores cafés do mundo. 
-            Receitas detalhadas, técnicas profissionais e dicas exclusivas.
+            {t('hero.description')}
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">

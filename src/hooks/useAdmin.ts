@@ -652,29 +652,43 @@ End of Diagnostic Report
 
     checkSession();
 
-    // Simple auth state listener
+    // Debounced auth state listener to prevent excessive events
+    let authStateTimeout: NodeJS.Timeout | null = null;
     const { data: { subscription } } = adminSupabase.auth.onAuthStateChange(
       (event, session) => {
-        console.log('🔍 AUTH STATE CHANGE:', {
-          event,
-          hasSession: !!session,
-          userEmail: session?.user?.email
-        });
-
-        const isAdmin = session?.user?.email === ADMIN_EMAIL;
-
-        console.log('🔍 Admin Status:', { isAdmin });
-
-        setIsAuthenticated(isAdmin);
-        setIsLoading(false);
-
-        if (isAdmin) {
-          setNeedsSetup(false);
+        // Clear previous timeout
+        if (authStateTimeout) {
+          clearTimeout(authStateTimeout);
         }
+
+        // Debounce auth state changes
+        authStateTimeout = setTimeout(() => {
+          console.log('🔍 AUTH STATE CHANGE (debounced):', {
+            event,
+            hasSession: !!session,
+            userEmail: session?.user?.email
+          });
+
+          const isAdmin = session?.user?.email === ADMIN_EMAIL;
+
+          console.log('🔍 Admin Status:', { isAdmin });
+
+          setIsAuthenticated(isAdmin);
+          setIsLoading(false);
+
+          if (isAdmin) {
+            setNeedsSetup(false);
+          }
+        }, 100); // 100ms debounce
       }
     );
 
-    return () => subscription.unsubscribe();
+    return () => {
+      if (authStateTimeout) {
+        clearTimeout(authStateTimeout);
+      }
+      subscription.unsubscribe();
+    };
   }, []);
 
   return {

@@ -89,6 +89,16 @@ export const useAdmin = (isAuthenticated: boolean = false) => {
 
       console.log('🔍 FETCHING ORDERS - Admin authenticated:', isAuthenticated);
 
+      // Force session refresh before queries
+      console.log('🔍 Forcing session refresh...');
+      const { data: { session: refreshedSession }, error: refreshError } = await adminSupabase.auth.refreshSession();
+      console.log('🔍 Session refresh result:', {
+        success: !refreshError,
+        error: refreshError?.message,
+        hasSession: !!refreshedSession,
+        userEmail: refreshedSession?.user?.email
+      });
+
       // Ensure admin is authenticated before making queries
       const session = await ensureAdminAuthenticated();
       console.log('🔍 Admin session verified:', {

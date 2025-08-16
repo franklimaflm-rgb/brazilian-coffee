@@ -1,15 +1,17 @@
 import { Navigation } from "@/components/Navigation";
+import { Footer } from "@/components/Footer";
 import { CoffeeCard } from "@/components/CoffeeCard";
-import { coffees } from "@/data/coffees";
+import { coffeesI18n } from "@/data/coffees-i18n";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useNavigate } from "react-router-dom";
 
 const MenuPage = () => {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const navigate = useNavigate();
 
-  const handleCoffeeClick = (coffeeId: string) => {
-    navigate(`/coffee/${coffeeId}`);
+  const handleCoffeeOrder = (coffeeId: string) => {
+    // Redirect to delivery page with pre-selected coffee
+    navigate(`/delivery?coffee=${coffeeId}`);
   };
 
   return (
@@ -27,19 +29,23 @@ const MenuPage = () => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {coffees.map((coffee) => (
+          {coffeesI18n.map((coffee) => (
             <CoffeeCard
               key={coffee.id}
-              name={coffee.name}
-              description={coffee.description}
+              name={coffee.name[language]}
+              description={coffee.description[language]}
               image={coffee.image}
-              prepTime={coffee.prepTime}
-              difficulty={coffee.difficulty}
-              onClick={() => handleCoffeeClick(coffee.id)}
+              prepTime={coffee.prepTime[language]}
+              difficulty={coffee.difficulty[language]}
+              onClick={() => handleCoffeeOrder(coffee.id)}
+              buttonIcon="order"
+              showPrice={true}
+              price={8.50}
             />
           ))}
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

@@ -14,13 +14,200 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      customers: {
+        Row: {
+          id: string
+          name: string
+          email: string
+          phone: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          email: string
+          phone?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          email?: string
+          phone?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      addresses: {
+        Row: {
+          id: string
+          customer_id: string | null
+          address_line_1: string
+          address_line_2: string | null
+          city: string
+          county: string | null
+          postcode: string
+          country: string | null
+          latitude: number | null
+          longitude: number | null
+          is_within_delivery_zone: boolean | null
+          distance_from_business: number | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          customer_id?: string | null
+          address_line_1: string
+          address_line_2?: string | null
+          city: string
+          county?: string | null
+          postcode: string
+          country?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          is_within_delivery_zone?: boolean | null
+          distance_from_business?: number | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          customer_id?: string | null
+          address_line_1?: string
+          address_line_2?: string | null
+          city?: string
+          county?: string | null
+          postcode?: string
+          country?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          is_within_delivery_zone?: boolean | null
+          distance_from_business?: number | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "addresses_customer_id_fkey"
+            columns: ["customer_id"]
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      coffee_products: {
+        Row: {
+          id: string
+          name_en: string
+          name_pt: string
+          description_en: string | null
+          description_pt: string | null
+          price: number
+          is_available: boolean | null
+          prep_time_minutes: number | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id: string
+          name_en: string
+          name_pt: string
+          description_en?: string | null
+          description_pt?: string | null
+          price: number
+          is_available?: boolean | null
+          prep_time_minutes?: number | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name_en?: string
+          name_pt?: string
+          description_en?: string | null
+          description_pt?: string | null
+          price?: number
+          is_available?: boolean | null
+          prep_time_minutes?: number | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      orders: {
+        Row: {
+          id: string
+          order_number: string
+          customer_id: string | null
+          delivery_address_id: string | null
+          status: string | null
+          subtotal: number
+          delivery_fee: number
+          total_amount: number
+          special_instructions: string | null
+          estimated_delivery_time: number | null
+          actual_delivery_time: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          order_number?: string
+          customer_id?: string | null
+          delivery_address_id?: string | null
+          status?: string | null
+          subtotal: number
+          delivery_fee: number
+          total_amount: number
+          special_instructions?: string | null
+          estimated_delivery_time?: number | null
+          actual_delivery_time?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          order_number?: string
+          customer_id?: string | null
+          delivery_address_id?: string | null
+          status?: string | null
+          subtotal?: number
+          delivery_fee?: number
+          total_amount?: number
+          special_instructions?: string | null
+          estimated_delivery_time?: number | null
+          actual_delivery_time?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_customer_id_fkey"
+            columns: ["customer_id"]
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_delivery_address_id_fkey"
+            columns: ["delivery_address_id"]
+            referencedRelation: "addresses"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_order_number: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never

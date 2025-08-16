@@ -1,0 +1,395 @@
+import { useState } from "react";
+import { useAdmin, useAdminAuth, OrderStatus } from "@/hooks/useAdmin";
+import { useLanguage } from "@/i18n/LanguageContext";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { 
+  Coffee, 
+  Package, 
+  Truck, 
+  CheckCircle, 
+  Clock, 
+  AlertCircle, 
+  DollarSign,
+  Users,
+  Calendar,
+  LogOut,
+  Loader2,
+  Phone,
+  Mail,
+  MapPin
+} from "lucide-react";
+import { toast } from "sonner";
+
+const AdminLoginForm = ({ onLogin }: { onLogin: (email: string, password: string) => Promise<{ success: boolean; error?: string }> }) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    
+    const result = await onLogin(email, password);
+    
+    if (!result.success) {
+      toast.error(result.error || 'Login failed');
+    }
+    
+    setIsLoading(false);
+  };
+
+  return (
+    <div className="min-h-screen bg-background flex items-center justify-center p-6">
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center">
+          <div className="flex items-center justify-center mb-4">
+            <Coffee className="w-8 h-8 text-primary mr-2" />
+            <span className="text-2xl font-bold">Admin Panel</span>
+          </div>
+          <CardTitle>Brazilian Coffee Academy</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="franklinmarceloderreiradelima@gmail.com"
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Logging in...
+                </>
+              ) : (
+                'Login'
+              )}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+const OrderStatusBadge = ({ status }: { status: string }) => {
+  const getStatusConfig = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return { color: 'bg-yellow-100 text-yellow-800', icon: Clock, label: 'Pending' };
+      case 'confirmed':
+        return { color: 'bg-blue-100 text-blue-800', icon: CheckCircle, label: 'Confirmed' };
+      case 'preparing':
+        return { color: 'bg-orange-100 text-orange-800', icon: Coffee, label: 'Preparing' };
+      case 'out_for_delivery':
+        return { color: 'bg-purple-100 text-purple-800', icon: Truck, label: 'Out for Delivery' };
+      case 'delivered':
+        return { color: 'bg-green-100 text-green-800', icon: CheckCircle, label: 'Delivered' };
+      case 'cancelled':
+        return { color: 'bg-red-100 text-red-800', icon: AlertCircle, label: 'Cancelled' };
+      default:
+        return { color: 'bg-gray-100 text-gray-800', icon: Clock, label: 'Unknown' };
+    }
+  };
+
+  const config = getStatusConfig(status);
+  const Icon = config.icon;
+
+  return (
+    <Badge className={`${config.color} flex items-center gap-1`}>
+      <Icon className="w-3 h-3" />
+      {config.label}
+    </Badge>
+  );
+};
+
+const AdminDashboard = () => {
+  const { language } = useLanguage();
+  const { orders, loading, updateOrderStatus, getOrderStats, getTodaysOrders } = useAdmin();
+  const { logout } = useAdminAuth();
+  const [selectedOrder, setSelectedOrder] = useState<string | null>(null);
+
+  const stats = getOrderStats();
+  const todaysOrders = getTodaysOrders();
+
+  const handleStatusUpdate = async (orderId: string, newStatus: OrderStatus) => {
+    const result = await updateOrderStatus(orderId, newStatus);
+    if (result.success) {
+      toast.success('Order status updated successfully');
+    } else {
+      toast.error(result.error || 'Failed to update order status');
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleString();
+  };
+
+  const formatCurrency = (amount: number) => {
+    return `£${amount.toFixed(2)}`;
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" />
+          <p>Loading orders...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <div className="border-b border-border bg-card">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Coffee className="w-8 h-8 text-primary" />
+              <div>
+                <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+                <p className="text-sm text-muted-foreground">Brazilian Coffee Academy</p>
+              </div>
+            </div>
+            <Button onClick={logout} variant="outline" size="sm">
+              <LogOut className="w-4 h-4 mr-2" />
+              Logout
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      <div className="container mx-auto px-6 py-8">
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Total Orders</p>
+                  <p className="text-2xl font-bold">{stats.total}</p>
+                </div>
+                <Package className="w-8 h-8 text-primary" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Today's Orders</p>
+                  <p className="text-2xl font-bold">{todaysOrders.length}</p>
+                </div>
+                <Calendar className="w-8 h-8 text-primary" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Pending Orders</p>
+                  <p className="text-2xl font-bold">{stats.pending}</p>
+                </div>
+                <Clock className="w-8 h-8 text-yellow-600" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Total Revenue</p>
+                  <p className="text-2xl font-bold">{formatCurrency(stats.totalRevenue)}</p>
+                </div>
+                <DollarSign className="w-8 h-8 text-green-600" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Orders Table */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Package className="w-5 h-5" />
+              Recent Orders
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {orders.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <Package className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                  <p>No orders yet</p>
+                </div>
+              ) : (
+                orders.map((order) => (
+                  <div key={order.id} className="border border-border rounded-lg p-4">
+                    <div className="flex items-start justify-between mb-4">
+                      <div>
+                        <div className="flex items-center gap-3 mb-2">
+                          <h3 className="font-semibold">Order #{order.order_number}</h3>
+                          <OrderStatusBadge status={order.status || 'pending'} />
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          {formatDate(order.created_at)}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-semibold">{formatCurrency(order.total_amount)}</p>
+                        <p className="text-sm text-muted-foreground">
+                          Delivery: {formatCurrency(order.delivery_fee)}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Customer Info */}
+                    {order.customers && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 p-3 bg-muted/50 rounded">
+                        <div>
+                          <h4 className="font-medium mb-2">Customer Details</h4>
+                          <div className="space-y-1 text-sm">
+                            <div className="flex items-center gap-2">
+                              <Users className="w-4 h-4" />
+                              {order.customers.name}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Mail className="w-4 h-4" />
+                              {order.customers.email}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Phone className="w-4 h-4" />
+                              {order.customers.phone}
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {order.addresses && (
+                          <div>
+                            <h4 className="font-medium mb-2">Delivery Address</h4>
+                            <div className="flex items-start gap-2 text-sm">
+                              <MapPin className="w-4 h-4 mt-0.5" />
+                              <div>
+                                <p>{order.addresses.address_line_1}</p>
+                                {order.addresses.address_line_2 && (
+                                  <p>{order.addresses.address_line_2}</p>
+                                )}
+                                <p>{order.addresses.city}, {order.addresses.postcode}</p>
+                                {order.addresses.distance_from_business && (
+                                  <p className="text-muted-foreground">
+                                    Distance: {order.addresses.distance_from_business}km
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Order Items */}
+                    <div className="mb-4">
+                      <h4 className="font-medium mb-2">Order Items</h4>
+                      <div className="space-y-2">
+                        {order.order_items.map((item) => (
+                          <div key={item.id} className="flex items-center justify-between text-sm">
+                            <div className="flex items-center gap-2">
+                              <Coffee className="w-4 h-4" />
+                              <span>
+                                {item.coffee_products 
+                                  ? (language === 'pt-BR' ? item.coffee_products.name_pt : item.coffee_products.name_en)
+                                  : 'Unknown Coffee'
+                                } x {item.quantity}
+                              </span>
+                            </div>
+                            <span>{formatCurrency(item.total_price)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Status Update */}
+                    <div className="flex items-center gap-3">
+                      <Label htmlFor={`status-${order.id}`} className="text-sm">Update Status:</Label>
+                      <Select
+                        value={order.status || 'pending'}
+                        onValueChange={(value: OrderStatus) => handleStatusUpdate(order.id, value)}
+                      >
+                        <SelectTrigger className="w-48">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="pending">Pending</SelectItem>
+                          <SelectItem value="confirmed">Confirmed</SelectItem>
+                          <SelectItem value="preparing">Preparing</SelectItem>
+                          <SelectItem value="out_for_delivery">Out for Delivery</SelectItem>
+                          <SelectItem value="delivered">Delivered</SelectItem>
+                          <SelectItem value="cancelled">Cancelled</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {order.special_instructions && (
+                      <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded">
+                        <p className="text-sm">
+                          <strong>Special Instructions:</strong> {order.special_instructions}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+};
+
+const AdminPage = () => {
+  const { isAuthenticated, isLoading, login } = useAdminAuth();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <AdminLoginForm onLogin={login} />;
+  }
+
+  return <AdminDashboard />;
+};
+
+export default AdminPage;

@@ -1,64 +1,57 @@
-# Welcome to your Lovable project
+# Brazilian Coffee Academy
 
-## Project info
+Welcome to Brazilian Coffee Academy - a comprehensive coffee education and delivery application built with modern web technologies.
 
-**URL**: https://lovable.dev/projects/8bd35a72-9db6-4b92-ac9e-37376778c694
+**Live Demo**: https://brazilian-coffee.lovable.app/
+**Lovable Project**: https://lovable.dev/projects/8bd35a72-9db6-4b92-ac9e-37376778c694
 
-## How can I edit this code?
+## Features
 
-There are several ways of editing your application.
+### 🎓 Coffee Education
+- **Detailed Recipes**: Learn to make various types of coffee (Espresso, Cappuccino, Latte, Americano, etc.)
+- **Step-by-Step Instructions**: Professional techniques with ingredients lists and preparation tips
+- **Interactive Coffee Cards**: Browse through different coffee types with individual recipe pages
+- **Bilingual Support**: Full internationalization in Portuguese (Brazilian) and English (British)
 
-**Use Lovable**
+### 🚚 Delivery System
+- **Geographic Mapping**: Interactive delivery zone visualization centered at Lubenham, Market Harborough
+- **Address Validation**: Real-time validation for 3-5km delivery radius
+- **Order Management**: Complete order system with customer details and delivery tracking
+- **Dynamic Pricing**: Distance-based delivery fee calculation (15-25 minute delivery times)
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/8bd35a72-9db6-4b92-ac9e-37376778c694) and start prompting.
+### 📱 QR Code Integration
+- **Multiple Formats**: Generate QR codes in PNG, SVG, and PDF formats
+- **Physical Menu Support**: Downloadable QR codes for menus, delivery stickers, and social media
+- **Direct Links**: QR codes linking to the delivery system
 
-Changes made via Lovable will be committed automatically to this repo.
+### 🌍 Internationalization
+- **Language Selector**: Toggle between Portuguese and English with flag icons
+- **Persistent Preferences**: Language choice saved in localStorage
+- **Complete Translation**: All content including coffee names, descriptions, and interface elements
 
-**Use your preferred IDE**
+### 🗄️ Database Integration
+- **Supabase Backend**: Complete database schema for orders, customers, and delivery management
+- **Real-time Updates**: Live order tracking and status updates
+- **Secure Authentication**: Row-level security policies for data protection
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## Business Information
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+**Owner**: Franklin Marcelo Ferreira de Lima
+**Email**: franklinmarceloderreiradelima@gmail.com
+**Phone**: +44 7386797734
+**Address**: Main Street, 68 - Lubenham - Market Harborough - Leicestershire - England - LE16 9TG
+**Delivery Area**: 5km radius covering Market Harborough, Lubenham, Great Bowden, Little Bowden, and surrounding villages
 
-Follow these steps:
+## Technologies Used
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- **Frontend**: React 18, TypeScript, Vite
+- **Styling**: Tailwind CSS, shadcn/ui components
+- **Database**: Supabase (PostgreSQL)
+- **Maps**: Custom mapping solution with delivery radius visualization
+- **QR Codes**: qrcode library with PDF generation (jsPDF)
+- **Internationalization**: Custom i18n system with React Context
+- **State Management**: React hooks, React Query for server state
+- **Build Tool**: Vite
 
 ## How can I deploy this project?
 

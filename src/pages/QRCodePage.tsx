@@ -1,5 +1,6 @@
 import { QRCodeGenerator } from "@/components/QRCodeGenerator";
 import { Navigation } from "@/components/Navigation";
+import { Footer } from "@/components/Footer";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -134,6 +135,7 @@ const QRCodePage = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

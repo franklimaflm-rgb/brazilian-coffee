@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { Hero } from "@/components/Hero";
 import { CoffeeCard } from "@/components/CoffeeCard";
+import { Footer } from "@/components/Footer";
 import { coffeesI18n } from "@/data/coffees-i18n";
 import { useLanguage } from "@/i18n/LanguageContext";
 
@@ -44,6 +45,7 @@ const Index = () => {
           </div>
         </div>
       </section>
+      <Footer />
     </div>
   );
 };

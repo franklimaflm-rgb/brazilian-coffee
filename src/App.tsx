@@ -7,6 +7,8 @@ import { LanguageProvider } from "@/i18n/LanguageContext";
 import Index from "./pages/Index";
 import CoffeeDetail from "./pages/CoffeeDetail";
 import MenuPage from "./pages/MenuPage";
+import DeliveryPage from "./pages/DeliveryPage";
+import AdminPage from "./pages/AdminPage";
 import QRCodePage from "./pages/QRCodePage";
 import NotFound from "./pages/NotFound";
 
@@ -23,6 +25,8 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/menu" element={<MenuPage />} />
             <Route path="/coffee/:id" element={<CoffeeDetail />} />
+            <Route path="/delivery" element={<DeliveryPage />} />
+            <Route path="/admin" element={<AdminPage />} />
             <Route path="/qrcode" element={<QRCodePage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

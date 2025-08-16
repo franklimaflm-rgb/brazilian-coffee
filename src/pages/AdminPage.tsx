@@ -324,7 +324,7 @@ const OrderStatusBadge = ({ status }: { status: string }) => {
 
 const AdminDashboard = ({ isAuthenticated }: { isAuthenticated: boolean }) => {
   const { language, t } = useLanguage();
-  const { orders, loading, updateOrderStatus, getOrderStats, getTodaysOrders } = useAdmin(isAuthenticated);
+  const { orders, loading, error, updateOrderStatus, getOrderStats, getTodaysOrders, fetchOrders } = useAdmin(isAuthenticated);
   const { logout } = useAdminAuth();
   const [selectedOrder, setSelectedOrder] = useState<string | null>(null);
 
@@ -372,16 +372,43 @@ const AdminDashboard = ({ isAuthenticated }: { isAuthenticated: boolean }) => {
                 <p className="text-xs sm:text-sm text-muted-foreground">{t('admin.subtitle')}</p>
               </div>
             </div>
-            <Button onClick={logout} variant="outline" size="sm" className="h-9 sm:h-10 text-sm touch-manipulation">
-              <LogOut className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-              <span className="hidden sm:inline">{t('admin.logout')}</span>
-              <span className="sm:hidden">{t('admin.logout')}</span>
-            </Button>
+            <div className="flex gap-2">
+              <Button onClick={fetchOrders} variant="outline" size="sm" className="h-9 sm:h-10 text-sm touch-manipulation">
+                <Package className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Refresh</span>
+              </Button>
+              <Button onClick={logout} variant="outline" size="sm" className="h-9 sm:h-10 text-sm touch-manipulation">
+                <LogOut className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">{t('admin.logout')}</span>
+                <span className="sm:hidden">{t('admin.logout')}</span>
+              </Button>
+            </div>
           </div>
         </div>
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 lg:py-8">
+        {/* Error Display */}
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="flex items-center">
+              <AlertCircle className="w-5 h-5 text-red-500 mr-2" />
+              <div>
+                <h3 className="text-sm font-medium text-red-800">Error Loading Orders</h3>
+                <p className="text-sm text-red-700 mt-1">{error}</p>
+                <Button
+                  onClick={fetchOrders}
+                  variant="outline"
+                  size="sm"
+                  className="mt-2 text-red-700 border-red-300 hover:bg-red-50"
+                >
+                  Try Again
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Stats Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-8">
           <Card>

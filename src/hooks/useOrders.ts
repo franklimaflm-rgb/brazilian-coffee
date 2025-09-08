@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Database } from '@/integrations/supabase/types';
+import { coffeesI18n } from '@/data/coffees-i18n';
 
 type Customer = Database['public']['Tables']['customers']['Insert'];
 type Address = Database['public']['Tables']['addresses']['Insert'];
@@ -172,21 +173,28 @@ export const useOrders = () => {
 
 // Hook for fetching coffee products from database
 export const useCoffeeProducts = () => {
-  const [products, setProducts] = useState<Database['public']['Tables']['coffee_products']['Row'][]>([]);
+  const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('coffee_products')
-        .select('*')
-        .eq('is_available', true)
-        .order('name_en');
-
-      if (error) throw error;
-      setProducts(data || []);
+      // Use static coffee data until coffee_products table is available
+      const staticProducts = coffeesI18n.map(coffee => ({
+        id: coffee.id,
+        name_pt: coffee.name['pt-BR'],
+        name_en: coffee.name['en-GB'],
+        description_pt: coffee.description['pt-BR'],
+        description_en: coffee.description['en-GB'],
+        price: 4.50, // Default price
+        is_available: true,
+        prep_time_minutes: 5,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }));
+      
+      setProducts(staticProducts);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch products';
       setError(errorMessage);
@@ -232,15 +240,9 @@ export const useDeliveryValidation = () => {
         // Simulate distance calculation
         const distance = Math.random() * 4 + 1; // 1-5km
         
-        // Get delivery zone info from database
-        const { data: deliveryZone } = await supabase
-          .from('delivery_zones')
-          .select('*')
-          .eq('is_active', true)
-          .single();
-
-        const baseFee = deliveryZone?.base_delivery_fee || 3.00;
-        const feePerKm = deliveryZone?.fee_per_km || 2.00;
+        // Get delivery zone info - use static values for now
+        const baseFee = 3.00;
+        const feePerKm = 2.00;
         const deliveryFee = baseFee + (distance * feePerKm);
         const estimatedTime = Math.round(distance * 5 + 15); // 15-40 minutes
 

@@ -89,18 +89,45 @@ export const useAuth = () => {
 
       // Create customer record if signup successful
       if (data.user) {
-        const { error: customerError } = await supabase.rpc('register_customer', {
-          p_name: customerData.name,
-          p_email: customerData.email,
-          p_phone: customerData.phone || null,
-        });
-
-        if (customerError) {
-          console.error('Error creating customer record:', customerError);
+        const customerResult = await registerCustomer(customerData);
+        if (!customerResult.success) {
+          console.error('Error creating customer record:', customerResult.error);
         }
       }
 
       return { success: true, data };
+    } catch (error: any) {
+      return { success: false, error: error.message };
+    }
+  };
+
+  // Simplified customer creation - direct database insert
+  const registerCustomer = async (customerData: { name: string; email: string; phone?: string }) => {
+    try {
+      // Check if customer exists
+      const { data: existingCustomer } = await supabase
+        .from('customers')
+        .select('id')
+        .eq('email', customerData.email)
+        .single();
+
+      if (existingCustomer) {
+        return { success: true, customerId: existingCustomer.id };
+      }
+
+      // Create new customer
+      const { data: newCustomer, error } = await supabase
+        .from('customers')
+        .insert({
+          name: customerData.name,
+          email: customerData.email,
+          phone: customerData.phone
+        })
+        .select('id')
+        .single();
+
+      if (error) throw error;
+      return { success: true, customerId: newCustomer.id };
     } catch (error: any) {
       return { success: false, error: error.message };
     }
@@ -148,22 +175,13 @@ export const useAuth = () => {
   // Get or create customer for anonymous orders
   const getOrCreateCustomer = async (customerData: CustomerData) => {
     try {
-      // Use the secure register_customer function which handles both cases
-      const { data: customerId, error } = await supabase.rpc('register_customer', {
-        p_name: customerData.name,
-        p_email: customerData.email,
-        p_phone: customerData.phone || null,
-      });
-
-      if (error) throw error;
-
-      return { success: true, customerId };
+      return await registerCustomer(customerData);
     } catch (error: any) {
       return { success: false, error: error.message };
     }
   };
 
-  // Create order using secure function
+  // Create order using direct database operations
   const createOrder = async (orderData: {
     customerEmail: string;
     addressId: string;
@@ -172,17 +190,42 @@ export const useAuth = () => {
     deliveryFee: number;
   }) => {
     try {
-      const { data: orderId, error } = await supabase.rpc('create_order', {
-        p_customer_email: orderData.customerEmail,
-        p_address_id: orderData.addressId,
-        p_coffee_items: orderData.coffeeItems,
-        p_special_instructions: orderData.specialInstructions || null,
-        p_delivery_fee: orderData.deliveryFee,
-      });
+      // Get customer by email
+      const { data: customer } = await supabase
+        .from('customers')
+        .select('id')
+        .eq('email', orderData.customerEmail)
+        .single();
+
+      if (!customer) {
+        throw new Error('Customer not found');
+      }
+
+      // Generate order number
+      const orderNumber = `BC${Date.now().toString().slice(-6)}`;
+
+      // Calculate total amount (simplified)
+      const itemTotal = orderData.coffeeItems.length * 4.50; // Default price
+      const totalAmount = itemTotal + orderData.deliveryFee;
+
+      // Create order
+      const { data: order, error } = await supabase
+        .from('orders')
+        .insert({
+          customer_id: customer.id,
+          delivery_address_id: orderData.addressId,
+          order_number: orderNumber,
+          subtotal: itemTotal,
+          delivery_fee: orderData.deliveryFee,
+          total_amount: totalAmount,
+          special_instructions: orderData.specialInstructions || null,
+          status: 'pending'
+        })
+        .select('id')
+        .single();
 
       if (error) throw error;
-
-      return { success: true, orderId };
+      return { success: true, orderId: order.id };
     } catch (error: any) {
       return { success: false, error: error.message };
     }
@@ -195,13 +238,14 @@ export const useAuth = () => {
         throw new Error('Unauthorized: Admin access required');
       }
 
-      const { data, error } = await supabase.rpc('update_order_status', {
-        p_order_id: orderId,
-        p_new_status: newStatus,
-      });
+      const { data, error } = await supabase
+        .from('orders')
+        .update({ status: newStatus, updated_at: new Date().toISOString() })
+        .eq('id', orderId)
+        .select()
+        .single();
 
       if (error) throw error;
-
       return { success: true, data };
     } catch (error: any) {
       return { success: false, error: error.message };

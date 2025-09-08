@@ -347,7 +347,7 @@ const AdminDashboard = ({ isAuthenticated }: { isAuthenticated: boolean }) => {
     if (result.success) {
       toast.success(t('admin.messages.statusUpdated'));
     } else {
-      toast.error(result.error || t('admin.messages.statusUpdateFailed'));
+      toast.error(t('admin.messages.statusUpdateFailed'));
     }
   };
 
@@ -572,7 +572,7 @@ const AdminDashboard = ({ isAuthenticated }: { isAuthenticated: boolean }) => {
                           ))
                         ) : (
                           <div className="text-sm text-muted-foreground">
-                            {t('admin.noOrderItems', 'No order items available')}
+                            {t('admin.noOrderItems')}
                           </div>
                         )}
                       </div>

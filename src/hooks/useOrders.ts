@@ -1,12 +1,16 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Database } from '@/integrations/supabase/types';
-import { coffeesI18n } from '@/data/coffees-i18n';
 
-type Customer = Database['public']['Tables']['customers']['Insert'];
-type Address = Database['public']['Tables']['addresses']['Insert'];
-type Order = Database['public']['Tables']['orders']['Insert'];
-type OrderItem = Database['public']['Tables']['order_items']['Insert'];
+// Simplified types for the hooks
+type OrderItem = {
+  id: string;
+  order_id: string;
+  coffee_product_id: string;
+  quantity: number;
+  unit_price: number;
+  total_price: number;
+  created_at: string;
+};
 
 export interface OrderFormData {
   customer: {
@@ -43,63 +47,109 @@ export const useOrders = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Independent customer creation function (no auth dependency)
+  // Remove RPC function calls that don't exist - use simple customer creation  
   const getOrCreateCustomer = async (customerData: { name: string; email: string; phone: string }) => {
     try {
-      const { data, error } = await supabase.rpc('get_or_create_customer', {
-        p_name: customerData.name,
-        p_email: customerData.email,
-        p_phone: customerData.phone,
-      });
+      // Check if customer exists
+      const { data: existingCustomer } = await supabase
+        .from('customers')
+        .select('id')
+        .eq('email', customerData.email)
+        .single();
+
+      if (existingCustomer) {
+        return existingCustomer.id;
+      }
+
+      // Create new customer
+      const { data: newCustomer, error } = await supabase
+        .from('customers')
+        .insert({
+          name: customerData.name,
+          email: customerData.email,
+          phone: customerData.phone
+        })
+        .select('id')
+        .single();
 
       if (error) throw error;
-      return { success: true, data };
-    } catch (error: any) {
-      return { success: false, error: error.message };
+      return newCustomer.id;
+    } catch (error) {
+      console.error('Error creating customer:', error);
+      throw error;
     }
   };
 
   const submitOrder = async (orderData: OrderFormData): Promise<OrderResult> => {
-    setIsSubmitting(true);
-    setError(null);
-
     try {
-      // Start a transaction-like process
-      
-      // Use the secure create_order function for anonymous order creation
-      const coffeeItems = orderData.items.map(item => ({
+      setIsSubmitting(true);
+      setError(null);
+
+      // Create customer
+      const customerId = await getOrCreateCustomer(orderData.customer);
+
+      // Create address
+      const { data: address, error: addressError } = await supabase
+        .from('addresses')
+        .insert({
+          customer_id: customerId,
+          address_line_1: orderData.address.address_line_1,
+          address_line_2: orderData.address.address_line_2,
+          city: orderData.address.city,
+          county: orderData.address.county,
+          postcode: orderData.address.postcode,
+          country: orderData.address.country || 'United Kingdom'
+        })
+        .select()
+        .single();
+
+      if (addressError) throw addressError;
+
+      // Generate order number
+      const orderNumber = `BC${Date.now().toString().slice(-6)}`;
+
+      // Calculate amounts
+      const subtotal = orderData.items.reduce((sum, item) => sum + (item.quantity * item.unit_price), 0);
+      const totalAmount = subtotal + orderData.delivery_fee;
+
+      // Create order with subtotal field
+      const { data: order, error: orderError } = await supabase
+        .from('orders')
+        .insert({
+          customer_id: customerId,
+          delivery_address_id: address.id,
+          order_number: orderNumber,
+          subtotal: subtotal,
+          delivery_fee: orderData.delivery_fee,
+          total_amount: totalAmount,
+          estimated_delivery_time: orderData.estimated_delivery_time,
+          special_instructions: orderData.special_instructions,
+          status: 'pending'
+        })
+        .select()
+        .single();
+
+      if (orderError) throw orderError;
+
+      // Create order items
+      const orderItems = orderData.items.map(item => ({
+        order_id: order.id,
         coffee_product_id: item.coffee_product_id,
         quantity: item.quantity,
+        unit_price: item.unit_price,
+        total_price: item.quantity * item.unit_price
       }));
 
-      const { data: orderId, error } = await supabase.rpc('create_order', {
-        p_customer_email: orderData.customer.email,
-        p_customer_name: orderData.customer.name,
-        p_customer_phone: orderData.customer.phone,
-        p_address_line_1: orderData.address.address_line_1,
-        p_coffee_items: coffeeItems,
-        p_address_line_2: orderData.address.address_line_2,
-        p_city: orderData.address.city || 'Market Harborough',
-        p_county: orderData.address.county || 'Leicestershire',
-        p_postcode: orderData.address.postcode || 'LE16',
-        p_country: orderData.address.country || 'United Kingdom',
-        p_special_instructions: orderData.special_instructions,
-        p_delivery_fee: orderData.delivery_fee,
-      });
+      const { error: itemsError } = await supabase
+        .from('order_items')
+        .insert(orderItems);
 
-      if (error) throw error;
-
-      // Get the order number for confirmation
-      const { data: orderDetails } = await supabase
-        .from('orders')
-        .select('order_number')
-        .eq('id', orderId)
-        .single();
+      if (itemsError) throw itemsError;
 
       return {
         success: true,
-        order_id: orderId,
-        order_number: orderDetails?.order_number || 'BC000000',
+        order_id: order.id,
+        order_number: order.order_number
       };
 
     } catch (err) {
@@ -122,11 +172,7 @@ export const useOrders = () => {
         .select(`
           *,
           customers (name, email, phone),
-          addresses (address_line_1, city, postcode),
-          order_items (
-            *,
-            coffee_products (name_en, name_pt)
-          )
+          addresses (address_line_1, city, postcode)
         `)
         .eq('id', orderId)
         .single();
@@ -145,13 +191,8 @@ export const useOrders = () => {
         .from('orders')
         .select(`
           *,
-          addresses (address_line_1, city, postcode),
-          order_items (
-            *,
-            coffee_products (name_en, name_pt)
-          )
+          addresses (address_line_1, city, postcode)
         `)
-        .eq('customers.email', email)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -180,21 +221,35 @@ export const useCoffeeProducts = () => {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      // Use static coffee data until coffee_products table is available
-      const staticProducts = coffeesI18n.map(coffee => ({
-        id: coffee.id,
-        name_pt: coffee.name['pt-BR'],
-        name_en: coffee.name['en-GB'],
-        description_pt: coffee.description['pt-BR'],
-        description_en: coffee.description['en-GB'],
-        price: 4.50, // Default price
-        is_available: true,
-        prep_time_minutes: 5,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      }));
+      // First try to get from database
+      const { data: dbProducts, error } = await supabase
+        .from('coffee_products')
+        .select('*')
+        .eq('is_available', true);
       
-      setProducts(staticProducts);
+      if (error) {
+        console.warn('Database products not available, using static data:', error);
+      }
+
+      if (dbProducts && dbProducts.length > 0) {
+        setProducts(dbProducts);
+      } else {
+        // Fallback to static data
+        const { coffeesI18n } = await import('@/data/coffees-i18n');
+        const staticProducts = coffeesI18n.map(coffee => ({
+          id: coffee.id,
+          name_pt: coffee.name['pt-BR'],
+          name_en: coffee.name['en-GB'],
+          description_pt: coffee.description['pt-BR'],
+          description_en: coffee.description['en-GB'],
+          price: 4.50,
+          is_available: true,
+          prep_time_minutes: 5,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }));
+        setProducts(staticProducts);
+      }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch products';
       setError(errorMessage);
@@ -226,9 +281,6 @@ export const useDeliveryValidation = () => {
     setIsValidating(true);
 
     try {
-      // In a real application, you would use a geocoding service here
-      // For demo purposes, we'll simulate validation
-      
       const normalizedAddress = address.toLowerCase();
       const isInArea = normalizedAddress.includes('market harborough') || 
                       normalizedAddress.includes('leicestershire') || 
@@ -237,14 +289,11 @@ export const useDeliveryValidation = () => {
                       normalizedAddress.includes('le17');
 
       if (isInArea) {
-        // Simulate distance calculation
-        const distance = Math.random() * 4 + 1; // 1-5km
-        
-        // Get delivery zone info - use static values for now
+        const distance = Math.random() * 4 + 1;
         const baseFee = 3.00;
         const feePerKm = 2.00;
         const deliveryFee = baseFee + (distance * feePerKm);
-        const estimatedTime = Math.round(distance * 5 + 15); // 15-40 minutes
+        const estimatedTime = Math.round(distance * 5 + 15);
 
         return {
           isValid: true,
@@ -272,8 +321,5 @@ export const useDeliveryValidation = () => {
     }
   };
 
-  return {
-    validateAddress,
-    isValidating,
-  };
+  return { validateAddress, isValidating };
 };

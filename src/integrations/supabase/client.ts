@@ -25,11 +25,11 @@ export const supabase = (() => {
 
     // Track client instances for monitoring (intentional dual-client architecture)
     if (typeof window !== 'undefined') {
-      window.__supabaseClients = window.__supabaseClients || [];
-      window.__supabaseClients.push('main-client');
+      (window as any).__supabaseClients = (window as any).__supabaseClients || [];
+      (window as any).__supabaseClients.push('main-client');
 
       // Log client info for debugging (not a warning since it's intentional)
-      console.log('ℹ️ Supabase clients active:', window.__supabaseClients);
+      console.log('ℹ️ Supabase clients active:', (window as any).__supabaseClients);
     }
   } else {
     console.log('🔍 Reusing existing main Supabase client instance');

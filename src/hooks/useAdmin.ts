@@ -4,12 +4,21 @@ import { Database } from '@/integrations/supabase/types';
 import { createClient } from '@supabase/supabase-js';
 
 // Flexible Order type for testing - can handle simple or complex queries
-type Order = Database['public']['Tables']['orders']['Row'] & {
-  customers?: Database['public']['Tables']['customers']['Row'] | null;
-  addresses?: Database['public']['Tables']['addresses']['Row'] | null;
-  order_items?: (Database['public']['Tables']['order_items']['Row'] & {
-    coffee_products?: Database['public']['Tables']['coffee_products']['Row'] | null;
-  })[];
+type Order = {
+  id: string;
+  customer_id: string;
+  delivery_address_id: string;
+  order_number: string;
+  total_amount: number;
+  delivery_fee: number;
+  status: string;
+  created_at: string;
+  updated_at: string;
+  estimated_delivery_time: string;
+  special_instructions?: string;
+  customers?: any;
+  addresses?: any;
+  order_items?: any[];
 };
 
 export type OrderStatus = 'pending' | 'confirmed' | 'preparing' | 'out_for_delivery' | 'delivered' | 'cancelled';
@@ -40,11 +49,11 @@ const adminSupabase = (() => {
 
     // Track admin client instance (intentional dual-client architecture)
     if (typeof window !== 'undefined') {
-      window.__supabaseClients = window.__supabaseClients || [];
-      window.__supabaseClients.push('admin-client');
+      (window as any).__supabaseClients = (window as any).__supabaseClients || [];
+      (window as any).__supabaseClients.push('admin-client');
 
       // Log client info for debugging (not a warning since it's intentional)
-      console.log('ℹ️ Admin client initialized. Total clients:', window.__supabaseClients);
+      console.log('ℹ️ Admin client initialized. Total clients:', (window as any).__supabaseClients);
     }
   } else {
     console.log('🔍 Reusing existing admin Supabase client instance');
@@ -242,12 +251,16 @@ export const useAdmin = (isAuthenticated: boolean = false) => {
     try {
       console.log('🔍 Updating order status:', { orderId, status });
 
-      // Use admin-friendly function that bypasses authentication context issues
-      const { data, error } = await adminSupabase.rpc('update_order_status_admin', {
-        p_order_id: orderId,
-        p_new_status: status,
-        p_admin_email: ADMIN_EMAIL
-      });
+      // Direct database update instead of RPC function
+      const { data, error } = await adminSupabase
+        .from('orders')
+        .update({ 
+          status: status,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', orderId)
+        .select()
+        .single();
 
       console.log('🔍 Order status update result:', { data, error });
 
@@ -256,25 +269,20 @@ export const useAdmin = (isAuthenticated: boolean = false) => {
         throw error;
       }
 
-      // Check if the function returned an error in the response
-      if (data && !data.success) {
-        console.error('🚨 Order status update failed:', data.error);
-        throw new Error(data.error);
-      }
-
-      // Update local state with the actual updated data
+      // Update local state with the updated data
       setOrders(prev => prev.map(order =>
         order.id === orderId
-          ? { ...order, status: data.new_status, updated_at: data.updated_at }
+          ? { ...order, status: data.status as string, updated_at: data.updated_at as string }
           : order
       ));
 
       console.log('✅ Order status updated successfully');
-      return { success: true, data };
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to update order status';
-      console.error('🚨 updateOrderStatus error:', errorMessage);
-      return { success: false, error: errorMessage };
+      console.log('✅ Order status updated successfully');
+      return { success: true };
+
+    } catch (error) {
+      console.error('🚨 Failed to update order status:', error);
+      throw error;
     }
   };
 

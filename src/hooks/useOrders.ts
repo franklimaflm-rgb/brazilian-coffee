@@ -112,20 +112,19 @@ export const useOrders = () => {
       const subtotal = orderData.items.reduce((sum, item) => sum + (item.quantity * item.unit_price), 0);
       const totalAmount = subtotal + orderData.delivery_fee;
 
-      // Create order with subtotal field
-      const { data: order, error: orderError } = await supabase
+      // Create order
+      const { data: order, error: orderError} = await supabase
         .from('orders')
-        .insert({
+        .insert([{
           customer_id: customerId,
           delivery_address_id: address.id,
           order_number: orderNumber,
-          subtotal: subtotal,
           delivery_fee: orderData.delivery_fee,
           total_amount: totalAmount,
-          estimated_delivery_time: orderData.estimated_delivery_time,
-          special_instructions: orderData.special_instructions,
-          status: 'pending'
-        })
+          estimated_delivery_time: orderData.estimated_delivery_time as any,
+          special_instructions: orderData.special_instructions || null,
+          status: 'pending' as any
+        } as any])
         .select()
         .single();
 
@@ -183,6 +182,26 @@ export const useOrders = () => {
     }
   };
 
+  const getOrderByNumber = async (orderNumber: string, email: string) => {
+    try {
+      const { data, error } = await supabase
+        .rpc('get_order_by_number', {
+          p_order_number: orderNumber,
+          p_email: email
+        });
+
+      if (error) throw error;
+      if (!data || data.length === 0) {
+        throw new Error('Order not found');
+      }
+      
+      return data[0];
+    } catch (error) {
+      console.error('Error fetching order by number:', error);
+      throw error;
+    }
+  };
+
   const getCustomerOrders = async (email: string) => {
     try {
       const { data, error } = await supabase
@@ -204,6 +223,7 @@ export const useOrders = () => {
   return {
     submitOrder,
     getOrderStatus,
+    getOrderByNumber,
     getCustomerOrders,
     isSubmitting,
     error,

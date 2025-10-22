@@ -139,9 +139,14 @@ export const useOrders = () => {
         total_price: item.quantity * item.unit_price
       }));
 
-      // Note: order_items table not available in current schema
-      // Order items would be handled when the table is created
-      console.log('Order items to be processed:', orderItems);
+      const { error: itemsError } = await supabase
+        .from('order_items')
+        .insert(orderItems);
+
+      if (itemsError) {
+        console.error('Error creating order items:', itemsError);
+        throw itemsError;
+      }
 
       return {
         success: true,

@@ -5,7 +5,8 @@ export const translations = {
       home: "Início",
       menu: "Menu",
       delivery: "Delivery",
-      qrcode: "QR Code"
+      qrcode: "QR Code",
+      help: "Ajuda"
     },
     
     // Hero Section
@@ -157,6 +158,108 @@ export const translations = {
       contact: "Contato",
       social: "Redes Sociais",
       quickAccess: "Acesso Rápido"
+    },
+
+    // Help Page
+    help: {
+      title: "Central de Ajuda",
+      subtitle: "Como podemos ajudá-lo?",
+      searchPlaceholder: "Buscar ajuda...",
+      categories: "Categorias de Ajuda",
+      
+      ordering: {
+        title: "Como Fazer Pedidos",
+        description: "Aprenda a fazer seu pedido passo a passo",
+        step1: "Acesse a página de Delivery no menu principal",
+        step2: "Preencha suas informações: nome, email e telefone",
+        step3: "Digite seu endereço completo e clique em 'Verificar Endereço'",
+        step4: "Selecione o café desejado no menu dropdown",
+        step5: "Escolha a quantidade desejada",
+        step6: "Adicione instruções especiais se necessário (opcional)",
+        step7: "Revise o total, taxa de entrega e tempo estimado",
+        step8: "Clique em 'Fazer Pedido' para confirmar"
+      },
+      
+      tracking: {
+        title: "Rastreamento de Pedidos",
+        description: "Acompanhe seu pedido em tempo real",
+        step1: "Após fazer o pedido, você receberá um número de pedido",
+        step2: "Acesse a página 'Track Order' no menu",
+        step3: "Digite o número do seu pedido",
+        step4: "Digite o email usado no pedido",
+        step5: "Clique em 'Rastrear Pedido' para ver o status atual",
+        step6: "Acompanhe as atualizações: Pendente → Confirmado → Preparando → Saiu para Entrega → Entregue"
+      },
+      
+      deliveryArea: {
+        title: "Área de Entrega",
+        description: "Onde entregamos",
+        info1: "Entregamos em um raio de 5km de Lubenham, Market Harborough",
+        info2: "Áreas cobertas: Market Harborough, Lubenham, Great Bowden, Little Bowden e vilas próximas",
+        info3: "Use o mapa interativo na página de Delivery para verificar se está na área",
+        info4: "Taxa de entrega varia de acordo com a distância",
+        info5: "Tempo estimado de entrega: 30-40 minutos"
+      },
+      
+      payment: {
+        title: "Pagamento",
+        description: "Formas de pagamento aceitas",
+        info1: "Aceitamos pagamento em dinheiro na entrega",
+        info2: "Pagamento por cartão de débito/crédito na entrega",
+        info3: "Pagamento via transferência bancária (PIX para clientes brasileiros)",
+        info4: "Pagamento digital via aplicativo móvel (em breve)",
+        info5: "Não é necessário pagamento antecipado"
+      },
+      
+      qrcode: {
+        title: "QR Code",
+        description: "Como usar o QR Code",
+        step1: "Acesse a página QR Code no menu",
+        step2: "Use a câmera do seu celular para escanear o código",
+        step3: "O QR Code direciona direto para nossa página de delivery",
+        step4: "Você pode baixar o QR Code em PNG, SVG ou PDF",
+        step5: "Ideal para compartilhar em redes sociais ou imprimir"
+      },
+      
+      coffees: {
+        title: "Sobre os Cafés",
+        description: "Conheça nossos cafés especiais",
+        espresso: "Espresso: Café forte e concentrado, base para muitas bebidas",
+        americano: "Americano: Espresso diluído em água quente, sabor suave",
+        cappuccino: "Cappuccino: Espresso com leite vaporizado e espuma cremosa",
+        latte: "Latte: Espresso com muito leite e pouca espuma, sabor suave",
+        quality: "Todos os cafés são preparados com grãos especiais brasileiros"
+      },
+      
+      faqs: {
+        title: "Perguntas Frequentes",
+        q1: "Quanto tempo leva a entrega?",
+        a1: "O tempo estimado de entrega é de 30-40 minutos, dependendo da distância.",
+        q2: "Qual a taxa de entrega?",
+        a2: "A taxa varia de acordo com a distância do seu endereço. Será calculada automaticamente ao verificar seu endereço.",
+        q3: "Como posso pagar?",
+        a3: "Aceitamos dinheiro, cartão de débito/crédito e transferência bancária na entrega.",
+        q4: "Posso cancelar meu pedido?",
+        a4: "Sim, entre em contato conosco imediatamente após fazer o pedido. Cancelamentos só são possíveis antes do preparo começar.",
+        q5: "Vocês entregam fora do raio de 5km?",
+        a5: "No momento, entregamos apenas dentro do raio de 5km. Para pedidos especiais, entre em contato diretamente.",
+        q6: "Como faço para rastrear meu pedido?",
+        a6: "Use o número do pedido e email na página 'Track Order' para acompanhar o status em tempo real.",
+        q7: "Posso fazer pedidos sem cadastro?",
+        a7: "Sim! Nosso sistema aceita checkout como convidado. Basta preencher suas informações no momento do pedido.",
+        q8: "Quais cafés vocês oferecem?",
+        a8: "Oferecemos Espresso, Americano, Cappuccino e Latte, todos preparados com grãos brasileiros especiais."
+      },
+      
+      contact: {
+        title: "Ainda Precisa de Ajuda?",
+        description: "Entre em contato conosco",
+        phone: "Telefone:",
+        email: "Email:",
+        address: "Endereço:",
+        hours: "Horário de Atendimento:",
+        hoursInfo: "Segunda a Sábado: 8:00-18:00, Domingo: 9:00-16:00"
+      }
     }
   },
   
@@ -166,7 +269,8 @@ export const translations = {
       home: "Home",
       menu: "Menu",
       delivery: "Delivery",
-      qrcode: "QR Code"
+      qrcode: "QR Code",
+      help: "Help"
     },
     
     // Hero Section
@@ -318,6 +422,108 @@ export const translations = {
       contact: "Contact",
       social: "Social Media",
       quickAccess: "Quick Access"
+    },
+
+    // Help Page
+    help: {
+      title: "Help Centre",
+      subtitle: "How can we help you?",
+      searchPlaceholder: "Search for help...",
+      categories: "Help Categories",
+      
+      ordering: {
+        title: "How to Place Orders",
+        description: "Learn how to place your order step by step",
+        step1: "Access the Delivery page from the main menu",
+        step2: "Fill in your information: name, email and phone",
+        step3: "Enter your full address and click 'Check Address'",
+        step4: "Select your desired coffee from the dropdown menu",
+        step5: "Choose your desired quantity",
+        step6: "Add special instructions if needed (optional)",
+        step7: "Review the total, delivery fee and estimated time",
+        step8: "Click 'Place Order' to confirm"
+      },
+      
+      tracking: {
+        title: "Order Tracking",
+        description: "Track your order in real-time",
+        step1: "After placing your order, you'll receive an order number",
+        step2: "Access the 'Track Order' page from the menu",
+        step3: "Enter your order number",
+        step4: "Enter the email used for the order",
+        step5: "Click 'Track Order' to view current status",
+        step6: "Follow updates: Pending → Confirmed → Preparing → Out for Delivery → Delivered"
+      },
+      
+      deliveryArea: {
+        title: "Delivery Area",
+        description: "Where we deliver",
+        info1: "We deliver within a 5km radius of Lubenham, Market Harborough",
+        info2: "Areas covered: Market Harborough, Lubenham, Great Bowden, Little Bowden and surrounding villages",
+        info3: "Use the interactive map on the Delivery page to check if you're in the area",
+        info4: "Delivery fee varies according to distance",
+        info5: "Estimated delivery time: 30-40 minutes"
+      },
+      
+      payment: {
+        title: "Payment",
+        description: "Accepted payment methods",
+        info1: "We accept cash payment on delivery",
+        info2: "Debit/credit card payment on delivery",
+        info3: "Bank transfer payment (PIX for Brazilian customers)",
+        info4: "Digital payment via mobile app (coming soon)",
+        info5: "No advance payment required"
+      },
+      
+      qrcode: {
+        title: "QR Code",
+        description: "How to use the QR Code",
+        step1: "Access the QR Code page from the menu",
+        step2: "Use your phone's camera to scan the code",
+        step3: "The QR Code directs you straight to our delivery page",
+        step4: "You can download the QR Code in PNG, SVG or PDF",
+        step5: "Perfect for sharing on social media or printing"
+      },
+      
+      coffees: {
+        title: "About Our Coffees",
+        description: "Discover our specialty coffees",
+        espresso: "Espresso: Strong and concentrated coffee, base for many drinks",
+        americano: "Americano: Espresso diluted in hot water, smooth flavour",
+        cappuccino: "Cappuccino: Espresso with steamed milk and creamy foam",
+        latte: "Latte: Espresso with lots of milk and little foam, smooth taste",
+        quality: "All coffees are prepared with Brazilian specialty beans"
+      },
+      
+      faqs: {
+        title: "Frequently Asked Questions",
+        q1: "How long does delivery take?",
+        a1: "The estimated delivery time is 30-40 minutes, depending on distance.",
+        q2: "What is the delivery fee?",
+        a2: "The fee varies according to the distance of your address. It will be calculated automatically when you check your address.",
+        q3: "How can I pay?",
+        a3: "We accept cash, debit/credit card and bank transfer on delivery.",
+        q4: "Can I cancel my order?",
+        a4: "Yes, contact us immediately after placing your order. Cancellations are only possible before preparation begins.",
+        q5: "Do you deliver outside the 5km radius?",
+        a5: "Currently, we only deliver within the 5km radius. For special orders, please contact us directly.",
+        q6: "How do I track my order?",
+        a6: "Use the order number and email on the 'Track Order' page to follow the status in real-time.",
+        q7: "Can I order without registering?",
+        a7: "Yes! Our system accepts guest checkout. Just fill in your information when placing your order.",
+        q8: "Which coffees do you offer?",
+        a8: "We offer Espresso, Americano, Cappuccino and Latte, all prepared with Brazilian specialty beans."
+      },
+      
+      contact: {
+        title: "Still Need Help?",
+        description: "Get in touch with us",
+        phone: "Phone:",
+        email: "Email:",
+        address: "Address:",
+        hours: "Opening Hours:",
+        hoursInfo: "Monday to Saturday: 8:00-18:00, Sunday: 9:00-16:00"
+      }
     }
   }
 };

@@ -2,7 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { LanguageSelector } from "./LanguageSelector";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { Coffee, Menu, Home, Truck, QrCode } from "lucide-react";
+import { Coffee, Menu, Home, Truck, QrCode, HelpCircle } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 export const Navigation = () => {
@@ -13,7 +13,8 @@ export const Navigation = () => {
     { to: "/", label: t('nav.home'), icon: Home },
     { to: "/menu", label: t('nav.menu'), icon: Coffee },
     { to: "/delivery", label: t('nav.delivery'), icon: Truck },
-    { to: "/qrcode", label: t('nav.qrcode'), icon: QrCode }
+    { to: "/qrcode", label: t('nav.qrcode'), icon: QrCode },
+    { to: "/help", label: t('nav.help'), icon: HelpCircle }
   ];
 
   const isActive = (path: string) => location.pathname === path;

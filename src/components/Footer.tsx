@@ -71,6 +71,9 @@ export const Footer = () => {
               <Link to="/qrcode" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
                 {t('nav.qrcode')}
               </Link>
+              <Link to="/help" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
+                {t('nav.help')}
+              </Link>
             </div>
           </div>
 

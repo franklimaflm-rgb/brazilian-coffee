@@ -2,37 +2,16 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "https://eticmvmetfpijbavteel.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV0aWNtdm1ldGZwaWpiYXZ0ZWVsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUyMDI2OTQsImV4cCI6MjA3MDc3ODY5NH0.h6Isaa4WG-Yi8fgonQqj3czuFzGOju0AUs3QYOX_JOU";
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
-// Create main client with singleton pattern to avoid multiple instances
-let _supabaseInstance: ReturnType<typeof createClient<Database>> | null = null;
-
-export const supabase = (() => {
-  if (!_supabaseInstance) {
-    console.log('🔍 Creating main Supabase client instance');
-    _supabaseInstance = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
-      auth: {
-        storage: localStorage,
-        persistSession: true,
-        autoRefreshToken: true,
-        storageKey: 'main-auth-token', // Use unique storage key to avoid conflicts
-      }
-    });
-
-    // Track client instances for monitoring (intentional dual-client architecture)
-    if (typeof window !== 'undefined') {
-      (window as any).__supabaseClients = (window as any).__supabaseClients || [];
-      (window as any).__supabaseClients.push('main-client');
-
-      // Log client info for debugging (not a warning since it's intentional)
-      console.log('ℹ️ Supabase clients active:', (window as any).__supabaseClients);
-    }
-  } else {
-    console.log('🔍 Reusing existing main Supabase client instance');
+export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+  auth: {
+    storage: localStorage,
+    persistSession: true,
+    autoRefreshToken: true,
   }
-  return _supabaseInstance;
-})();
+});

@@ -15,11 +15,11 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-hidden">
       <Navigation />
       <Hero />
       
-      <section className="py-16 px-6 bg-gradient-warm">
+      <section className="py-12 sm:py-16 px-4 sm:px-6 bg-gradient-warm">
         <div className="container mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-foreground mb-4">
@@ -30,7 +30,7 @@ const Index = () => {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {coffeesI18n.map((coffee) => (
               <CoffeeCard
                 key={coffee.id}

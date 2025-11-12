@@ -7,7 +7,7 @@ export const Footer = () => {
 
   return (
     <footer className="bg-card border-t border-border mt-16">
-      <div className="container mx-auto px-6 py-12">
+      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Business Info */}
           <div className="space-y-4">
@@ -104,8 +104,10 @@ export const Footer = () => {
               </a>
             </div>
             <div className="text-sm text-muted-foreground">
-              <p className="mb-2">Delivery Area:</p>
-              <p>Market Harborough, Lubenham, Great Bowden, Little Bowden and surrounding villages (5km radius)</p>
+              <p className="mb-2 font-medium">Delivery Area:</p>
+              <p className="break-word leading-relaxed">
+                Market Harborough, Lubenham, Great Bowden, Little Bowden and surrounding villages (5km radius)
+              </p>
             </div>
           </div>
         </div>

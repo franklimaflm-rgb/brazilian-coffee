@@ -8,7 +8,7 @@ export const Hero = () => {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background Image */}
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0 overflow-hidden">
         <img 
           src={heroImage} 
           alt="Beautiful coffee setup" 
@@ -18,17 +18,17 @@ export const Hero = () => {
       </div>
       
       {/* Content */}
-      <div className="relative z-10 text-center text-white px-6 max-w-4xl mx-auto">
+      <div className="relative z-10 text-center text-white px-4 sm:px-6 max-w-4xl mx-auto w-full">
         <div className="animate-fade-in">
           <div className="flex justify-center mb-6">
             <Coffee className="w-16 h-16 text-accent animate-float" />
           </div>
           
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+          <h1 className="text-3xl sm:text-5xl md:text-7xl font-bold mb-6 leading-tight break-word">
             {t('hero.title')}
           </h1>
           
-          <p className="text-xl md:text-2xl mb-8 text-gray-200 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-lg sm:text-xl md:text-2xl mb-8 text-gray-200 max-w-2xl mx-auto leading-relaxed break-word">
             {t('hero.description')}
           </p>
           
@@ -50,18 +50,18 @@ export const Hero = () => {
             </Button>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
-              <h3 className="text-2xl font-bold mb-2">15+</h3>
-              <p className="text-gray-200">Tipos de Café</p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 text-center w-full">
+            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 sm:p-6 border border-white/20">
+              <h3 className="text-xl sm:text-2xl font-bold mb-2">15+</h3>
+              <p className="text-sm sm:text-base text-gray-200">Tipos de Café</p>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
-              <h3 className="text-2xl font-bold mb-2">100%</h3>
-              <p className="text-gray-200">Receitas Testadas</p>
+            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 sm:p-6 border border-white/20">
+              <h3 className="text-xl sm:text-2xl font-bold mb-2">100%</h3>
+              <p className="text-sm sm:text-base text-gray-200">Receitas Testadas</p>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
-              <h3 className="text-2xl font-bold mb-2">5★</h3>
-              <p className="text-gray-200">Avaliação Média</p>
+            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 sm:p-6 border border-white/20">
+              <h3 className="text-xl sm:text-2xl font-bold mb-2">5★</h3>
+              <p className="text-sm sm:text-base text-gray-200">Avaliação Média</p>
             </div>
           </div>
         </div>

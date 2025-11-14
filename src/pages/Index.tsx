@@ -15,7 +15,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background overflow-hidden">
+    <div className="min-h-screen bg-background overflow-x-hidden">
       <Navigation />
       <Hero />
       

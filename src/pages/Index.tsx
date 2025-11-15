@@ -3,6 +3,7 @@ import { Navigation } from "@/components/Navigation";
 import { Hero } from "@/components/Hero";
 import { CoffeeCard } from "@/components/CoffeeCard";
 import { Footer } from "@/components/Footer";
+import { InstallPrompt } from "@/components/InstallPrompt";
 import { coffeesI18n } from "@/data/coffees-i18n";
 import { useLanguage } from "@/i18n/LanguageContext";
 
@@ -18,6 +19,7 @@ const Index = () => {
     <div className="min-h-screen bg-background overflow-x-hidden pb-20 md:pb-0">
       <Navigation />
       <Hero />
+      <InstallPrompt />
       
       <section className="py-12 sm:py-16 px-4 sm:px-6 bg-gradient-warm">
         <div className="container mx-auto">

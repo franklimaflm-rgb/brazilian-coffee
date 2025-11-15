@@ -14,6 +14,7 @@ import OrderTracking from "./pages/OrderTracking";
 import DatabaseTest from "./components/DatabaseTest";
 import NotFound from "./pages/NotFound";
 import HelpPage from "./pages/HelpPage";
+import InstallPage from "./pages/InstallPage";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ const App = () => (
             <Route path="/database-test" element={<DatabaseTest />} />
             <Route path="/qrcode" element={<QRCodePage />} />
             <Route path="/help" element={<HelpPage />} />
+            <Route path="/install" element={<InstallPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

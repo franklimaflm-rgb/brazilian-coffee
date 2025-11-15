@@ -260,6 +260,37 @@ export const translations = {
         hours: "Horário de Atendimento:",
         hoursInfo: "Segunda a Sábado: 8:00-18:00, Domingo: 9:00-16:00"
       }
+    },
+
+    // Install Page
+    install: {
+      title: "Instalar Café Academy",
+      description: "Tenha acesso rápido ao app direto da tela inicial do seu dispositivo",
+      alreadyInstalled: "App já instalado! Você pode acessá-lo pela tela inicial.",
+      quickInstall: "Instalação Rápida",
+      quickInstallDesc: "Clique no botão abaixo para instalar o app",
+      installNow: "Instalar Agora",
+      iosTitle: "iPhone / iPad",
+      iosDesc: "Como instalar no iOS",
+      iosStep1: "Abra este site no Safari",
+      iosStep2: "Toque no ícone de compartilhar (quadrado com seta para cima)",
+      iosStep3: "Role para baixo e toque em 'Adicionar à Tela de Início'",
+      iosStep4: "Toque em 'Adicionar' no canto superior direito",
+      androidTitle: "Android",
+      androidDesc: "Como instalar no Android",
+      androidStep1: "Abra este site no Chrome",
+      androidStep2: "Toque no menu (três pontos) no canto superior direito",
+      androidStep3: "Toque em 'Instalar app' ou 'Adicionar à tela inicial'",
+      androidStep4: "Confirme tocando em 'Instalar'",
+      benefitsTitle: "Benefícios do App Instalado",
+      benefit1Title: "Acesso Offline",
+      benefit1Desc: "Consulte receitas mesmo sem internet",
+      benefit2Title: "Carregamento Rápido",
+      benefit2Desc: "App otimizado para performance máxima",
+      benefit3Title: "Tela Inicial",
+      benefit3Desc: "Ícone direto na tela do seu dispositivo",
+      benefit4Title: "Experiência Nativa",
+      benefit4Desc: "Interface otimizada como um app de verdade"
     }
   },
   
@@ -524,6 +555,37 @@ export const translations = {
         hours: "Opening Hours:",
         hoursInfo: "Monday to Saturday: 8:00-18:00, Sunday: 9:00-16:00"
       }
+    },
+
+    // Install Page
+    install: {
+      title: "Install Café Academy",
+      description: "Get quick access to the app straight from your device's home screen",
+      alreadyInstalled: "App already installed! You can access it from your home screen.",
+      quickInstall: "Quick Install",
+      quickInstallDesc: "Click the button below to install the app",
+      installNow: "Install Now",
+      iosTitle: "iPhone / iPad",
+      iosDesc: "How to install on iOS",
+      iosStep1: "Open this site in Safari",
+      iosStep2: "Tap the share icon (square with arrow pointing up)",
+      iosStep3: "Scroll down and tap 'Add to Home Screen'",
+      iosStep4: "Tap 'Add' in the top right corner",
+      androidTitle: "Android",
+      androidDesc: "How to install on Android",
+      androidStep1: "Open this site in Chrome",
+      androidStep2: "Tap the menu (three dots) in the top right corner",
+      androidStep3: "Tap 'Install app' or 'Add to home screen'",
+      androidStep4: "Confirm by tapping 'Install'",
+      benefitsTitle: "Benefits of the Installed App",
+      benefit1Title: "Offline Access",
+      benefit1Desc: "Access recipes even without internet",
+      benefit2Title: "Fast Loading",
+      benefit2Desc: "App optimized for maximum performance",
+      benefit3Title: "Home Screen",
+      benefit3Desc: "Icon directly on your device's screen",
+      benefit4Title: "Native Experience",
+      benefit4Desc: "Interface optimized like a real app"
     }
   }
 };

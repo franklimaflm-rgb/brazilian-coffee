@@ -20,7 +20,8 @@ export const Navigation = () => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <nav className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
+    <>
+    <nav className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50 safe-top">
       <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
@@ -80,5 +81,24 @@ export const Navigation = () => {
         </div>
       </div>
     </nav>
+
+    {/* Bottom Mobile Navigation */}
+    <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-sm border-t border-border safe-bottom">
+      <div className="flex justify-around items-center px-2 py-2">
+        {navItems.map(({ to, label, icon: Icon }) => (
+          <Link key={to} to={to} className="flex-1">
+            <Button
+              variant={isActive(to) ? "secondary" : "ghost"}
+              className="w-full h-14 flex flex-col items-center justify-center gap-1 px-2"
+              size="sm"
+            >
+              <Icon className="w-5 h-5" />
+              <span className="text-xs">{label}</span>
+            </Button>
+          </Link>
+        ))}
+      </div>
+    </div>
+    </>
   );
 };

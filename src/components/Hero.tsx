@@ -6,7 +6,7 @@ import heroImage from "@/assets/coffee-hero.jpg";
 export const Hero = () => {
   const { t } = useLanguage();
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-[100svh] pt-16 sm:pt-20 safe-top flex items-center justify-center overflow-hidden">
       {/* Background Image */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         <img 

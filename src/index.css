@@ -149,6 +149,17 @@ All colors MUST be HSL.
     word-break: break-word;
     overflow-wrap: break-word;
   }
+
+  /* Safe area utilities for mobile devices with notches */
+  @supports (padding: env(safe-area-inset-top)) {
+    .safe-top {
+      padding-top: max(env(safe-area-inset-top), 0px);
+    }
+    
+    .safe-bottom {
+      padding-bottom: max(env(safe-area-inset-bottom), 0px);
+    }
+  }
 }
 
 /* Mapbox GL JS Styles */

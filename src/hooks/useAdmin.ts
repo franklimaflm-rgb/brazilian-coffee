@@ -252,7 +252,7 @@ export const useAdmin = (isAuthenticated: boolean = false) => {
       console.log('🔍 Updating order status:', { orderId, status });
 
       // Direct database update instead of RPC function
-      const { data, error } = await adminSupabase
+      const { data, error } = await (adminSupabase as any)
         .from('orders')
         .update({ 
           status: status,
@@ -267,6 +267,10 @@ export const useAdmin = (isAuthenticated: boolean = false) => {
       if (error) {
         console.error('🚨 Order status update error:', error);
         throw error;
+      }
+
+      if (!data) {
+        throw new Error('No data returned from update');
       }
 
       // Update local state with the updated data

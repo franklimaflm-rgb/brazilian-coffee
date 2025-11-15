@@ -240,7 +240,10 @@ export const useAuth = () => {
 
       const { data, error } = await supabase
         .from('orders')
-        .update({ status: newStatus, updated_at: new Date().toISOString() })
+        .update({ 
+          status: newStatus as any, 
+          updated_at: new Date().toISOString() 
+        } as any)
         .eq('id', orderId)
         .select()
         .single();

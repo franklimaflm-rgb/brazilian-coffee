@@ -93,13 +93,12 @@ export const useOrders = () => {
         .from('addresses')
         .insert({
           customer_id: customerId,
-          address_line_1: orderData.address.address_line_1,
-          address_line_2: orderData.address.address_line_2,
+          street: orderData.address.address_line_1,
           city: orderData.address.city,
-          county: orderData.address.county,
-          postcode: orderData.address.postcode,
-          country: orderData.address.country || 'United Kingdom'
-        })
+          state: orderData.address.county,
+          postal_code: orderData.address.postcode,
+          country: orderData.address.country || 'UK'
+        } as any)
         .select()
         .single();
 
@@ -191,8 +190,7 @@ export const useOrders = () => {
     try {
       const { data, error } = await supabase
         .rpc('get_order_by_number', {
-          p_order_number: orderNumber,
-          p_email: email
+          _order_number: orderNumber
         });
 
       if (error) throw error;
@@ -248,7 +246,7 @@ export const useCoffeeProducts = () => {
       const { data: dbProducts, error } = await supabase
         .from('coffee_products')
         .select('*')
-        .eq('is_available', true);
+        .eq('available', true);
       
       if (error) {
         console.warn('Database products not available, using static data:', error);

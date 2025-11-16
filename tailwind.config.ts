@@ -11,6 +11,7 @@ export default {
 	prefix: "",
 	theme: {
 		screens: {
+			'portrait': { 'raw': '(orientation: portrait)' },
 			'landscape': { 'raw': '(orientation: landscape)' },
 		},
 		container: {

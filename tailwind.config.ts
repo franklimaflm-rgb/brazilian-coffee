@@ -10,6 +10,9 @@ export default {
 	],
 	prefix: "",
 	theme: {
+		screens: {
+			'landscape': { 'raw': '(orientation: landscape)' },
+		},
 		container: {
 			center: true,
 			padding: {

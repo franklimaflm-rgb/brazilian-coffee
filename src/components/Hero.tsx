@@ -6,7 +6,7 @@ import heroImage from "@/assets/coffee-hero.jpg";
 export const Hero = () => {
   const { t } = useLanguage();
   return (
-    <section className="relative min-h-[100svh] pt-16 sm:pt-20 safe-top flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-[100svh] landscape:min-h-fit pt-16 sm:pt-20 landscape:pt-8 landscape:pb-8 safe-top flex items-center justify-center overflow-hidden">
       {/* Background Image */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         <img 
@@ -20,19 +20,19 @@ export const Hero = () => {
       {/* Content */}
       <div className="relative z-10 text-center text-white px-4 sm:px-6 max-w-4xl mx-auto w-full">
         <div className="animate-fade-in">
-          <div className="flex justify-center mb-6">
-            <Coffee className="w-16 h-16 text-accent animate-float" />
+          <div className="flex justify-center mb-6 landscape:mb-3">
+            <Coffee className="w-16 h-16 landscape:w-10 landscape:h-10 text-accent animate-float" />
           </div>
           
-          <h1 className="text-3xl sm:text-5xl md:text-7xl font-bold mb-6 leading-tight break-word">
+          <h1 className="text-3xl sm:text-5xl md:text-7xl landscape:text-2xl landscape:sm:text-3xl landscape:md:text-4xl font-bold mb-6 landscape:mb-3 leading-tight break-word">
             {t('hero.title')}
           </h1>
           
-          <p className="text-lg sm:text-xl md:text-2xl mb-8 text-gray-200 max-w-2xl mx-auto leading-relaxed break-word">
+          <p className="text-lg sm:text-xl md:text-2xl landscape:text-base landscape:sm:text-lg mb-8 landscape:mb-4 text-gray-200 max-w-2xl mx-auto leading-relaxed break-word">
             {t('hero.description')}
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+          <div className="flex flex-col sm:flex-row gap-4 landscape:gap-3 justify-center mb-12 landscape:mb-6">
             <Button 
               size="lg" 
               className="bg-primary hover:bg-primary-glow text-primary-foreground px-8 py-4 text-lg font-semibold shadow-glow transition-all duration-300 hover:scale-105"
@@ -50,18 +50,18 @@ export const Hero = () => {
             </Button>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 text-center w-full">
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 sm:p-6 border border-white/20">
-              <h3 className="text-xl sm:text-2xl font-bold mb-2">15+</h3>
-              <p className="text-sm sm:text-base text-gray-200">Tipos de Café</p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 landscape:gap-3 text-center w-full">
+            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 sm:p-6 landscape:p-3 landscape:sm:p-4 border border-white/20">
+              <h3 className="text-xl sm:text-2xl landscape:text-lg font-bold mb-2 landscape:mb-1">15+</h3>
+              <p className="text-sm sm:text-base landscape:text-xs text-gray-200">Tipos de Café</p>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 sm:p-6 border border-white/20">
-              <h3 className="text-xl sm:text-2xl font-bold mb-2">100%</h3>
-              <p className="text-sm sm:text-base text-gray-200">Receitas Testadas</p>
+            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 sm:p-6 landscape:p-3 landscape:sm:p-4 border border-white/20">
+              <h3 className="text-xl sm:text-2xl landscape:text-lg font-bold mb-2 landscape:mb-1">100%</h3>
+              <p className="text-sm sm:text-base landscape:text-xs text-gray-200">Receitas Testadas</p>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 sm:p-6 border border-white/20">
-              <h3 className="text-xl sm:text-2xl font-bold mb-2">5★</h3>
-              <p className="text-sm sm:text-base text-gray-200">Avaliação Média</p>
+            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 sm:p-6 landscape:p-3 landscape:sm:p-4 border border-white/20">
+              <h3 className="text-xl sm:text-2xl landscape:text-lg font-bold mb-2 landscape:mb-1">5★</h3>
+              <p className="text-sm sm:text-base landscape:text-xs text-gray-200">Avaliação Média</p>
             </div>
           </div>
         </div>

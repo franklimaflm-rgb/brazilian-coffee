@@ -10,10 +10,6 @@ export default {
 	],
 	prefix: "",
 	theme: {
-		screens: {
-			'portrait': { 'raw': '(orientation: portrait)' },
-			'landscape': { 'raw': '(orientation: landscape)' },
-		},
 		container: {
 			center: true,
 			padding: {
@@ -26,6 +22,10 @@ export default {
 			}
 		},
 		extend: {
+			screens: {
+				'portrait': { 'raw': '(orientation: portrait)' },
+				'landscape': { 'raw': '(orientation: landscape)' },
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',

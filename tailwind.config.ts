@@ -23,6 +23,7 @@ export default {
 		},
 		extend: {
 			screens: {
+				'tablet': '700px',
 				'portrait': { 'raw': '(orientation: portrait)' },
 				'landscape': { 'raw': '(orientation: landscape)' },
 			},

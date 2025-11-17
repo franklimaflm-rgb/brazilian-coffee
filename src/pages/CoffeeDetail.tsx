@@ -31,17 +31,17 @@ const CoffeeDetail = () => {
   return (
     <div className="min-h-screen bg-gradient-warm">
       <Navigation />
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 tablet:px-6 py-8 tablet:py-10">
         <Button
           onClick={() => navigate("/")}
           variant="outline"
-          className="mb-8 hover:bg-accent"
+          className="mb-8 tablet:mb-10 hover:bg-accent"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           {t('coffee.back')}
         </Button>
 
-        <div className="grid lg:grid-cols-2 gap-8 mb-8">
+        <div className="grid lg:grid-cols-2 tablet:grid-cols-2 gap-8 tablet:gap-7 mb-8 tablet:mb-10">
           {/* Image */}
           <div className="aspect-square rounded-lg overflow-hidden shadow-warm">
             <img
@@ -52,20 +52,20 @@ const CoffeeDetail = () => {
           </div>
 
           {/* Coffee Info */}
-          <div className="space-y-6">
+          <div className="space-y-6 tablet:space-y-5">
             <div>
-              <h1 className="text-4xl font-bold text-foreground mb-4">{coffee.name[language]}</h1>
-              <p className="text-lg text-muted-foreground leading-relaxed">
+              <h1 className="text-4xl tablet:text-3xl font-bold text-foreground mb-4 tablet:mb-3">{coffee.name[language]}</h1>
+              <p className="text-lg tablet:text-base text-muted-foreground leading-relaxed">
                 {coffee.description[language]}
               </p>
             </div>
 
-            <div className="flex gap-4">
-              <Badge variant="secondary" className="flex items-center gap-2 px-4 py-2">
+            <div className="flex gap-4 tablet:gap-3">
+              <Badge variant="secondary" className="flex items-center gap-2 px-4 py-2 tablet:px-3 tablet:py-1.5">
                 <Clock className="w-4 h-4" />
                 {coffee.prepTime[language]}
               </Badge>
-              <Badge variant="secondary" className="flex items-center gap-2 px-4 py-2">
+              <Badge variant="secondary" className="flex items-center gap-2 px-4 py-2 tablet:px-3 tablet:py-1.5">
                 <Users className="w-4 h-4" />
                 {coffee.difficulty[language]}
               </Badge>
@@ -74,17 +74,17 @@ const CoffeeDetail = () => {
             {/* Ingredients */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-xl tablet:text-lg">
                   <Coffee className="w-5 h-5 text-primary" />
                   {t('coffee.ingredients')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <ul className="space-y-2">
+                <ul className="space-y-2 tablet:space-y-1.5">
                   {coffee.ingredients[language].map((ingredient, index) => (
                     <li key={index} className="flex items-start gap-2">
                       <span className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></span>
-                      <span className="text-foreground">{ingredient}</span>
+                      <span className="text-foreground text-base tablet:text-sm">{ingredient}</span>
                     </li>
                   ))}
                 </ul>
@@ -94,19 +94,19 @@ const CoffeeDetail = () => {
         </div>
 
         {/* Instructions */}
-        <div className="grid lg:grid-cols-2 gap-8">
+        <div className="grid lg:grid-cols-2 tablet:grid-cols-2 gap-8 tablet:gap-7">
           <Card>
             <CardHeader>
-              <CardTitle className="text-2xl">{t('coffee.instructions')}</CardTitle>
+              <CardTitle className="text-2xl tablet:text-xl">{t('coffee.instructions')}</CardTitle>
             </CardHeader>
             <CardContent>
-              <ol className="space-y-4">
+              <ol className="space-y-4 tablet:space-y-3">
                 {coffee.instructions[language].map((instruction, index) => (
-                  <li key={index} className="flex gap-4">
-                    <span className="flex items-center justify-center w-8 h-8 bg-primary text-primary-foreground rounded-full text-sm font-bold flex-shrink-0">
+                  <li key={index} className="flex gap-4 tablet:gap-3">
+                    <span className="flex items-center justify-center w-8 h-8 tablet:w-7 tablet:h-7 bg-primary text-primary-foreground rounded-full text-sm tablet:text-xs font-bold flex-shrink-0">
                       {index + 1}
                     </span>
-                    <p className="text-foreground leading-relaxed pt-1">{instruction}</p>
+                    <p className="text-foreground leading-relaxed pt-1 text-base tablet:text-sm">{instruction}</p>
                   </li>
                 ))}
               </ol>
@@ -116,17 +116,17 @@ const CoffeeDetail = () => {
           {/* Tips */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-2xl">
-                <Lightbulb className="w-6 h-6 text-accent" />
+              <CardTitle className="flex items-center gap-2 text-2xl tablet:text-xl">
+                <Lightbulb className="w-6 h-6 tablet:w-5 tablet:h-5 text-accent" />
                 {t('coffee.tips')}
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ul className="space-y-3">
+              <ul className="space-y-3 tablet:space-y-2.5">
                 {coffee.tips[language].map((tip, index) => (
-                  <li key={index} className="flex items-start gap-3">
+                  <li key={index} className="flex items-start gap-3 tablet:gap-2.5">
                     <Lightbulb className="w-4 h-4 text-accent mt-1 flex-shrink-0" />
-                    <p className="text-foreground leading-relaxed">{tip}</p>
+                    <p className="text-foreground leading-relaxed text-base tablet:text-sm">{tip}</p>
                   </li>
                 ))}
               </ul>

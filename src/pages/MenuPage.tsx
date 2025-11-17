@@ -18,17 +18,17 @@ const MenuPage = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 lg:py-12">
-        <div className="text-center mb-8 sm:mb-12">
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-3 sm:mb-4">
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 tablet:py-10 lg:py-12">
+        <div className="text-center mb-8 tablet:mb-10 sm:mb-12">
+          <h1 className="text-2xl sm:text-3xl tablet:text-3xl lg:text-4xl font-bold text-foreground mb-3 tablet:mb-3.5 sm:mb-4">
             {t('coffee.sectionTitle')}
           </h1>
-          <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto px-2">
+          <p className="text-base sm:text-lg tablet:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto px-2">
             {t('coffee.sectionDescription')}
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 tablet:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 tablet:gap-5 sm:gap-6">
           {coffeesI18n.map((coffee) => (
             <CoffeeCard
               key={coffee.id}

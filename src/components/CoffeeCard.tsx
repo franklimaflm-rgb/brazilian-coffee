@@ -41,7 +41,7 @@ export const CoffeeCard = ({
   };
 
   return (
-    <Card className="group cursor-pointer overflow-hidden transition-all duration-300 hover:shadow-warm hover:-translate-y-1 sm:hover:-translate-y-2 bg-card border-border">
+    <Card className="group cursor-pointer overflow-hidden transition-all duration-300 hover:shadow-warm hover:-translate-y-1 tablet:hover:-translate-y-1.5 sm:hover:-translate-y-2 bg-card border-border">
       <div className="aspect-square overflow-hidden">
         <img
           src={image}
@@ -51,31 +51,31 @@ export const CoffeeCard = ({
           decoding="async"
         />
       </div>
-      <CardContent className="p-3 sm:p-4 md:p-6">
-        <h3 className="text-lg sm:text-xl font-bold text-foreground mb-2">{name}</h3>
-        <p className="text-sm sm:text-base text-muted-foreground mb-3 sm:mb-4 line-clamp-2">{description}</p>
+      <CardContent className="p-3 sm:p-4 tablet:p-5 md:p-6">
+        <h3 className="text-lg sm:text-xl tablet:text-xl font-bold text-foreground mb-2">{name}</h3>
+        <p className="text-sm sm:text-base tablet:text-base text-muted-foreground mb-3 tablet:mb-3.5 sm:mb-4 line-clamp-2">{description}</p>
 
-        <div className="flex items-center justify-between mb-3 sm:mb-4 text-xs sm:text-sm text-muted-foreground">
+        <div className="flex items-center justify-between mb-3 tablet:mb-3.5 sm:mb-4 text-xs sm:text-sm tablet:text-sm text-muted-foreground">
           <div className="flex items-center gap-1">
-            <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
+            <Clock className="w-3 h-3 sm:w-4 sm:h-4 tablet:w-4 tablet:h-4" />
             <span>{prepTime}</span>
           </div>
           <div className="flex items-center gap-1">
-            <Users className="w-3 h-3 sm:w-4 sm:h-4" />
+            <Users className="w-3 h-3 sm:w-4 sm:h-4 tablet:w-4 tablet:h-4" />
             <span>{difficulty}</span>
           </div>
         </div>
 
         {showPrice && (
-          <div className="mb-3 sm:mb-4 text-center">
-            <span className="text-xl sm:text-2xl font-bold text-primary">£{price.toFixed(2)}</span>
+          <div className="mb-3 tablet:mb-3.5 sm:mb-4 text-center">
+            <span className="text-xl sm:text-2xl tablet:text-2xl font-bold text-primary">£{price.toFixed(2)}</span>
           </div>
         )}
 
         <Button
           onClick={onClick}
           variant={buttonIcon === 'order' ? 'default' : 'secondary'}
-          className="w-full h-11 sm:h-10 text-sm sm:text-base transition-colors duration-300 hover:bg-accent touch-manipulation"
+          className="w-full h-11 sm:h-10 tablet:h-10 text-sm sm:text-base tablet:text-base transition-colors duration-300 hover:bg-accent touch-manipulation"
           size="default"
         >
           {getButtonIcon()}

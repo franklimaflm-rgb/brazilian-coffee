@@ -1,10 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Coffee, BookOpen, Heart } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useNavigate } from "react-router-dom";
 import heroImage from "@/assets/coffee-hero.jpg";
 
 export const Hero = () => {
   const { t } = useLanguage();
+  const navigate = useNavigate();
+  
   return (
     <section className="relative min-h-[100svh] portrait:min-h-fit pt-16 sm:pt-20 portrait:pt-12 safe-top flex items-center justify-center overflow-hidden">
       {/* Background Image */}
@@ -36,6 +39,7 @@ export const Hero = () => {
             <Button 
               size="lg" 
               className="bg-primary hover:bg-primary-glow text-primary-foreground px-8 py-4 tablet:py-3.5 portrait:py-3 text-lg font-semibold shadow-glow transition-all duration-300 hover:scale-105"
+              onClick={() => navigate('/menu')}
             >
               <BookOpen className="w-5 h-5 mr-2" />
               Explorar Receitas
@@ -44,6 +48,7 @@ export const Hero = () => {
               variant="outline" 
               size="lg"
               className="border-white text-white hover:bg-white hover:text-primary px-8 py-4 tablet:py-3.5 portrait:py-3 text-lg font-semibold transition-all duration-300 hover:scale-105"
+              onClick={() => navigate('/menu')}
             >
               <Heart className="w-5 h-5 mr-2" />
               Favoritos

@@ -81,27 +81,27 @@ export const Footer = () => {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-foreground">{t('footer.social')}</h3>
             <div className="flex gap-3">
-              <a 
-                href="#" 
+              <button 
                 className="w-8 h-8 bg-muted rounded-full flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors"
                 aria-label="Facebook"
+                onClick={(e) => e.preventDefault()}
               >
                 <Facebook className="w-4 h-4" />
-              </a>
-              <a 
-                href="#" 
+              </button>
+              <button 
                 className="w-8 h-8 bg-muted rounded-full flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors"
                 aria-label="Instagram"
+                onClick={(e) => e.preventDefault()}
               >
                 <Instagram className="w-4 h-4" />
-              </a>
-              <a 
-                href="#" 
+              </button>
+              <button 
                 className="w-8 h-8 bg-muted rounded-full flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors"
                 aria-label="Twitter"
+                onClick={(e) => e.preventDefault()}
               >
                 <Twitter className="w-4 h-4" />
-              </a>
+              </button>
             </div>
             <div className="text-sm text-muted-foreground">
               <p className="mb-2 font-medium">Delivery Area:</p>

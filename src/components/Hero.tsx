@@ -55,16 +55,16 @@ export const Hero = () => {
             </Button>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6 tablet:gap-5 portrait:gap-3 text-center w-full">
-            <div className="bg-white/10 backdrop-blur-sm rounded-md sm:rounded-lg p-3 sm:p-6 tablet:p-5 portrait:p-3 border border-white/20">
+          <div className="w-full max-w-md sm:max-w-3xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6 tablet:gap-5 portrait:gap-3 text-center">
+            <div className="bg-white/10 backdrop-blur-sm rounded-lg sm:rounded-2xl p-3 sm:p-6 tablet:p-5 portrait:p-3 border border-white/20">
               <h3 className="text-lg sm:text-2xl tablet:text-xl portrait:text-lg font-bold mb-1 sm:mb-2 portrait:mb-1">15+</h3>
               <p className="text-xs sm:text-base tablet:text-sm portrait:text-xs text-gray-200">Tipos de Café</p>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-md sm:rounded-lg p-3 sm:p-6 tablet:p-5 portrait:p-3 border border-white/20">
+            <div className="bg-white/10 backdrop-blur-sm rounded-lg sm:rounded-2xl p-3 sm:p-6 tablet:p-5 portrait:p-3 border border-white/20">
               <h3 className="text-lg sm:text-2xl tablet:text-xl portrait:text-lg font-bold mb-1 sm:mb-2 portrait:mb-1">100%</h3>
               <p className="text-xs sm:text-base tablet:text-sm portrait:text-xs text-gray-200">Receitas Testadas</p>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-md sm:rounded-lg p-3 sm:p-6 tablet:p-5 portrait:p-3 border border-white/20">
+            <div className="bg-white/10 backdrop-blur-sm rounded-lg sm:rounded-2xl p-3 sm:p-6 tablet:p-5 portrait:p-3 border border-white/20">
               <h3 className="text-lg sm:text-2xl tablet:text-xl portrait:text-lg font-bold mb-1 sm:mb-2 portrait:mb-1">5★</h3>
               <p className="text-xs sm:text-base tablet:text-sm portrait:text-xs text-gray-200">Avaliação Média</p>
             </div>

@@ -113,6 +113,22 @@
     -webkit-overflow-scrolling: touch;
   }
 
+  /* Prevent iOS bounce/overscroll showing white space */
+  html, body {
+    position: fixed;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+  }
+
+  #root {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
   /* Fix iOS Safari input styling */
   input[type="text"],
   input[type="email"],

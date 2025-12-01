@@ -16,13 +16,13 @@ const Index = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-background overflow-x-hidden">
+    <div className="flex flex-col min-h-[100dvh] bg-background overflow-x-hidden">
       <Navigation />
-      <main className="flex-1 pb-20 md:pb-0">
+      <main className="flex-1">
         <Hero />
         <InstallPrompt />
         
-        <section className="py-12 sm:py-16 px-4 sm:px-6 bg-gradient-warm">
+        <section className="py-12 sm:py-16 px-4 sm:px-6 bg-gradient-warm pb-24 md:pb-16">
           <div className="container mx-auto">
             <div className="text-center mb-12">
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-4">

@@ -6,7 +6,7 @@ export const Footer = () => {
   const { t } = useLanguage();
 
   return (
-    <footer className="bg-card border-t border-border mt-16">
+    <footer className="bg-card border-t border-border">
       <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Business Info */}

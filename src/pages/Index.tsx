@@ -16,7 +16,7 @@ const Index = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-[100dvh] bg-background overflow-x-hidden">
+    <div className="flex flex-col min-h-full bg-background overflow-x-hidden">
       <Navigation />
       <main className="flex-1">
         <Hero />

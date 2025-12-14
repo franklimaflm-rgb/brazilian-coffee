@@ -160,35 +160,6 @@ export const translations = {
       quickAccess: "Acesso Rápido"
     },
 
-    // Order Tracking
-    orderTracking: {
-      title: "Rastrear Pedido",
-      subtitle: "Acompanhe sua entrega em tempo real",
-      description: "Digite o número do pedido e email para rastrear sua entrega",
-      orderNumber: "Número do Pedido",
-      orderNumberPlaceholder: "ex: ORD-20250116-1234",
-      email: "Endereço de Email",
-      emailPlaceholder: "seu@email.com",
-      trackOrder: "Rastrear Pedido",
-      searching: "Buscando...",
-      orderLookup: "Buscar Pedido",
-      lookupDescription: "Você pode encontrar o número do pedido no email de confirmação",
-      orderNotFound: "Pedido não encontrado. Verifique seus dados.",
-      orderFound: "Pedido encontrado!",
-      enterBoth: "Por favor, digite o número do pedido e email",
-      placedOn: "Realizado em",
-      customerDetails: "Detalhes do Cliente",
-      deliveryAddress: "Endereço de Entrega",
-      orderItems: "Itens do Pedido",
-      subtotal: "Subtotal",
-      deliveryFee: "Taxa de Entrega",
-      total: "Total",
-      estimatedDelivery: "Entrega Estimada",
-      specialInstructions: "Instruções Especiais",
-      each: "cada",
-      coffeeProduct: "Produto de Café"
-    },
-
     // Help Page
     help: {
       title: "Central de Ajuda",
@@ -482,35 +453,6 @@ export const translations = {
       contact: "Contact",
       social: "Social Media",
       quickAccess: "Quick Access"
-    },
-
-    // Order Tracking
-    orderTracking: {
-      title: "Track Your Order",
-      subtitle: "Track your delivery in real-time",
-      description: "Enter your order number and email to track your delivery",
-      orderNumber: "Order Number",
-      orderNumberPlaceholder: "e.g., ORD-20250116-1234",
-      email: "Email Address",
-      emailPlaceholder: "your@email.com",
-      trackOrder: "Track Order",
-      searching: "Searching...",
-      orderLookup: "Order Lookup",
-      lookupDescription: "You can find your order number in the confirmation email",
-      orderNotFound: "Order not found. Please check your details.",
-      orderFound: "Order found!",
-      enterBoth: "Please enter both order number and email",
-      placedOn: "Placed on",
-      customerDetails: "Customer Details",
-      deliveryAddress: "Delivery Address",
-      orderItems: "Order Items",
-      subtotal: "Subtotal",
-      deliveryFee: "Delivery Fee",
-      total: "Total",
-      estimatedDelivery: "Estimated Delivery",
-      specialInstructions: "Special Instructions",
-      each: "each",
-      coffeeProduct: "Coffee Product"
     },
 
     // Help Page

@@ -27,8 +27,8 @@ import { toast } from "sonner";
 
 const AdminSetupForm = ({ onCreateAdmin }: { onCreateAdmin: (email: string, password: string) => Promise<{ success: boolean; error?: string; message?: string }> }) => {
   const { t } = useLanguage();
-  const [email, setEmail] = useState("franklinmarceloferreiradelima@gmail.com");
-  const [password, setPassword] = useState("BrazilianCoffee2024!");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -125,7 +125,7 @@ const AdminSetupForm = ({ onCreateAdmin }: { onCreateAdmin: (email: string, pass
 
 const AdminLoginForm = ({ onLogin, needsSetup }: { onLogin: (email: string, password: string) => Promise<{ success: boolean; error?: string; needsSetup?: boolean; diagnosticData?: any }>, needsSetup?: boolean }) => {
   const { t } = useLanguage();
-  const [email, setEmail] = useState("franklinmarceloferreiradelima@gmail.com");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [lastDiagnosticData, setLastDiagnosticData] = useState<any>(null);
@@ -140,7 +140,7 @@ Generated: ${timestamp}
 MANUAL DIAGNOSTIC REQUESTED BY USER
 
 CURRENT STATE:
-- Email Field: ${email}
+- Email Field: ${email ? '[SET]' : '[EMPTY]'}
 - Password Field: ${password ? '[SET]' : '[EMPTY]'}
 - Loading State: ${isLoading}
 - Needs Setup: ${needsSetup}
@@ -157,8 +157,8 @@ BROWSER CONSOLE LOGS:
 Please check the browser console (F12) for additional debugging information.
 
 TROUBLESHOOTING STEPS:
-1. Verify email: franklinmarceloferreiradelima@gmail.com
-2. Verify password: 4sR#viwqtUMHUym
+1. Verify your admin email is correct
+2. Verify your admin password is correct
 3. Check browser console for errors
 4. Try clearing browser cache and cookies
 5. Check network connectivity
@@ -501,9 +501,6 @@ const AdminDashboard = ({ isAuthenticated }: { isAuthenticated: boolean }) => {
                       </div>
                       <div className="text-right">
                         <p className="font-semibold">{formatCurrency(order.total_amount)}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {t('admin.delivery')} {formatCurrency(order.delivery_fee)}
-                        </p>
                       </div>
                     </div>
 
@@ -599,10 +596,10 @@ const AdminDashboard = ({ isAuthenticated }: { isAuthenticated: boolean }) => {
                       </Select>
                     </div>
 
-                    {order.special_instructions && (
+                    {order.delivery_instructions && (
                       <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded">
                         <p className="text-sm">
-                          <strong>{t('admin.specialInstructions')}</strong> {order.special_instructions}
+                          <strong>{t('admin.specialInstructions')}</strong> {order.delivery_instructions}
                         </p>
                       </div>
                     )}

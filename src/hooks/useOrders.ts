@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { orderFormSchema, type OrderFormData as ValidatedOrderFormData } from '@/lib/orderValidation';
 
 // Simplified types for the hooks
 type OrderItem = {
@@ -41,6 +42,7 @@ export interface OrderResult {
   order_id?: string;
   order_number?: string;
   error?: string;
+  validationErrors?: string[];
 }
 
 export const useOrders = () => {
@@ -85,19 +87,41 @@ export const useOrders = () => {
       setIsSubmitting(true);
       setError(null);
 
+      // Validate input data using zod schema
+      const validationResult = orderFormSchema.safeParse(orderData);
+      
+      if (!validationResult.success) {
+        const validationErrors = validationResult.error.errors.map(err => {
+          const path = err.path.join('.');
+          return path ? `${path}: ${err.message}` : err.message;
+        });
+        
+        return {
+          success: false,
+          error: 'Validation failed',
+          validationErrors,
+        };
+      }
+
+      const validatedData = validationResult.data;
+
       // Create customer
-      const customerId = await getOrCreateCustomer(orderData.customer);
+      const customerId = await getOrCreateCustomer({
+        name: validatedData.customer.name,
+        email: validatedData.customer.email,
+        phone: validatedData.customer.phone,
+      });
 
       // Create address
       const { data: address, error: addressError } = await supabase
         .from('addresses')
         .insert({
           customer_id: customerId,
-          street: orderData.address.address_line_1,
-          city: orderData.address.city,
-          state: orderData.address.county,
-          postal_code: orderData.address.postcode,
-          country: orderData.address.country || 'UK'
+          street: validatedData.address.address_line_1,
+          city: validatedData.address.city,
+          state: validatedData.address.county,
+          postal_code: validatedData.address.postcode,
+          country: validatedData.address.country || 'UK'
         } as any)
         .select()
         .single();
@@ -108,20 +132,18 @@ export const useOrders = () => {
       const orderNumber = `BC${Date.now().toString().slice(-6)}`;
 
       // Calculate amounts
-      const subtotal = orderData.items.reduce((sum, item) => sum + (item.quantity * item.unit_price), 0);
-      const totalAmount = subtotal + orderData.delivery_fee;
+      const subtotal = validatedData.items.reduce((sum, item) => sum + (item.quantity * item.unit_price), 0);
+      const totalAmount = subtotal + validatedData.delivery_fee;
 
       // Create order
       const { data: order, error: orderError} = await supabase
         .from('orders')
         .insert([{
           customer_id: customerId,
-          delivery_address_id: address.id,
+          address_id: address.id,
           order_number: orderNumber,
-          delivery_fee: orderData.delivery_fee,
           total_amount: totalAmount,
-          estimated_delivery_time: orderData.estimated_delivery_time as any,
-          special_instructions: orderData.special_instructions || null,
+          delivery_instructions: validatedData.special_instructions || null,
           status: 'pending' as any
         } as any])
         .select()
@@ -130,7 +152,7 @@ export const useOrders = () => {
       if (orderError) throw orderError;
 
       // Create order items
-      const orderItems = orderData.items.map(item => ({
+      const orderItems = validatedData.items.map(item => ({
         order_id: order.id,
         coffee_product_id: item.coffee_product_id,
         quantity: item.quantity,

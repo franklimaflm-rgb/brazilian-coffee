@@ -31,6 +31,11 @@ export const DeliveryMap = ({
     console.log('🗺️ Initializing Mapbox map...');
 
     try {
+      // Clear any existing content in the container
+      if (mapContainer.current) {
+        mapContainer.current.innerHTML = '';
+      }
+
       // Validate Mapbox token
       if (!MAPBOX_TOKEN || MAPBOX_TOKEN.includes('example')) {
         console.error('🚨 Invalid Mapbox token');

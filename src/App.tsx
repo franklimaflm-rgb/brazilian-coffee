@@ -16,6 +16,7 @@ import DatabaseTest from "./components/DatabaseTest";
 import NotFound from "./pages/NotFound";
 import HelpPage from "./pages/HelpPage";
 import InstallPage from "./pages/InstallPage";
+import AuthPage from "./pages/AuthPage";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +39,7 @@ const App = () => (
             <Route path="/qrcode" element={<QRCodePage />} />
             <Route path="/help" element={<HelpPage />} />
             <Route path="/install" element={<InstallPage />} />
+            <Route path="/auth" element={<AuthPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

@@ -291,6 +291,29 @@ export const translations = {
       benefit3Desc: "Ícone direto na tela do seu dispositivo",
       benefit4Title: "Experiência Nativa",
       benefit4Desc: "Interface otimizada como um app de verdade"
+    },
+
+    // Authentication
+    auth: {
+      title: "Café Academy",
+      subtitle: "Faça login ou crie sua conta",
+      login: "Entrar",
+      signup: "Criar Conta",
+      email: "Email",
+      password: "Senha",
+      name: "Nome",
+      namePlaceholder: "Seu nome completo",
+      passwordHint: "Mínimo de 6 caracteres",
+      loggingIn: "Entrando...",
+      signingUp: "Criando conta...",
+      loginFailed: "Falha no login",
+      signupFailed: "Falha ao criar conta",
+      loginSuccess: "Login realizado",
+      signupSuccess: "Conta criada",
+      welcomeBack: "Bem-vindo de volta!",
+      accountCreated: "Sua conta foi criada com sucesso!",
+      emailAlreadyRegistered: "Este email já está cadastrado",
+      unexpectedError: "Ocorreu um erro inesperado"
     }
   },
   
@@ -586,6 +609,29 @@ export const translations = {
       benefit3Desc: "Icon directly on your device's screen",
       benefit4Title: "Native Experience",
       benefit4Desc: "Interface optimized like a real app"
+    },
+
+    // Authentication
+    auth: {
+      title: "Café Academy",
+      subtitle: "Login or create your account",
+      login: "Login",
+      signup: "Sign Up",
+      email: "Email",
+      password: "Password",
+      name: "Name",
+      namePlaceholder: "Your full name",
+      passwordHint: "Minimum 6 characters",
+      loggingIn: "Logging in...",
+      signingUp: "Creating account...",
+      loginFailed: "Login failed",
+      signupFailed: "Sign up failed",
+      loginSuccess: "Login successful",
+      signupSuccess: "Account created",
+      welcomeBack: "Welcome back!",
+      accountCreated: "Your account was created successfully!",
+      emailAlreadyRegistered: "This email is already registered",
+      unexpectedError: "An unexpected error occurred"
     }
   }
 };

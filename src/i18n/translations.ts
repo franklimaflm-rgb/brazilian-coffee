@@ -298,6 +298,7 @@ export const translations = {
       title: "Café Academy",
       subtitle: "Faça login ou crie sua conta",
       login: "Entrar",
+      logout: "Sair",
       signup: "Criar Conta",
       email: "Email",
       password: "Senha",
@@ -310,8 +311,11 @@ export const translations = {
       signupFailed: "Falha ao criar conta",
       loginSuccess: "Login realizado",
       signupSuccess: "Conta criada",
+      logoutSuccess: "Logout realizado",
+      logoutFailed: "Falha no logout",
       welcomeBack: "Bem-vindo de volta!",
       accountCreated: "Sua conta foi criada com sucesso!",
+      logoutMessage: "Você foi desconectado com sucesso",
       emailAlreadyRegistered: "Este email já está cadastrado",
       unexpectedError: "Ocorreu um erro inesperado"
     }
@@ -616,6 +620,7 @@ export const translations = {
       title: "Café Academy",
       subtitle: "Login or create your account",
       login: "Login",
+      logout: "Logout",
       signup: "Sign Up",
       email: "Email",
       password: "Password",
@@ -628,8 +633,11 @@ export const translations = {
       signupFailed: "Sign up failed",
       loginSuccess: "Login successful",
       signupSuccess: "Account created",
+      logoutSuccess: "Logout successful",
+      logoutFailed: "Logout failed",
       welcomeBack: "Welcome back!",
       accountCreated: "Your account was created successfully!",
+      logoutMessage: "You have been logged out successfully",
       emailAlreadyRegistered: "This email is already registered",
       unexpectedError: "An unexpected error occurred"
     }

@@ -65,6 +65,9 @@ export const Footer = () => {
               <Link to="/delivery" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
                 {t('nav.delivery')}
               </Link>
+              <Link to="/auth" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
+                {t('auth.login')} / {t('auth.signup')}
+              </Link>
               <Link to="/track-order" className="block text-sm text-muted-foreground hover:text-primary transition-colors">
                 Track Order
               </Link>

@@ -113,22 +113,6 @@
     -webkit-overflow-scrolling: touch;
   }
 
-  /* Prevent iOS bounce/overscroll showing white space */
-  html, body {
-    position: fixed;
-    overflow: hidden;
-    width: 100%;
-    height: 100%;
-  }
-
-  #root {
-    width: 100%;
-    height: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
-  }
-
   /* Fix iOS Safari input styling */
   input[type="text"],
   input[type="email"],
@@ -187,6 +171,27 @@
 }
 
 /* Landscape orientation optimizations */
+@media (orientation: landscape) and (max-height: 500px) {
+  /* Reduce hero height in landscape mobile */
+  .landscape-hero {
+    min-height: 60vh !important;
+    padding-top: 2rem !important;
+    padding-bottom: 2rem !important;
+  }
+
+  /* Reduce bottom nav height in landscape */
+  .landscape-bottom-nav {
+    height: 48px !important;
+    padding: 4px 8px !important;
+  }
+
+  /* Reduce spacing in landscape */
+  .landscape-compact {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+  }
+}
+
 @media (max-width: 768px) and (orientation: landscape) {
   /* Optimize for mobile landscape */
   .landscape-optimize {

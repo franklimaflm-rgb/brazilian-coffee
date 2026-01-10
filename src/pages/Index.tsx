@@ -16,24 +16,24 @@ const Index = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-[100dvh] bg-background overflow-x-hidden">
+    <div className="flex flex-col min-h-[100dvh] bg-background w-full">
       <Navigation />
-      <main className="flex-1">
+      <main className="flex-1 w-full">
         <Hero />
         <InstallPrompt />
         
-        <section className="py-12 sm:py-16 px-4 sm:px-6 bg-gradient-warm pb-24 md:pb-16">
+        <section className="py-12 sm:py-16 landscape:py-8 px-4 sm:px-6 bg-gradient-warm pb-24 md:pb-16 landscape:pb-20">
           <div className="container mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-4">
+            <div className="text-center mb-12 landscape:mb-6">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl landscape:text-xl landscape:sm:text-2xl font-bold text-foreground mb-4 landscape:mb-2">
                 {t('coffee.sectionTitle')}
               </h2>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              <p className="text-xl landscape:text-base text-muted-foreground max-w-2xl mx-auto">
                 {t('coffee.sectionDescription')}
               </p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 landscape:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 landscape:gap-3">
               {coffeesI18n.map((coffee) => (
                 <CoffeeCard
                   key={coffee.id}

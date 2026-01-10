@@ -164,16 +164,16 @@ const DeliveryPage = () => {
     : "";
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background w-full">
       <Navigation />
       
-      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 lg:py-12">
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 lg:py-12 landscape:py-4 pb-24 md:pb-12 landscape:pb-20">
         {/* Header */}
-        <div className="text-center mb-8 sm:mb-12">
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-3 sm:mb-4">
+        <div className="text-center mb-8 sm:mb-12 landscape:mb-4">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl landscape:text-xl landscape:sm:text-2xl font-bold text-foreground mb-3 sm:mb-4 landscape:mb-2">
             {t('delivery.title')}
           </h1>
-          <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto mb-4 sm:mb-6 px-2">
+          <p className="text-base sm:text-lg lg:text-xl landscape:text-sm text-muted-foreground max-w-3xl mx-auto mb-4 sm:mb-6 landscape:mb-3 px-2">
             {t('delivery.description')}
           </p>
 
@@ -194,7 +194,7 @@ const DeliveryPage = () => {
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-6 lg:gap-8">
+        <div className="grid lg:grid-cols-2 landscape:grid-cols-2 gap-6 lg:gap-8 landscape:gap-4">
           {/* Order Form */}
           <Card>
             <CardHeader className="pb-4 sm:pb-6">

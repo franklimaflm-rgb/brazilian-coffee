@@ -191,17 +191,17 @@ export const Navigation = () => {
       </nav>
 
       {/* Bottom Mobile Navigation */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-sm border-t border-border safe-bottom">
-        <div className="flex justify-around items-center px-2 py-2">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-sm border-t border-border safe-bottom landscape:h-12">
+        <div className="flex justify-around items-center px-2 py-2 landscape:py-1">
           {navItems.map(({ to, label, icon: Icon }) => (
             <Link key={to} to={to} className="flex-1">
               <Button
                 variant={isActive(to) ? "secondary" : "ghost"}
-                className="w-full h-14 flex flex-col items-center justify-center gap-1 px-2"
+                className="w-full h-14 landscape:h-10 flex flex-col landscape:flex-row items-center justify-center gap-1 px-2"
                 size="sm"
               >
-                <Icon className="w-5 h-5" />
-                <span className="text-xs">{label}</span>
+                <Icon className="w-5 h-5 landscape:w-4 landscape:h-4" />
+                <span className="text-xs landscape:text-xs landscape:ml-1">{label}</span>
               </Button>
             </Link>
           ))}

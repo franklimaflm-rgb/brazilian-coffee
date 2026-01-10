@@ -15,20 +15,20 @@ const MenuPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background w-full">
       <Navigation />
       
-      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 tablet:py-10 lg:py-12">
-        <div className="text-center mb-8 tablet:mb-10 sm:mb-12">
-          <h1 className="text-2xl sm:text-3xl tablet:text-3xl lg:text-4xl font-bold text-foreground mb-3 tablet:mb-3.5 sm:mb-4">
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 tablet:py-10 lg:py-12 landscape:py-4 pb-24 md:pb-12 landscape:pb-20">
+        <div className="text-center mb-8 tablet:mb-10 sm:mb-12 landscape:mb-4">
+          <h1 className="text-2xl sm:text-3xl tablet:text-3xl lg:text-4xl landscape:text-xl landscape:sm:text-2xl font-bold text-foreground mb-3 tablet:mb-3.5 sm:mb-4 landscape:mb-2">
             {t('coffee.sectionTitle')}
           </h1>
-          <p className="text-base sm:text-lg tablet:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto px-2">
+          <p className="text-base sm:text-lg tablet:text-lg lg:text-xl landscape:text-sm text-muted-foreground max-w-2xl mx-auto px-2">
             {t('coffee.sectionDescription')}
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 tablet:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 tablet:gap-5 sm:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 tablet:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 landscape:grid-cols-2 gap-4 tablet:gap-5 sm:gap-6 landscape:gap-3">
           {coffeesI18n.map((coffee) => (
             <CoffeeCard
               key={coffee.id}

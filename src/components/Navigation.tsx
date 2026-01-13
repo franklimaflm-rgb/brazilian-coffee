@@ -70,52 +70,61 @@ export const Navigation = () => {
               <span className="text-xl font-bold text-foreground">Café Academy</span>
             </Link>
 
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-6">
+            {/* Desktop/Tablet Navigation - Icons only on tablet (md), full on desktop (lg) */}
+            <div className="hidden md:flex items-center gap-1 lg:gap-4">
               {navItems.map(({ to, label, icon: Icon }) => (
                 <Link key={to} to={to}>
                   <Button
                     variant={isActive(to) ? "secondary" : "ghost"}
-                    className="flex items-center gap-2"
+                    className="flex items-center gap-2 px-2 lg:px-4"
+                    size="sm"
+                    title={label}
                   >
                     <Icon className="w-4 h-4" />
-                    {label}
+                    <span className="hidden lg:inline">{label}</span>
                   </Button>
                 </Link>
               ))}
             </div>
 
-            {/* Auth & Language Selector */}
-            <div className="hidden md:flex items-center gap-4">
+            {/* Auth & Language Selector - Compact on tablet, full on desktop */}
+            <div className="hidden md:flex items-center gap-1 lg:gap-3">
               {!isLoading && (
                 <>
                   {user ? (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1 lg:gap-2">
                       <Button
                         variant="ghost"
-                        className="flex items-center gap-2"
+                        className="flex items-center gap-2 px-2"
+                        size="sm"
+                        title={user.user_metadata?.name || user.email}
                       >
                         <User className="w-4 h-4" />
-                        <span className="max-w-24 truncate">{user.user_metadata?.name || user.email}</span>
+                        <span className="hidden lg:inline max-w-24 truncate">
+                          {user.user_metadata?.name || user.email}
+                        </span>
                       </Button>
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={handleLogout}
-                        className="flex items-center gap-2"
+                        className="flex items-center gap-2 px-2 lg:px-3"
+                        title={t('auth.logout') || 'Logout'}
                       >
                         <LogOut className="w-4 h-4" />
-                        {t('auth.logout') || 'Logout'}
+                        <span className="hidden lg:inline">{t('auth.logout') || 'Logout'}</span>
                       </Button>
                     </div>
                   ) : (
                     <Link to="/auth">
                       <Button
                         variant={isActive('/auth') ? "secondary" : "outline"}
-                        className="flex items-center gap-2"
+                        className="flex items-center gap-2 px-2 lg:px-4"
+                        size="sm"
+                        title={t('auth.login')}
                       >
                         <LogIn className="w-4 h-4" />
-                        {t('auth.login')}
+                        <span className="hidden lg:inline">{t('auth.login')}</span>
                       </Button>
                     </Link>
                   )}

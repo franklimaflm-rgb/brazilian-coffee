@@ -42,22 +42,24 @@ const QRCodePage = () => {
             <div className="space-y-4 sm:space-y-6">
               <QRCodeGenerator
                 url={siteUrl}
-                size={window.innerWidth < 640 ? 280 : 320}
+                size={280}
                 title="Café Academy"
                 description={t('qrcode.scanToOrder')}
               />
               
-              {/* Smaller QR Codes */}
-              <div className="grid grid-cols-2 gap-4">
+              {/* Smaller QR Codes - Stack on mobile, side by side on tablet+ */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <QRCodeGenerator
                   url={`${siteUrl}delivery`}
-                  size={180}
+                  size={160}
                   title={t('qrcode.printVersion')}
+                  compact
                 />
                 <QRCodeGenerator
                   url={siteUrl}
-                  size={180}
+                  size={160}
                   title={t('qrcode.socialVersion')}
+                  compact
                 />
               </div>
             </div>

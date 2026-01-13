@@ -3,21 +3,24 @@ import QRCode from 'qrcode';
 import jsPDF from 'jspdf';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Download, QrCode, FileText, Printer } from "lucide-react";
+import { Download, QrCode, FileText } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { cn } from "@/lib/utils";
 
 interface QRCodeGeneratorProps {
   url: string;
   size?: number;
   title?: string;
   description?: string;
+  compact?: boolean;
 }
 
 export const QRCodeGenerator = ({ 
   url, 
   size = 256, 
   title, 
-  description 
+  description,
+  compact = false
 }: QRCodeGeneratorProps) => {
   const { t } = useLanguage();
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>('');
@@ -33,7 +36,7 @@ export const QRCodeGenerator = ({
         width: size,
         margin: 2,
         color: {
-          dark: '#3A2317', // Using primary color from design system
+          dark: '#3A2317',
           light: '#FFFFFF'
         },
         errorCorrectionLevel: 'M'
@@ -79,28 +82,24 @@ export const QRCodeGenerator = ({
     try {
       const pdf = new jsPDF();
 
-      // Add business header
       pdf.setFontSize(20);
-      pdf.setTextColor(58, 35, 23); // Primary color
+      pdf.setTextColor(58, 35, 23);
       pdf.text('Brazilian Coffee Academy', 20, 30);
 
       pdf.setFontSize(12);
       pdf.setTextColor(0, 0, 0);
       pdf.text('Fresh Coffee Delivery - Market Harborough Area', 20, 45);
 
-      // Add business contact info
       pdf.setFontSize(10);
       pdf.text('Franklin Marcelo Ferreira de Lima', 20, 60);
       pdf.text('Phone: +44 7386797734', 20, 70);
       pdf.text('Email: franklinmarceloferreiradelima@gmail.com', 20, 80);
       pdf.text('Address: Main Street, 68 - Lubenham - Market Harborough - LE16 9TG', 20, 90);
 
-      // Add QR code
       if (qrCodeDataUrl) {
         const qrSize = 80;
         pdf.addImage(qrCodeDataUrl, 'PNG', 20, 110, qrSize, qrSize);
 
-        // Add QR code description
         pdf.setFontSize(12);
         pdf.text('Scan to Order Online', 20, 200);
         pdf.setFontSize(10);
@@ -109,20 +108,17 @@ export const QRCodeGenerator = ({
         pdf.text('3. Tap the link that appears', 20, 235);
         pdf.text('4. Place your order for delivery', 20, 245);
 
-        // Add delivery info
         pdf.text('Delivery Area: 5km radius from Lubenham', 120, 120);
         pdf.text('Delivery Fee: From £3.00', 120, 130);
         pdf.text('Estimated Time: 15-45 minutes', 120, 140);
         pdf.text('Fresh coffee delivered to your door!', 120, 150);
       }
 
-      // Add footer
       pdf.setFontSize(8);
       pdf.setTextColor(128, 128, 128);
       pdf.text('Visit: https://brazilian-coffee.lovable.app/', 20, 270);
       pdf.text('Generated on: ' + new Date().toLocaleDateString(), 20, 280);
 
-      // Save the PDF
       pdf.save('brazilian-coffee-delivery-menu.pdf');
     } catch (error) {
       console.error('Error generating PDF:', error);
@@ -130,63 +126,99 @@ export const QRCodeGenerator = ({
   };
 
   return (
-    <Card className="p-6 text-center">
-      <CardContent className="space-y-4">
+    <Card className={cn("text-center", compact ? "p-2 sm:p-4" : "p-4 sm:p-6")}>
+      <CardContent className={cn("space-y-3 sm:space-y-4", compact && "p-0")}>
         {title && (
-          <h3 className="text-lg font-semibold text-foreground">{title}</h3>
+          <h3 className={cn(
+            "font-semibold text-foreground",
+            compact ? "text-sm sm:text-base" : "text-base sm:text-lg"
+          )}>
+            {title}
+          </h3>
         )}
         {description && (
-          <p className="text-muted-foreground">{description}</p>
+          <p className={cn(
+            "text-muted-foreground",
+            compact ? "text-xs sm:text-sm" : "text-sm sm:text-base"
+          )}>
+            {description}
+          </p>
         )}
         
         <div className="flex justify-center">
-          <div className="p-4 bg-white rounded-lg shadow-warm">
+          <div className={cn(
+            "bg-white rounded-lg shadow-warm",
+            compact ? "p-2 sm:p-3" : "p-3 sm:p-4"
+          )}>
             {qrCodeDataUrl ? (
               <img 
                 src={qrCodeDataUrl} 
                 alt="QR Code" 
-                className="block"
-                style={{ width: size, height: size }}
+                className="block w-full h-auto"
+                style={{ maxWidth: size }}
               />
             ) : (
               <div 
-                className="flex items-center justify-center bg-muted rounded-lg"
-                style={{ width: size, height: size }}
+                className="flex items-center justify-center bg-muted rounded-lg aspect-square"
+                style={{ maxWidth: size, width: '100%' }}
               >
-                <QrCode className="w-12 h-12 text-muted-foreground" />
+                <QrCode className={cn(
+                  "text-muted-foreground",
+                  compact ? "w-8 h-8" : "w-12 h-12"
+                )} />
               </div>
             )}
           </div>
         </div>
 
-        <div className="flex gap-2 justify-center flex-wrap">
-          <Button
-            onClick={() => downloadQRCode('png')}
-            variant="secondary"
-            size="sm"
-            className="flex items-center gap-2"
-          >
-            <Download className="w-4 h-4" />
-            {t('qrcode.downloadPng')}
-          </Button>
-          <Button
-            onClick={() => downloadQRCode('svg')}
-            variant="secondary"
-            size="sm"
-            className="flex items-center gap-2"
-          >
-            <Download className="w-4 h-4" />
-            {t('qrcode.downloadSvg')}
-          </Button>
-          <Button
-            onClick={() => downloadQRCode('pdf')}
-            variant="secondary"
-            size="sm"
-            className="flex items-center gap-2"
-          >
-            <FileText className="w-4 h-4" />
-            {t('qrcode.downloadPdf')}
-          </Button>
+        <div className={cn(
+          "flex gap-2 justify-center flex-wrap",
+          compact && "flex-col sm:flex-row"
+        )}>
+          {compact ? (
+            <Button
+              onClick={() => downloadQRCode('png')}
+              variant="secondary"
+              size="sm"
+              className="flex items-center gap-2 w-full sm:w-auto"
+            >
+              <Download className="w-4 h-4" />
+              <span>Download</span>
+            </Button>
+          ) : (
+            <>
+              <Button
+                onClick={() => downloadQRCode('png')}
+                variant="secondary"
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <Download className="w-4 h-4" />
+                <span className="hidden sm:inline">{t('qrcode.downloadPng')}</span>
+                <span className="sm:hidden">PNG</span>
+              </Button>
+              <Button
+                onClick={() => downloadQRCode('svg')}
+                variant="secondary"
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <Download className="w-4 h-4" />
+                <span className="hidden sm:inline">{t('qrcode.downloadSvg')}</span>
+                <span className="sm:hidden">SVG</span>
+              </Button>
+              <Button
+                onClick={() => downloadQRCode('pdf')}
+                variant="secondary"
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <FileText className="w-4 h-4" />
+                <span className="hidden sm:inline">{t('qrcode.downloadPdf')}</span>
+                <span className="sm:hidden">PDF</span>
+              </Button>
+            </>
+          )}
         </div>
       </CardContent>
     </Card>

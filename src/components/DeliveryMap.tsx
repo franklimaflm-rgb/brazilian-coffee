@@ -1,7 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { useSafeEffect, useSafeDOMOperation } from '@/hooks/useSafeEffect';
 
 // Mapbox access token
 const MAPBOX_TOKEN = 'pk.eyJ1Ijoic2FyYWgyMDA5IiwiYSI6ImNtZWU5dXh0MzBqZTAybHM5ZHk4cGFjbnEifQ.eAX9kvVinXThpyuNOUPhAw';
@@ -19,23 +18,59 @@ export const DeliveryMap = ({
 }: DeliveryMapProps) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
-  const markersRef = useRef<mapboxgl.Marker[]>([]);
+  const businessMarkerRef = useRef<mapboxgl.Marker | null>(null);
+  const customerMarkerRef = useRef<mapboxgl.Marker | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [mapError, setMapError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const { safeOperation, safeSetInnerHTML, isMounted } = useSafeDOMOperation();
+  const initializingRef = useRef(false);
+
+  // Cleanup function to safely remove map resources
+  const cleanupMap = useCallback(() => {
+    console.log('🗺️ Cleaning up map...');
+    
+    // Remove customer marker
+    if (customerMarkerRef.current) {
+      try {
+        customerMarkerRef.current.remove();
+      } catch (e) {
+        // Ignore errors during cleanup
+      }
+      customerMarkerRef.current = null;
+    }
+
+    // Remove business marker
+    if (businessMarkerRef.current) {
+      try {
+        businessMarkerRef.current.remove();
+      } catch (e) {
+        // Ignore errors during cleanup
+      }
+      businessMarkerRef.current = null;
+    }
+
+    // Remove map instance
+    if (map.current) {
+      try {
+        map.current.remove();
+      } catch (e) {
+        // Ignore errors during cleanup
+      }
+      map.current = null;
+    }
+    
+    setMapLoaded(false);
+    console.log('🗺️ Map cleaned up');
+  }, []);
 
   useEffect(() => {
-    if (!mapContainer.current || map.current) return;
-
+    // Prevent double initialization
+    if (!mapContainer.current || map.current || initializingRef.current) return;
+    
+    initializingRef.current = true;
     console.log('🗺️ Initializing Mapbox map...');
 
     try {
-      // Clear any existing content in the container
-      if (mapContainer.current) {
-        mapContainer.current.innerHTML = '';
-      }
-
       // Validate Mapbox token
       if (!MAPBOX_TOKEN || MAPBOX_TOKEN.includes('example')) {
         console.error('🚨 Invalid Mapbox token');
@@ -46,7 +81,7 @@ export const DeliveryMap = ({
       mapboxgl.accessToken = MAPBOX_TOKEN;
 
       console.log('🗺️ Creating Mapbox map instance...');
-      map.current = new mapboxgl.Map({
+      const mapInstance = new mapboxgl.Map({
         container: mapContainer.current,
         style: 'mapbox://styles/mapbox/satellite-v9',
         center: businessLocation,
@@ -54,6 +89,7 @@ export const DeliveryMap = ({
         attributionControl: true
       });
 
+      map.current = mapInstance;
       console.log('🗺️ Map instance created successfully');
 
       // Add navigation controls
@@ -62,17 +98,16 @@ export const DeliveryMap = ({
         showCompass: false,
         showZoom: true
       });
-      map.current.addControl(navControl, 'top-right');
+      mapInstance.addControl(navControl, 'top-right');
 
       // Add fullscreen control
-      map.current.addControl(new mapboxgl.FullscreenControl(), 'top-right');
+      mapInstance.addControl(new mapboxgl.FullscreenControl(), 'top-right');
 
-      map.current.on('load', () => {
+      mapInstance.on('load', () => {
         console.log('🗺️ Map loaded successfully!');
         setMapLoaded(true);
         setIsLoading(false);
-
-        if (!map.current) return;
+        initializingRef.current = false;
 
         // Add business location marker
         const businessMarker = new mapboxgl.Marker({
@@ -96,10 +131,9 @@ export const DeliveryMap = ({
               </div>
             </div>
           `))
-          .addTo(map.current);
+          .addTo(mapInstance);
 
-        // Track the marker for cleanup
-        markersRef.current.push(businessMarker);
+        businessMarkerRef.current = businessMarker;
 
         // Create delivery radius circle
         const center = businessLocation;
@@ -109,13 +143,13 @@ export const DeliveryMap = ({
 
         for (let i = 0; i < points; i++) {
           const angle = (i / points) * 2 * Math.PI;
-          const dx = radiusInKm * Math.cos(angle) / 111.32; // Convert km to degrees (approximate)
+          const dx = radiusInKm * Math.cos(angle) / 111.32;
           const dy = radiusInKm * Math.sin(angle) / 110.54;
           coords.push([center[0] + dx, center[1] + dy]);
         }
         coords.push(coords[0]); // Close the circle
 
-        map.current.addSource('delivery-radius', {
+        mapInstance.addSource('delivery-radius', {
           type: 'geojson',
           data: {
             type: 'Feature',
@@ -127,7 +161,7 @@ export const DeliveryMap = ({
           }
         });
 
-        map.current.addLayer({
+        mapInstance.addLayer({
           id: 'delivery-radius-fill',
           type: 'fill',
           source: 'delivery-radius',
@@ -137,7 +171,7 @@ export const DeliveryMap = ({
           }
         });
 
-        map.current.addLayer({
+        mapInstance.addLayer({
           id: 'delivery-radius-border',
           type: 'line',
           source: 'delivery-radius',
@@ -147,105 +181,40 @@ export const DeliveryMap = ({
             'line-dasharray': [2, 2]
           }
         });
-
-        // Add customer location marker if provided
-        if (customerLocation) {
-          new mapboxgl.Marker({
-            color: '#22c55e',
-            scale: 1.0
-          })
-            .setLngLat(customerLocation)
-            .setPopup(new mapboxgl.Popup({
-              offset: 25,
-              closeButton: true,
-              closeOnClick: false,
-              maxWidth: '250px'
-            }).setHTML(`
-              <div class="p-3">
-                <h3 class="font-semibold text-base text-gray-900 mb-2">Your Location</h3>
-                <div class="text-sm text-gray-600">
-                  <p>📍 Delivery address</p>
-                  <p class="mt-2 text-xs text-green-600">✓ Within delivery area</p>
-                </div>
-              </div>
-            `))
-            .addTo(map.current);
-
-          // Fit map to show both business and customer locations with responsive padding
-          const bounds = new mapboxgl.LngLatBounds();
-          bounds.extend(businessLocation);
-          bounds.extend(customerLocation);
-
-          // Use different padding for mobile vs desktop
-          const isMobile = window.innerWidth < 768;
-          const padding = isMobile ? 30 : 50;
-
-          map.current.fitBounds(bounds, {
-            padding: padding,
-            maxZoom: 14
-          });
-        }
       });
 
-      map.current.on('error', (e) => {
+      mapInstance.on('error', (e) => {
         console.error('🚨 Mapbox error:', e);
         setMapError(true);
         setIsLoading(false);
+        initializingRef.current = false;
       });
 
     } catch (error) {
       console.error('🚨 Failed to initialize Mapbox:', error);
       setMapError(true);
       setIsLoading(false);
+      initializingRef.current = false;
     }
 
-    return () => {
-      console.log('🗺️ Cleaning up map...');
+    return cleanupMap;
+  }, [businessLocation, deliveryRadius, cleanupMap]);
 
-      // Clean up markers
-      markersRef.current.forEach(marker => {
-        try {
-          marker.remove();
-        } catch (e) {
-          console.warn('Error removing marker:', e);
-        }
-      });
-      markersRef.current = [];
-
-      // Clean up map
-      if (map.current) {
-        try {
-          map.current.remove();
-          map.current = null;
-          console.log('🗺️ Map cleaned up successfully');
-        } catch (e) {
-          console.warn('Error during map cleanup:', e);
-        }
-      }
-    };
-  }, [businessLocation, deliveryRadius]);
-
-  // Handle customer location updates
+  // Handle customer location updates separately
   useEffect(() => {
-    if (!map.current || !mapLoaded || !isMounted) return;
+    if (!map.current || !mapLoaded) return;
 
-    // Safe removal of existing customer markers
-    try {
-      const existingMarkers = document.querySelectorAll('.mapboxgl-marker[data-customer="true"]');
-      existingMarkers.forEach(marker => {
-        try {
-          if (marker && marker.parentNode) {
-            marker.remove();
-          }
-        } catch (error) {
-          console.warn('Error removing customer marker:', error);
-        }
-      });
-    } catch (error) {
-      console.warn('Error querying customer markers:', error);
+    // Remove existing customer marker safely
+    if (customerMarkerRef.current) {
+      try {
+        customerMarkerRef.current.remove();
+      } catch (e) {
+        // Ignore errors
+      }
+      customerMarkerRef.current = null;
     }
 
-    if (customerLocation && isMounted) {
+    if (customerLocation) {
       const customerMarker = new mapboxgl.Marker({
         color: '#22c55e',
         scale: 1.0
@@ -267,23 +236,13 @@ export const DeliveryMap = ({
         `))
         .addTo(map.current);
 
-      // Add data attribute and track marker
-      try {
-        const markerElement = customerMarker.getElement();
-        if (markerElement) {
-          markerElement.setAttribute('data-customer', 'true');
-        }
-        markersRef.current.push(customerMarker);
-      } catch (error) {
-        console.warn('Error setting marker attribute:', error);
-      }
+      customerMarkerRef.current = customerMarker;
 
-      // Fit map to show both business and customer locations with responsive padding
+      // Fit map to show both locations
       const bounds = new mapboxgl.LngLatBounds();
       bounds.extend(businessLocation);
       bounds.extend(customerLocation);
 
-      // Use different padding for mobile vs desktop
       const isMobile = window.innerWidth < 768;
       const padding = isMobile ? 30 : 50;
 
@@ -292,9 +251,9 @@ export const DeliveryMap = ({
         maxZoom: 14
       });
     }
-  }, [customerLocation, mapLoaded, businessLocation, isMounted]);
+  }, [customerLocation, mapLoaded, businessLocation]);
 
-  // Fallback placeholder implementation for when Mapbox fails to load
+  // Fallback placeholder for when Mapbox fails
   const renderFallbackMap = () => {
     return (
       <div className="w-full h-full bg-gradient-to-br from-green-100 to-blue-100 relative rounded-lg overflow-hidden flex items-center justify-center">
@@ -302,8 +261,8 @@ export const DeliveryMap = ({
           <div className="w-16 h-16 bg-red-500 rounded-full mx-auto mb-4 flex items-center justify-center">
             <div className="w-3 h-3 bg-white rounded-full"></div>
           </div>
-          <h3 className="text-lg font-semibold text-gray-700 mb-2">Distribution Centre</h3>
-          <p className="text-sm text-gray-600 mb-4">Lubenham, Market Harborough</p>
+          <h3 className="text-lg font-semibold text-gray-700 mb-2">Map Temporarily Unavailable</h3>
+          <p className="text-sm text-gray-600 mb-4">We deliver within 5km of Lubenham, Market Harborough</p>
           <div className="inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs">
             5km Delivery Radius
           </div>
@@ -312,7 +271,7 @@ export const DeliveryMap = ({
               <div className="w-12 h-12 bg-green-500 rounded-full mx-auto mb-2 flex items-center justify-center">
                 <div className="w-2 h-2 bg-white rounded-full"></div>
               </div>
-              <p className="text-sm text-gray-600">Your Location</p>
+              <p className="text-sm text-gray-600">Your Location Added</p>
             </div>
           )}
         </div>

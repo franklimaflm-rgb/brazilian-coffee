@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 import { LanguageSelector } from "./LanguageSelector";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Coffee, Menu, Home, Truck, QrCode, HelpCircle, LogIn, LogOut, User } from "lucide-react";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -141,8 +142,10 @@ export const Navigation = () => {
                     <Menu className="w-5 h-5" />
                   </Button>
                 </SheetTrigger>
-                {/* @ts-ignore - SheetContent children prop type issue */}
                 <SheetContent className="w-[300px] sm:w-[400px]">
+                  <VisuallyHidden>
+                    <SheetTitle>Navigation Menu</SheetTitle>
+                  </VisuallyHidden>
                   <div className="flex flex-col gap-4 mt-8">
                     {navItems.map(({ to, label, icon: Icon }) => (
                       <Link key={to} to={to} className="w-full">

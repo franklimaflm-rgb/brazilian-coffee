@@ -317,7 +317,16 @@ export const translations = {
       accountCreated: "Sua conta foi criada com sucesso!",
       logoutMessage: "Você foi desconectado com sucesso",
       emailAlreadyRegistered: "Este email já está cadastrado",
-      unexpectedError: "Ocorreu um erro inesperado"
+      unexpectedError: "Ocorreu um erro inesperado",
+      forgotPassword: "Esqueci minha senha",
+      forgotPasswordTitle: "Recuperar Senha",
+      forgotPasswordSubtitle: "Digite seu email para receber o link de recuperação",
+      sendResetLink: "Enviar Link",
+      sendingResetLink: "Enviando...",
+      resetLinkSent: "Link enviado!",
+      resetLinkSentMessage: "Verifique seu email para redefinir sua senha",
+      resetPasswordFailed: "Falha ao enviar link",
+      backToLogin: "Voltar ao login"
     }
   },
   
@@ -639,7 +648,16 @@ export const translations = {
       accountCreated: "Your account was created successfully!",
       logoutMessage: "You have been logged out successfully",
       emailAlreadyRegistered: "This email is already registered",
-      unexpectedError: "An unexpected error occurred"
+      unexpectedError: "An unexpected error occurred",
+      forgotPassword: "Forgot password",
+      forgotPasswordTitle: "Reset Password",
+      forgotPasswordSubtitle: "Enter your email to receive the reset link",
+      sendResetLink: "Send Reset Link",
+      sendingResetLink: "Sending...",
+      resetLinkSent: "Link sent!",
+      resetLinkSentMessage: "Check your email to reset your password",
+      resetPasswordFailed: "Failed to send link",
+      backToLogin: "Back to login"
     }
   }
 };

@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/i18n/LanguageContext';
-import { Coffee, Mail, Lock, User } from 'lucide-react';
+import { Coffee, Mail, Lock, User, ArrowLeft } from 'lucide-react';
 import { z } from 'zod';
 
 const emailSchema = z.string().trim().email({ message: "Invalid email address" }).max(255);
@@ -21,6 +21,7 @@ const AuthPage = () => {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [errors, setErrors] = useState<{ email?: string; password?: string; name?: string }>({});
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
   const { t } = useLanguage();
@@ -63,6 +64,16 @@ const AuthPage = () => {
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  const validateEmailOnly = () => {
+    const emailResult = emailSchema.safeParse(email);
+    if (!emailResult.success) {
+      setErrors({ email: emailResult.error.errors[0].message });
+      return false;
+    }
+    setErrors({});
+    return true;
   };
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -149,6 +160,99 @@ const AuthPage = () => {
     }
   };
 
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validateEmailOnly()) return;
+
+    setIsLoading(true);
+    try {
+      const redirectUrl = `${window.location.origin}/auth`;
+      
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+        redirectTo: redirectUrl,
+      });
+
+      if (error) {
+        toast({
+          title: t('auth.resetPasswordFailed'),
+          description: error.message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: t('auth.resetLinkSent'),
+          description: t('auth.resetLinkSentMessage'),
+        });
+        setShowForgotPassword(false);
+        setEmail('');
+      }
+    } catch (error) {
+      toast({
+        title: t('auth.resetPasswordFailed'),
+        description: t('auth.unexpectedError'),
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Forgot Password View
+  if (showForgotPassword) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/20 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md border-border/50 shadow-xl">
+          <CardHeader className="text-center space-y-4">
+            <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
+              <Coffee className="w-8 h-8 text-primary" />
+            </div>
+            <div>
+              <CardTitle className="text-2xl font-bold">{t('auth.forgotPasswordTitle')}</CardTitle>
+              <CardDescription className="mt-2">{t('auth.forgotPasswordSubtitle')}</CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleForgotPassword} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="reset-email">{t('auth.email')}</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="reset-email"
+                    type="email"
+                    placeholder="email@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="pl-10"
+                    disabled={isLoading}
+                  />
+                </div>
+                {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
+              </div>
+              
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? t('auth.sendingResetLink') : t('auth.sendResetLink')}
+              </Button>
+              
+              <Button
+                type="button"
+                variant="ghost"
+                className="w-full gap-2"
+                onClick={() => {
+                  setShowForgotPassword(false);
+                  setErrors({});
+                }}
+              >
+                <ArrowLeft className="w-4 h-4" />
+                {t('auth.backToLogin')}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/20 flex items-center justify-center p-4">
       <Card className="w-full max-w-md border-border/50 shadow-xl">
@@ -206,6 +310,19 @@ const AuthPage = () => {
                 
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? t('auth.loggingIn') : t('auth.login')}
+                </Button>
+                
+                <Button
+                  type="button"
+                  variant="link"
+                  className="w-full text-sm text-muted-foreground hover:text-primary"
+                  onClick={() => {
+                    setShowForgotPassword(true);
+                    setErrors({});
+                    setPassword('');
+                  }}
+                >
+                  {t('auth.forgotPassword')}
                 </Button>
               </form>
             </TabsContent>

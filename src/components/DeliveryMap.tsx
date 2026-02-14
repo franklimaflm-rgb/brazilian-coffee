@@ -24,6 +24,8 @@ export const DeliveryMap = ({
   const [mapError, setMapError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const initializingRef = useRef(false);
+  const businessLocationRef = useRef(businessLocation);
+  const deliveryRadiusRef = useRef(deliveryRadius);
 
   // Cleanup function to safely remove map resources
   const cleanupMap = useCallback(() => {
@@ -198,7 +200,7 @@ export const DeliveryMap = ({
     }
 
     return cleanupMap;
-  }, [businessLocation, deliveryRadius, cleanupMap]);
+  }, []);
 
   // Handle customer location updates separately
   useEffect(() => {

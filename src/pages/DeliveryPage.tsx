@@ -37,6 +37,9 @@ interface AddressValidation {
   estimatedTime?: number;
 }
 
+// Business location coordinates (Main Street, 68 - Lubenham - Market Harborough)
+const BUSINESS_LOCATION: [number, number] = [-0.9533, 52.4673];
+
 const DeliveryPage = () => {
   const { language, t } = useLanguage();
   const { submitOrder, isSubmitting } = useOrders();
@@ -71,8 +74,6 @@ const DeliveryPage = () => {
     }
   }, [searchParams, orderForm.coffee]);
 
-  // Business location coordinates (Main Street, 68 - Lubenham - Market Harborough)
-  const businessLocation: [number, number] = [-0.9533, 52.4673]; // Precise coordinates for Main Street, 68, Lubenham
 
   const handleAddressValidation = async () => {
     if (!orderForm.address.trim()) {
@@ -93,7 +94,7 @@ const DeliveryPage = () => {
       deliveryFee: result.deliveryFee,
       estimatedTime: result.estimatedTime,
       coordinates: result.isWithinRange
-        ? [businessLocation[0] + (Math.random() - 0.5) * 0.1, businessLocation[1] + (Math.random() - 0.5) * 0.1]
+        ? [BUSINESS_LOCATION[0] + (Math.random() - 0.5) * 0.1, BUSINESS_LOCATION[1] + (Math.random() - 0.5) * 0.1]
         : undefined
     });
   };
@@ -416,7 +417,7 @@ const DeliveryPage = () => {
                 }
               >
                 <DeliveryMap
-                  businessLocation={businessLocation}
+                  businessLocation={BUSINESS_LOCATION}
                   customerLocation={addressValidation?.coordinates}
                   deliveryRadius={5}
                 />

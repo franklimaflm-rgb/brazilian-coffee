@@ -9,17 +9,19 @@ interface Props {
 interface State {
   hasError: boolean;
   error?: Error;
+  retryCount: number;
 }
+
+const MAX_RETRIES = 3;
 
 export class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.state = { hasError: false };
+    this.state = { hasError: false, retryCount: 0 };
   }
 
   static getDerivedStateFromError(error: Error): State {
-    // Update state so the next render will show the fallback UI
-    return { hasError: true, error };
+    return { hasError: true, error, retryCount: 0 };
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
@@ -34,10 +36,11 @@ export class ErrorBoundary extends Component<Props, State> {
     // Check if this is a DOM manipulation error and handle gracefully
     if (error.name === 'NotFoundError' && error.message.includes('removeChild')) {
       console.warn('DOM manipulation error caught and handled gracefully:', error.message);
-      // Reset the error state after a brief delay to allow recovery
-      setTimeout(() => {
-        this.setState({ hasError: false, error: undefined });
-      }, 100);
+      if (this.state.retryCount < MAX_RETRIES) {
+        setTimeout(() => {
+          this.setState(prev => ({ hasError: false, error: undefined, retryCount: prev.retryCount + 1 }));
+        }, 2000);
+      }
     }
   }
 

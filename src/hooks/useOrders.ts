@@ -212,8 +212,9 @@ export const useOrders = () => {
     try {
       const { data, error } = await supabase
         .rpc('get_order_by_number', {
-          _order_number: orderNumber
-        });
+          _order_number: orderNumber,
+          _email: email
+        } as any);
 
       if (error) throw error;
       if (!data || data.length === 0) {

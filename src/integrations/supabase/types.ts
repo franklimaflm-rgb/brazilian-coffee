@@ -243,26 +243,45 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      get_order_by_number: {
-        Args: { _order_number: string }
-        Returns: {
-          address_id: string | null
-          created_at: string
-          customer_id: string | null
-          delivery_instructions: string | null
-          id: string
-          order_number: string
-          status: Database["public"]["Enums"]["order_status"]
-          total_amount: number
-          updated_at: string
-        }[]
-        SetofOptions: {
-          from: "*"
-          to: "orders"
-          isOneToOne: false
-          isSetofReturn: true
-        }
-      }
+      get_order_by_number:
+        | {
+            Args: { _order_number: string }
+            Returns: {
+              address_id: string | null
+              created_at: string
+              customer_id: string | null
+              delivery_instructions: string | null
+              id: string
+              order_number: string
+              status: Database["public"]["Enums"]["order_status"]
+              total_amount: number
+              updated_at: string
+            }[]
+            SetofOptions: {
+              from: "*"
+              to: "orders"
+              isOneToOne: false
+              isSetofReturn: true
+            }
+          }
+        | {
+            Args: { _email: string; _order_number: string }
+            Returns: {
+              created_at: string
+              customer_email: string
+              customer_name: string
+              customer_phone: string
+              delivery_address: string
+              delivery_fee: number
+              estimated_delivery_time: number
+              id: string
+              items: Json
+              order_number: string
+              special_instructions: string
+              status: Database["public"]["Enums"]["order_status"]
+              total_amount: number
+            }[]
+          }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

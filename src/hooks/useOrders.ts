@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { orderFormSchema, type OrderFormData as ValidatedOrderFormData } from '@/lib/orderValidation';
 
@@ -48,6 +48,8 @@ export interface OrderResult {
 export const useOrders = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const lastOrderTime = useRef<number>(0);
+  const MIN_ORDER_INTERVAL = 10000; // 10 seconds minimum between orders
 
   // Remove RPC function calls that don't exist - use simple customer creation  
   const getOrCreateCustomer = async (customerData: { name: string; email: string; phone: string }) => {
@@ -86,6 +88,16 @@ export const useOrders = () => {
     try {
       setIsSubmitting(true);
       setError(null);
+
+      // Rate limiting: prevent rapid order submissions
+      const now = Date.now();
+      if (now - lastOrderTime.current < MIN_ORDER_INTERVAL) {
+        return {
+          success: false,
+          error: 'Please wait before submitting another order',
+        };
+      }
+      lastOrderTime.current = now;
 
       // Validate input data using zod schema
       const validationResult = orderFormSchema.safeParse(orderData);

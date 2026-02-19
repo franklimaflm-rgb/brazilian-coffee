@@ -51,39 +51,6 @@ export const useOrders = () => {
   const lastOrderTime = useRef<number>(0);
   const MIN_ORDER_INTERVAL = 10000; // 10 seconds minimum between orders
 
-  // Remove RPC function calls that don't exist - use simple customer creation  
-  const getOrCreateCustomer = async (customerData: { name: string; email: string; phone: string }) => {
-    try {
-      // Check if customer exists
-      const { data: existingCustomer } = await supabase
-        .from('customers')
-        .select('id')
-        .eq('email', customerData.email)
-        .single();
-
-      if (existingCustomer) {
-        return existingCustomer.id;
-      }
-
-      // Create new customer
-      const { data: newCustomer, error } = await supabase
-        .from('customers')
-        .insert({
-          name: customerData.name,
-          email: customerData.email,
-          phone: customerData.phone
-        })
-        .select('id')
-        .single();
-
-      if (error) throw error;
-      return newCustomer.id;
-    } catch (error) {
-      console.error('Error creating customer:', error);
-      throw error;
-    }
-  };
-
   const submitOrder = async (orderData: OrderFormData): Promise<OrderResult> => {
     try {
       setIsSubmitting(true);
@@ -117,29 +84,6 @@ export const useOrders = () => {
 
       const validatedData = validationResult.data;
 
-      // Create customer
-      const customerId = await getOrCreateCustomer({
-        name: validatedData.customer.name,
-        email: validatedData.customer.email,
-        phone: validatedData.customer.phone,
-      });
-
-      // Create address
-      const { data: address, error: addressError } = await supabase
-        .from('addresses')
-        .insert({
-          customer_id: customerId,
-          street: validatedData.address.address_line_1,
-          city: validatedData.address.city,
-          state: validatedData.address.county,
-          postal_code: validatedData.address.postcode,
-          country: validatedData.address.country || 'UK'
-        } as any)
-        .select()
-        .single();
-
-      if (addressError) throw addressError;
-
       // Generate order number
       const orderNumber = `BC${Date.now().toString().slice(-6)}`;
 
@@ -147,44 +91,39 @@ export const useOrders = () => {
       const subtotal = validatedData.items.reduce((sum, item) => sum + (item.quantity * item.unit_price), 0);
       const totalAmount = subtotal + validatedData.delivery_fee;
 
-      // Create order
-      const { data: order, error: orderError} = await supabase
-        .from('orders')
-        .insert([{
-          customer_id: customerId,
-          address_id: address.id,
+      // Use SECURITY DEFINER RPC for secure guest order creation
+      // This centralizes validation server-side and prevents direct anonymous table access
+      const { data: orderId, error: rpcError } = await supabase.rpc('create_guest_order', {
+        _customer_data: {
+          name: validatedData.customer.name,
+          email: validatedData.customer.email,
+          phone: validatedData.customer.phone,
+        },
+        _address_data: {
+          street: validatedData.address.address_line_1,
+          city: validatedData.address.city,
+          postal_code: validatedData.address.postcode,
+          country: validatedData.address.country || 'UK',
+        },
+        _order_data: {
           order_number: orderNumber,
           total_amount: totalAmount,
           delivery_instructions: validatedData.special_instructions || null,
-          status: 'pending' as any
-        } as any])
-        .select()
-        .single();
+        },
+        _items: validatedData.items.map(item => ({
+          coffee_product_id: item.coffee_product_id,
+          quantity: item.quantity,
+          unit_price: item.unit_price,
+          total_price: item.quantity * item.unit_price,
+        })),
+      } as any);
 
-      if (orderError) throw orderError;
-
-      // Create order items
-      const orderItems = validatedData.items.map(item => ({
-        order_id: order.id,
-        coffee_product_id: item.coffee_product_id,
-        quantity: item.quantity,
-        unit_price: item.unit_price,
-        total_price: item.quantity * item.unit_price
-      }));
-
-      const { error: itemsError } = await supabase
-        .from('order_items')
-        .insert(orderItems);
-
-      if (itemsError) {
-        console.error('Error creating order items:', itemsError);
-        throw itemsError;
-      }
+      if (rpcError) throw rpcError;
 
       return {
         success: true,
-        order_id: order.id,
-        order_number: order.order_number
+        order_id: orderId as string,
+        order_number: orderNumber,
       };
 
     } catch (err) {

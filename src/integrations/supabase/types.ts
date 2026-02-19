@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "13.0.5"
+    PostgrestVersion: "14.1"
   }
   public: {
     Tables: {
@@ -243,6 +243,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_guest_order: {
+        Args: {
+          _address_data: Json
+          _customer_data: Json
+          _items: Json
+          _order_data: Json
+        }
+        Returns: string
+      }
       get_order_by_number:
         | {
             Args: { _order_number: string }

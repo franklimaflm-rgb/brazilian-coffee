@@ -1,4 +1,5 @@
 import { useEffect, useRef, useCallback } from 'react';
+import DOMPurify from 'dompurify';
 
 /**
  * A safer version of useEffect that prevents operations on unmounted components
@@ -113,7 +114,7 @@ export const useSafeDOMOperation = () => {
 
     try {
       if (element && element.parentNode) {
-        element.innerHTML = html;
+        element.innerHTML = DOMPurify.sanitize(html);
       }
     } catch (error) {
       console.warn('Safe innerHTML operation failed:', error);

@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { LanguageSelector } from "./LanguageSelector";
+import { ThemeToggle } from "./ThemeToggle";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Coffee, Menu, Home, Truck, QrCode, HelpCircle, LogIn, LogOut, User } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
@@ -131,6 +132,7 @@ export const Navigation = () => {
                   )}
                 </>
               )}
+              <ThemeToggle className="relative" />
               <LanguageSelector />
             </div>
 
@@ -191,8 +193,9 @@ export const Navigation = () => {
                       </div>
                     )}
 
-                    <div className="mt-4 pt-4 border-t border-border">
+                    <div className="mt-4 pt-4 border-t border-border flex items-center justify-between gap-2">
                       <LanguageSelector />
+                      <ThemeToggle className="relative" />
                     </div>
                   </div>
                 </SheetContent>

@@ -227,8 +227,8 @@ export const useAuth = () => {
       const totalAmount = itemTotal + orderData.deliveryFee;
 
       // Create order
-      const { data: order, error } = await supabase
-        .from('orders')
+      const { data: order, error } = await (supabase
+        .from('orders') as any)
         .insert({
           customer_id: customer.id,
           delivery_address_id: orderData.addressId,

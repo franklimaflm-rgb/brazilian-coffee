@@ -8,7 +8,13 @@ export const translations = {
       qrcode: "QR Code",
       help: "Ajuda"
     },
-    
+
+    theme: {
+      light: "Modo claro",
+      dark: "Modo escuro",
+      toggle: "Alternar tema"
+    },
+
     // Hero Section
     hero: {
       title: "A Arte do Café Perfeito",
@@ -339,7 +345,13 @@ export const translations = {
       qrcode: "QR Code",
       help: "Help"
     },
-    
+
+    theme: {
+      light: "Light mode",
+      dark: "Dark mode",
+      toggle: "Toggle theme"
+    },
+
     // Hero Section
     hero: {
       title: "The Art of Perfect Coffee",

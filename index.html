@@ -28,6 +28,17 @@
   </head>
 
   <body>
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var theme = stored || 'system';
+          var resolved = theme === 'system' ? (prefersDark ? 'dark' : 'light') : theme;
+          document.documentElement.classList.add(resolved);
+        } catch (e) {}
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

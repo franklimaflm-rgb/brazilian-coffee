@@ -1,59 +1,30 @@
+## Adicionar tema escuro
 
-## Fix: Map Flickering and Infinite Error Loop on /delivery
+O projeto já tem todas as variáveis CSS de dark mode definidas em `src/index.css` (`.dark { ... }`) e o Tailwind está configurado com `darkMode: ["class"]`. Falta apenas a infraestrutura para alternar e persistir o tema.
 
-### Root Cause Analysis
+### Etapas
 
-Two bugs interact to create an infinite flicker loop:
+1. **Provider de tema**
+   - Criar `src/components/ThemeProvider.tsx` (provider leve, sem dependência nova) que:
+     - Lê preferência salva em `localStorage` (`theme`) ou usa `prefers-color-scheme`.
+     - Aplica/remova a classe `dark` em `document.documentElement`.
+     - Expõe `useTheme()` com `theme` e `setTheme('light' | 'dark' | 'system')`.
 
-1. **New array reference every render**: In `DeliveryPage.tsx` line 75, `businessLocation` is declared as a plain array literal `[-0.9533, 52.4673]`. Every time the component re-renders, this creates a NEW array reference. Since `businessLocation` is in the `useEffect` dependency array of `DeliveryMap.tsx` (line 201), the map gets destroyed and recreated on every render.
+2. **Integrar no app**
+   - Envolver a árvore em `src/App.tsx` com `<ThemeProvider defaultTheme="system">` (acima do `LanguageProvider`).
 
-2. **ErrorBoundary auto-recovery at 100ms**: The `ErrorBoundary` component (line 38-40) catches `removeChild` errors and automatically resets after 100ms. When the map cleanup triggers a DOM error, the boundary catches it, recovers, re-mounts the map, which fails again -- creating an infinite loop of error/recovery/error.
+3. **Botão de alternância**
+   - Criar `src/components/ThemeToggle.tsx` com ícones `Sun` / `Moon` (lucide-react) usando o `Button` (variant `ghost`, size `icon`).
+   - Inserir o toggle no `src/components/Navigation.tsx` ao lado do `LanguageSelector` (desktop e mobile sheet).
 
-### Changes
+4. **Traduções**
+   - Adicionar chaves `theme.light`, `theme.dark`, `theme.toggle` em `src/i18n/translations.ts` (PT/EN/ES, conforme idiomas existentes) para `aria-label` do botão.
 
-#### 1. `src/pages/DeliveryPage.tsx`
-- Move `businessLocation` outside the component (as a module-level constant) so it's always the same reference
-- This prevents unnecessary re-renders of the map
+5. **Anti-flash**
+   - Adicionar pequeno script inline em `index.html` (`<head>`) que aplica a classe `dark` antes do React montar, evitando flash branco no carregamento.
 
-```tsx
-// Move OUTSIDE the component (before const DeliveryPage = ...)
-const BUSINESS_LOCATION: [number, number] = [-0.9533, 52.4673];
-```
+### Detalhes técnicos
 
-Then use `BUSINESS_LOCATION` instead of `businessLocation` throughout the component.
-
-#### 2. `src/components/DeliveryMap.tsx`
-- Remove `businessLocation` and `deliveryRadius` from the `useEffect` dependency array -- these values don't change at runtime
-- Remove `cleanupMap` from the dependency array as well
-- Use an empty dependency array `[]` so the map initializes only once on mount
-- Store `businessLocation` and `deliveryRadius` in refs for use inside the effect
-
-#### 3. `src/components/ErrorBoundary.tsx`
-- Remove the automatic 100ms recovery for `removeChild` errors, or increase the delay significantly (e.g., 5 seconds) and add a max retry counter to prevent infinite loops
-- This stops the error-recovery-error cycle
-
-### Technical Details
-
-**File: `src/pages/DeliveryPage.tsx`**
-- Extract `const BUSINESS_LOCATION: [number, number] = [-0.9533, 52.4673]` to module scope (before the component function)
-- Replace all `businessLocation` references with `BUSINESS_LOCATION`
-
-**File: `src/components/DeliveryMap.tsx`**
-- Add refs for businessLocation and deliveryRadius:
-  ```tsx
-  const businessLocationRef = useRef(businessLocation);
-  const deliveryRadiusRef = useRef(deliveryRadius);
-  ```
-- Change the main useEffect dependency array from `[businessLocation, deliveryRadius, cleanupMap]` to `[]`
-- Use ref values inside the effect instead of the props directly
-
-**File: `src/components/ErrorBoundary.tsx`**
-- Add a retry counter (`retryCount` in state) 
-- Only auto-recover up to 3 times maximum
-- Increase the recovery delay from 100ms to 2000ms
-- After max retries, show the fallback UI permanently
-
-### Expected Result
-- Map initializes once and stays stable
-- No more flickering or page flashing
-- If a rare DOM error occurs, it recovers gracefully with a limit instead of looping infinitely
+- Sem novas dependências; aproveitamos os tokens HSL já existentes em `index.css`.
+- `next-themes` não será adicionado para manter o bundle enxuto (o `sonner.tsx` já o importa, mas funciona com `theme="system"` lendo a classe do `<html>`; nada a alterar lá).
+- Nenhuma mudança de lógica de negócio, somente apresentação.

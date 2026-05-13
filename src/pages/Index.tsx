@@ -4,8 +4,11 @@ import { Hero } from "@/components/Hero";
 import { CoffeeCard } from "@/components/CoffeeCard";
 import { Footer } from "@/components/Footer";
 import { InstallPrompt } from "@/components/InstallPrompt";
+import { SEO } from "@/components/SEO";
 import { coffeesI18n } from "@/data/coffees-i18n";
 import { useLanguage } from "@/i18n/LanguageContext";
+
+const SITE_URL = "https://brazilian-coffee.lovable.app";
 
 const Index = () => {
   const navigate = useNavigate();

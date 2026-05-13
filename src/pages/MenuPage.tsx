@@ -1,5 +1,6 @@
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
+import { SEO } from "@/components/SEO";
 import { CoffeeCard } from "@/components/CoffeeCard";
 import { coffeesI18n } from "@/data/coffees-i18n";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -16,6 +17,11 @@ const MenuPage = () => {
 
   return (
     <div className="min-h-screen bg-background w-full">
+      <SEO
+        title="Coffee Menu — Café Academy"
+        description="Browse our full menu of espresso, cappuccino, latte and americano. Order for delivery or learn the recipe at home."
+        path="/menu"
+      />
       <Navigation />
       
       <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 tablet:py-10 lg:py-12 landscape:py-4 pb-24 md:pb-12 landscape:pb-20">

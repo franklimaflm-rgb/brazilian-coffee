@@ -31,8 +31,36 @@ const CoffeeDetail = () => {
     );
   }
 
+  const lang = language === "pt-BR" ? "pt-BR" : "en-GB";
+  const name = coffee.name[lang];
+  const description = coffee.description[lang];
+  const recipeJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Recipe",
+    name,
+    description,
+    image: `${SITE_URL}${coffee.image}`,
+    recipeCategory: "Beverage",
+    recipeCuisine: "Coffee",
+    recipeIngredient: coffee.ingredients[lang],
+    recipeInstructions: coffee.instructions[lang].map((text, i) => ({
+      "@type": "HowToStep",
+      position: i + 1,
+      text,
+    })),
+    totalTime: coffee.prepTime[lang],
+  };
+
   return (
     <div className="min-h-screen bg-gradient-warm">
+      <SEO
+        title={`${name} — Café Academy Recipe`}
+        description={description}
+        path={`/coffee/${coffee.id}`}
+        image={coffee.image}
+        type="article"
+        jsonLd={recipeJsonLd}
+      />
       <Navigation />
       <div className="container mx-auto px-4 tablet:px-6 py-8 tablet:py-10">
         <Button

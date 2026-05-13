@@ -1,6 +1,7 @@
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
+import { SEO } from "@/components/SEO";
 import { 
   HelpCircle, 
   Package, 
@@ -125,8 +126,24 @@ const HelpPage = () => {
     faq.a.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
+  };
+
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Help & FAQ — Café Academy"
+        description="Find answers about ordering, delivery area, payment, QR codes and our coffee selection at Café Academy."
+        path="/help"
+        jsonLd={faqJsonLd}
+      />
       <Navigation />
       
       {/* Hero Section */}

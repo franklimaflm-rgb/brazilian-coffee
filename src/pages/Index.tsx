@@ -4,8 +4,11 @@ import { Hero } from "@/components/Hero";
 import { CoffeeCard } from "@/components/CoffeeCard";
 import { Footer } from "@/components/Footer";
 import { InstallPrompt } from "@/components/InstallPrompt";
+import { SEO } from "@/components/SEO";
 import { coffeesI18n } from "@/data/coffees-i18n";
 import { useLanguage } from "@/i18n/LanguageContext";
+
+const SITE_URL = "https://brazilian-coffee.lovable.app";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -17,6 +20,32 @@ const Index = () => {
 
   return (
     <div className="flex flex-col min-h-[100dvh] bg-background w-full">
+      <SEO
+        title="Café Academy — Recipes, Techniques & Coffee Delivery"
+        description="Learn to brew espresso, cappuccino, latte and americano like a barista, and order fresh coffee delivered across Market Harborough."
+        path="/"
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            name: "Café Academy",
+            url: SITE_URL,
+            potentialAction: {
+              "@type": "SearchAction",
+              target: `${SITE_URL}/menu?q={search_term_string}`,
+              "query-input": "required name=search_term_string",
+            },
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            name: "Café Academy",
+            url: SITE_URL,
+            logo: `${SITE_URL}/og-image.jpg`,
+            sameAs: [],
+          },
+        ]}
+      />
       <Navigation />
       <main className="flex-1 w-full">
         <Hero />

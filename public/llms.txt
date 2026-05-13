@@ -1,0 +1,21 @@
+# Café Academy
+
+> Café Academy teaches you to brew world-class coffee at home with detailed recipes, professional techniques and barista tips — and delivers fresh coffee in Market Harborough and surrounding villages.
+
+## Pages
+
+- [Home](/): Featured coffee recipes and an introduction to Café Academy.
+- [Menu](/menu): Full menu of coffees available for ordering and learning.
+- [Espresso recipe](/coffee/espresso): How to pull a perfect espresso shot.
+- [Cappuccino recipe](/coffee/cappuccino): Steamed milk, microfoam and the classic 1:1:1 ratio.
+- [Latte recipe](/coffee/latte): Smooth coffee with steamed milk and a thin foam layer.
+- [Americano recipe](/coffee/americano): Espresso lengthened with hot water.
+- [Delivery](/delivery): Coffee delivery across Market Harborough, Lubenham, Great Bowden and Little Bowden (5km radius).
+- [Track order](/track-order): Look up the status of an existing order.
+- [Help](/help): Ordering, delivery, payment and QR-code FAQ.
+- [Install](/install): Install Café Academy as a Progressive Web App.
+- [Sign in](/auth): Customer sign in and sign up.
+
+## Optional
+
+- [QR code](/qrcode): Generate a QR code that links to the menu.

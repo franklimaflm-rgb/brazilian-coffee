@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
+import { SEO } from "@/components/SEO";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -166,6 +167,33 @@ const DeliveryPage = () => {
 
   return (
     <div className="min-h-screen bg-background w-full">
+      <SEO
+        title="Coffee Delivery in Market Harborough — Café Academy"
+        description="Order fresh coffee delivered across Market Harborough, Lubenham, Great Bowden and Little Bowden. 5km delivery radius."
+        path="/delivery"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "LocalBusiness",
+          name: "Café Academy",
+          image: "https://brazilian-coffee.lovable.app/og-image.jpg",
+          url: "https://brazilian-coffee.lovable.app/delivery",
+          telephone: "+44",
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: "Main Street, 68",
+            addressLocality: "Lubenham",
+            addressRegion: "Market Harborough",
+            addressCountry: "GB",
+          },
+          geo: {
+            "@type": "GeoCoordinates",
+            latitude: 52.4673,
+            longitude: -0.9533,
+          },
+          areaServed: "Market Harborough and surrounding villages (5km radius)",
+          openingHours: "Mo-Sa 08:00-18:00, Su 09:00-16:00",
+        }}
+      />
       <Navigation />
       
       <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 lg:py-12 landscape:py-4 pb-24 md:pb-12 landscape:pb-20">

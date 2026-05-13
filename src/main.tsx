@@ -1,4 +1,5 @@
 import { createRoot } from 'react-dom/client'
+import { HelmetProvider } from 'react-helmet-async'
 import App from './App.tsx'
 import './index.css'
 
@@ -7,12 +8,11 @@ window.addEventListener('error', (event) => {
   if (event.error && event.error.name === 'NotFoundError' &&
       event.error.message.includes('removeChild')) {
     console.warn('DOM manipulation error caught globally:', event.error.message);
-    event.preventDefault(); // Prevent the error from being logged to console
+    event.preventDefault();
     return false;
   }
 });
 
-// Handle unhandled promise rejections
 window.addEventListener('unhandledrejection', (event) => {
   if (event.reason && event.reason.name === 'NotFoundError' &&
       event.reason.message.includes('removeChild')) {
@@ -21,4 +21,8 @@ window.addEventListener('unhandledrejection', (event) => {
   }
 });
 
-createRoot(document.getElementById("root")!).render(<App />);
+createRoot(document.getElementById("root")!).render(
+  <HelmetProvider>
+    <App />
+  </HelmetProvider>
+);

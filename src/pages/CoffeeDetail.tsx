@@ -7,6 +7,9 @@ import { getCoffeeByIdI18n } from "@/data/coffees-i18n";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
+import { SEO } from "@/components/SEO";
+
+const SITE_URL = "https://brazilian-coffee.lovable.app";
 
 const CoffeeDetail = () => {
   const { id } = useParams<{ id: string }>();

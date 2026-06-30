@@ -1,30 +1,25 @@
-## Adicionar tema escuro
+## Diagnóstico
 
-O projeto já tem todas as variáveis CSS de dark mode definidas em `src/index.css` (`.dark { ... }`) e o Tailwind está configurado com `darkMode: ["class"]`. Falta apenas a infraestrutura para alternar e persistir o tema.
+O erro 400 vem do host `jzqymlazswolzsoffpgi.supabase.co`, que **não é** o backend atual deste projeto. O `.env` e `src/integrations/supabase/client.ts` apontam corretamente para `ymsqqetstluhxmrkugvg.supabase.co`. O host antigo só aparece em arquivos de documentação (`CONSOLE_FIXES.md`).
 
-### Etapas
+Causa: o app tem PWA ativado (`vite-plugin-pwa` com `registerType: 'autoUpdate'` e `devOptions.enabled: true`). Um Service Worker antigo, registrado numa build anterior que apontava para o backend errado, ainda está servindo HTML/JS em cache no navegador — por isso o login tenta o domínio Supabase antigo e recebe 400.
 
-1. **Provider de tema**
-   - Criar `src/components/ThemeProvider.tsx` (provider leve, sem dependência nova) que:
-     - Lê preferência salva em `localStorage` (`theme`) ou usa `prefers-color-scheme`.
-     - Aplica/remova a classe `dark` em `document.documentElement`.
-     - Expõe `useTheme()` com `theme` e `setTheme('light' | 'dark' | 'system')`.
+## Plano
 
-2. **Integrar no app**
-   - Envolver a árvore em `src/App.tsx` com `<ThemeProvider defaultTheme="system">` (acima do `LanguageProvider`).
+1. **Adicionar uma rotina de "kill switch" do SW antigo** em `src/main.tsx` (executa cedo, antes do React montar):
+   - Se houver `navigator.serviceWorker`, listar registros, desregistrar todos.
+   - Limpar `caches.keys()` → `caches.delete(...)`.
+   - Marcar `localStorage['sw-reset-v1'] = '1'` para rodar só uma vez por navegador e evitar loop.
+   - Se algo foi limpo, fazer `location.reload()` para carregar o bundle novo já com o backend correto.
 
-3. **Botão de alternância**
-   - Criar `src/components/ThemeToggle.tsx` com ícones `Sun` / `Moon` (lucide-react) usando o `Button` (variant `ghost`, size `icon`).
-   - Inserir o toggle no `src/components/Navigation.tsx` ao lado do `LanguageSelector` (desktop e mobile sheet).
+2. **Desativar o SW em desenvolvimento** em `vite.config.ts`:
+   - `devOptions.enabled: false` (mantém PWA só no build de produção). Isso evita o `dev-dist/sw.js` cachear o app durante o trabalho no preview.
 
-4. **Traduções**
-   - Adicionar chaves `theme.light`, `theme.dark`, `theme.toggle` em `src/i18n/translations.ts` (PT/EN/ES, conforme idiomas existentes) para `aria-label` do botão.
+3. **Limpar referências obsoletas em docs** (não afeta runtime, mas evita confusão futura):
+   - Remover/atualizar URLs antigas (`jzqymlazswolzsoffpgi`, `eticmvmetfpijbavteel`) em `CONSOLE_FIXES.md`, `README.md`, `SUPABASE_400_ERROR_RESOLUTION_REPORT.md`, `ADMIN_PANEL_FIXES_REPORT.md`, `database-setup.md`.
 
-5. **Anti-flash**
-   - Adicionar pequeno script inline em `index.html` (`<head>`) que aplica a classe `dark` antes do React montar, evitando flash branco no carregamento.
+4. **Verificar**: após o reload automático, o login no `/admin` deve bater em `ymsqqetstluhxmrkugvg.supabase.co/auth/v1/token`. Se as credenciais estiverem corretas, retorna 200; um 400 nesse host significaria apenas senha inválida, não cache.
 
-### Detalhes técnicos
+## Observação
 
-- Sem novas dependências; aproveitamos os tokens HSL já existentes em `index.css`.
-- `next-themes` não será adicionado para manter o bundle enxuto (o `sonner.tsx` já o importa, mas funciona com `theme="system"` lendo a classe do `<html>`; nada a alterar lá).
-- Nenhuma mudança de lógica de negócio, somente apresentação.
+Não é necessário mexer no client Supabase nem em variáveis de ambiente — eles já estão certos. O problema é puramente cache do Service Worker no navegador do usuário.

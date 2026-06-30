@@ -1,0 +1,33 @@
+{
+  "name": "Café Academy - Aprenda a Fazer Café Perfeito",
+  "short_name": "Café Academy",
+  "description": "Aprenda a fazer os melhores cafés do mundo com receitas detalhadas e técnicas profissionais.",
+  "theme_color": "#3D2817",
+  "background_color": "#F5EFE7",
+  "display": "standalone",
+  "orientation": "portrait",
+  "scope": "/",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["education", "food", "lifestyle"],
+  "screenshots": []
+}

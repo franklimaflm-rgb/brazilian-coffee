@@ -8,7 +8,7 @@ import './index.css'
 // browser (guarded by localStorage flag) to avoid reload loops.
 (async () => {
   try {
-    const FLAG = 'sw-reset-v2';
+    const FLAG = 'sw-reset-v3';
     if (typeof window === 'undefined' || localStorage.getItem(FLAG)) return;
     let cleaned = false;
     if ('serviceWorker' in navigator) {

@@ -31,7 +31,7 @@ export const Hero = () => {
             {t('hero.title')}
           </h1>
           
-          <p className="text-lg sm:text-xl md:text-2xl tablet:text-xl portrait:text-base portrait:sm:text-lg landscape:text-sm landscape:sm:text-base mb-8 tablet:mb-7 portrait:mb-5 landscape:mb-4 text-gray-200 max-w-2xl mx-auto leading-relaxed break-word">
+          <p className="text-lg sm:text-xl md:text-2xl tablet:text-xl portrait:text-base portrait:sm:text-lg landscape:text-sm landscape:sm:text-base mb-8 tablet:mb-7 portrait:mb-5 landscape:mb-4 text-white max-w-2xl mx-auto leading-relaxed break-word">
             {t('hero.description')}
           </p>
           
@@ -58,15 +58,15 @@ export const Hero = () => {
           <div className="w-full max-w-md sm:max-w-3xl mx-auto grid grid-cols-3 landscape:grid-cols-3 gap-3 sm:gap-6 tablet:gap-5 portrait:gap-3 landscape:gap-2 text-center">
             <div className="bg-white/10 backdrop-blur-sm rounded-lg sm:rounded-2xl p-3 sm:p-6 tablet:p-5 portrait:p-3 landscape:p-2 border border-white/20">
               <h3 className="text-lg sm:text-2xl tablet:text-xl portrait:text-lg landscape:text-base font-bold mb-1 sm:mb-2 portrait:mb-1 landscape:mb-0">15+</h3>
-              <p className="text-xs sm:text-base tablet:text-sm portrait:text-xs landscape:text-xs text-gray-200">Tipos de Café</p>
+              <p className="text-xs sm:text-base tablet:text-sm portrait:text-xs landscape:text-xs text-white">Tipos de Café</p>
             </div>
             <div className="bg-white/10 backdrop-blur-sm rounded-lg sm:rounded-2xl p-3 sm:p-6 tablet:p-5 portrait:p-3 landscape:p-2 border border-white/20">
               <h3 className="text-lg sm:text-2xl tablet:text-xl portrait:text-lg landscape:text-base font-bold mb-1 sm:mb-2 portrait:mb-1 landscape:mb-0">100%</h3>
-              <p className="text-xs sm:text-base tablet:text-sm portrait:text-xs landscape:text-xs text-gray-200">Receitas Testadas</p>
+              <p className="text-xs sm:text-base tablet:text-sm portrait:text-xs landscape:text-xs text-white">Receitas Testadas</p>
             </div>
             <div className="bg-white/10 backdrop-blur-sm rounded-lg sm:rounded-2xl p-3 sm:p-6 tablet:p-5 portrait:p-3 landscape:p-2 border border-white/20">
               <h3 className="text-lg sm:text-2xl tablet:text-xl portrait:text-lg landscape:text-base font-bold mb-1 sm:mb-2 portrait:mb-1 landscape:mb-0">5★</h3>
-              <p className="text-xs sm:text-base tablet:text-sm portrait:text-xs landscape:text-xs text-gray-200">Avaliação Média</p>
+              <p className="text-xs sm:text-base tablet:text-sm portrait:text-xs landscape:text-xs text-white">Avaliação Média</p>
             </div>
           </div>
         </div>

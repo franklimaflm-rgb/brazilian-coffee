@@ -28,9 +28,36 @@
     <meta name="twitter:title" content="Café Academy - Aprenda a Fazer Café Perfeito" />
     <meta name="twitter:description" content="Aprenda a fazer os melhores cafés do mundo com receitas detalhadas e técnicas profissionais." />
     <meta name="twitter:image" content="https://brazilian-coffee.lovable.app/og-image.jpg" />
+    <script>
+      // Runs before any app bundle: nuke stale Service Workers / caches from
+      // older builds that pointed at a decommissioned backend.
+      (function () {
+        try {
+          if (!('serviceWorker' in navigator)) return;
+          navigator.serviceWorker.getRegistrations().then(function (regs) {
+            if (!regs.length) return;
+            Promise.all(regs.map(function (r) { return r.unregister(); }))
+              .then(function () {
+                return 'caches' in window
+                  ? caches.keys().then(function (keys) {
+                      return Promise.all(keys.map(function (k) { return caches.delete(k); }));
+                    })
+                  : null;
+              })
+              .then(function () {
+                if (!sessionStorage.getItem('sw-purged')) {
+                  sessionStorage.setItem('sw-purged', '1');
+                  location.reload();
+                }
+              });
+          });
+        } catch (e) {}
+      })();
+    </script>
   </head>
 
   <body>
+
     <script>
       (function () {
         try {

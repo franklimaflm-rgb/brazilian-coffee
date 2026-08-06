@@ -332,7 +332,9 @@ export const translations = {
       resetLinkSent: "Link enviado!",
       resetLinkSentMessage: "Verifique seu email para redefinir sua senha",
       resetPasswordFailed: "Falha ao enviar link",
-      backToLogin: "Voltar ao login"
+      backToLogin: "Voltar ao login",
+      continueWithGoogle: "Continuar com Google",
+      or: "ou"
     }
   },
   
@@ -669,7 +671,9 @@ export const translations = {
       resetLinkSent: "Link sent!",
       resetLinkSentMessage: "Check your email to reset your password",
       resetPasswordFailed: "Failed to send link",
-      backToLogin: "Back to login"
+      backToLogin: "Back to login",
+      continueWithGoogle: "Continue with Google",
+      or: "or"
     }
   }
 };

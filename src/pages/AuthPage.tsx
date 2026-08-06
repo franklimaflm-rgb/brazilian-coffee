@@ -198,6 +198,33 @@ const AuthPage = () => {
     }
   };
 
+  const handleGoogleSignIn = async () => {
+    setIsLoading(true);
+    try {
+      const result = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: window.location.origin,
+      });
+
+      if (result.error) {
+        toast({
+          title: t('auth.loginFailed'),
+          description: result.error instanceof Error ? result.error.message : String(result.error),
+          variant: "destructive",
+        });
+      }
+      // result.redirected means the browser is being redirected to Google
+      // result.tokens will be handled by the onAuthStateChange listener
+    } catch (error) {
+      toast({
+        title: t('auth.loginFailed'),
+        description: t('auth.unexpectedError'),
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Forgot Password View
   if (showForgotPassword) {
     return (

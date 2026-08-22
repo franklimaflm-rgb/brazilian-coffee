@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "sdk_version": "0.26.3",
+  "path": "/functions/v1/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://ymsqqetstluhxmrkugvg.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "brazilian-coffee",
+      "version": "0.1.0",
+      "title": "brazilian-coffee"
+    },
+    "tools": [
+      {
+        "name": "list_coffee_products",
+        "title": "List coffee products",
+        "description": "List the coffees currently available on the Brazilian Coffee menu, with prices.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "track_order",
+        "title": "Track an order",
+        "description": "Look up a Brazilian Coffee order by its order number and the email used at checkout, returning status, items and total.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "order_number": {
+              "type": "string",
+              "description": "Order number, e.g. BC123456."
+            },
+            "email": {
+              "type": "string",
+              "description": "Email address used when the order was placed."
+            }
+          },
+          "required": [
+            "order_number",
+            "email"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_my_orders",
+        "title": "List my orders",
+        "description": "List the Brazilian Coffee orders belonging to the signed-in user, newest first.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}

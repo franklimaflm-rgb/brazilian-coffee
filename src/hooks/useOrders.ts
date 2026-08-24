@@ -87,10 +87,6 @@ export const useOrders = () => {
       // Generate order number
       const orderNumber = `BC${Date.now().toString().slice(-6)}`;
 
-      // Calculate amounts
-      const subtotal = validatedData.items.reduce((sum, item) => sum + (item.quantity * item.unit_price), 0);
-      const totalAmount = subtotal + validatedData.delivery_fee;
-
       // Use SECURITY DEFINER RPC for secure guest order creation
       // This centralizes validation server-side and prevents direct anonymous table access
       const { data: orderId, error: rpcError } = await supabase.rpc('create_guest_order', {
@@ -107,16 +103,14 @@ export const useOrders = () => {
         },
         _order_data: {
           order_number: orderNumber,
-          total_amount: totalAmount,
+          delivery_fee: validatedData.delivery_fee,
           delivery_instructions: validatedData.special_instructions || null,
         },
         _items: validatedData.items.map(item => ({
           coffee_product_id: item.coffee_product_id,
           quantity: item.quantity,
-          unit_price: item.unit_price,
-          total_price: item.quantity * item.unit_price,
         })),
-      } as any);
+      });
 
       if (rpcError) throw rpcError;
 

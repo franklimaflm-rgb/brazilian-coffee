@@ -142,9 +142,10 @@ export const Navigation = () => {
             <div className="md:hidden">
               <Sheet>
                 <SheetTrigger asChild>
-                  <Button variant="ghost" size="sm">
-                    <Menu className="w-5 h-5" />
+                  <Button variant="ghost" size="sm" aria-label="Open navigation menu">
+                    <Menu className="w-5 h-5" aria-hidden="true" />
                   </Button>
+
                 </SheetTrigger>
                 <SheetContent className="w-[300px] sm:w-[400px]">
                   <VisuallyHidden>

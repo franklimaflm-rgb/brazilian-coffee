@@ -77,7 +77,7 @@ const CoffeeDetail = () => {
           <div className="aspect-square rounded-lg overflow-hidden shadow-warm">
             <img
               src={coffee.image}
-              alt={coffee.name[language]}
+              alt={`${coffee.name[language]} coffee recipe`}
               className="w-full h-full object-cover"
             />
           </div>

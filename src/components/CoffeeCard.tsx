@@ -45,14 +45,14 @@ export const CoffeeCard = ({
       <div className="aspect-square overflow-hidden">
         <img
           src={image}
-          alt={name}
+          alt={`${name} coffee drink`}
           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
           loading="lazy"
           decoding="async"
         />
       </div>
       <CardContent className="p-3 sm:p-4 tablet:p-5 md:p-6">
-        <h3 className="text-lg sm:text-xl tablet:text-xl font-bold text-foreground mb-2">{name}</h3>
+        <h2 className="text-lg sm:text-xl tablet:text-xl font-bold text-foreground mb-2">{name}</h2>
         <p className="text-sm sm:text-base tablet:text-base text-muted-foreground mb-3 tablet:mb-3.5 sm:mb-4 line-clamp-2">{description}</p>
 
         <div className="flex items-center justify-between mb-3 tablet:mb-3.5 sm:mb-4 text-xs sm:text-sm tablet:text-sm text-muted-foreground">

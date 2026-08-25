@@ -75,17 +75,19 @@ export const Navigation = () => {
             {/* Desktop/Tablet Navigation - Icons only on tablet (md), full on desktop (lg) */}
             <div className="hidden md:flex items-center gap-1 lg:gap-4">
               {navItems.map(({ to, label, icon: Icon }) => (
-                <Link key={to} to={to}>
+                <Link key={to} to={to} aria-label={label}>
                   <Button
                     variant={isActive(to) ? "secondary" : "ghost"}
                     className="flex items-center gap-2 px-2 lg:px-4"
                     size="sm"
                     title={label}
                   >
-                    <Icon className="w-4 h-4" />
+                    <Icon className="w-4 h-4" aria-hidden="true" />
                     <span className="hidden lg:inline">{label}</span>
+                    <span className="sr-only lg:hidden">{label}</span>
                   </Button>
                 </Link>
+
               ))}
             </div>
 
@@ -140,9 +142,10 @@ export const Navigation = () => {
             <div className="md:hidden">
               <Sheet>
                 <SheetTrigger asChild>
-                  <Button variant="ghost" size="sm">
-                    <Menu className="w-5 h-5" />
+                  <Button variant="ghost" size="sm" aria-label="Open navigation menu">
+                    <Menu className="w-5 h-5" aria-hidden="true" />
                   </Button>
+
                 </SheetTrigger>
                 <SheetContent className="w-[300px] sm:w-[400px]">
                   <VisuallyHidden>

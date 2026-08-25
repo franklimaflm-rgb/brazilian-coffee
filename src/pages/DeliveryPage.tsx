@@ -233,7 +233,7 @@ const DeliveryPage = () => {
               <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
                 {/* Customer Information */}
                 <div className="space-y-3 sm:space-y-4">
-                  <h3 className="text-base sm:text-lg font-semibold">{t('delivery.orderForm.customerInfo')}</h3>
+                  <h2 className="text-base sm:text-lg font-semibold">{t('delivery.orderForm.customerInfo')}</h2>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div>
@@ -435,7 +435,7 @@ const DeliveryPage = () => {
                       <div className="w-16 h-16 bg-red-500 rounded-full mx-auto mb-4 flex items-center justify-center">
                         <div className="w-3 h-3 bg-white rounded-full"></div>
                       </div>
-                      <h3 className="text-lg font-semibold text-gray-700 mb-2">Map Temporarily Unavailable</h3>
+                      <h2 className="text-lg font-semibold text-muted-foreground mb-2">Map Temporarily Unavailable</h2>
                       <p className="text-sm text-gray-600 mb-4">We deliver within 5km of Lubenham, Market Harborough</p>
                       <div className="inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs">
                         5km Delivery Radius

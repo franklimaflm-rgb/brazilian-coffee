@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { ScrollToTop } from "@/components/ScrollToTop";
@@ -36,7 +36,8 @@ const App = () => (
             <Route path="/menu" element={<MenuPage />} />
             <Route path="/coffee/:id" element={<CoffeeDetail />} />
             <Route path="/delivery" element={<DeliveryPage />} />
-            <Route path="/admin" element={<AdminPage />} />
+            <Route path="/ADMIN" element={<AdminPage />} />
+            <Route path="/admin" element={<Navigate to="/ADMIN" replace />} />
             <Route path="/track-order" element={<OrderTracking />} />
             <Route path="/database-test" element={<DatabaseTest />} />
             <Route path="/qrcode" element={<QRCodePage />} />

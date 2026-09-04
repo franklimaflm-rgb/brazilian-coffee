@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Clearing cache...</title></head>
+<body>
+<p id="status">Limpando cache e Service Workers...</p>
+<script>
+(async function() {
+  const status = document.getElementById('status');
+  try {
+    // Unregister all service workers
+    if ('serviceWorker' in navigator) {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      for (const reg of regs) await reg.unregister();
+      status.textContent = 'Service Workers removidos (' + regs.length + ')...';
+    }
+    // Clear all caches
+    if ('caches' in window) {
+      const keys = await caches.keys();
+      for (const key of keys) await caches.delete(key);
+    }
+    // Clear localStorage
+    localStorage.clear();
+    sessionStorage.clear();
+    status.textContent = 'Cache limpo! Redirecionando para /ADMIN...';
+    setTimeout(() => { window.location.href = '/ADMIN'; }, 1500);
+  } catch(e) {
+    status.textContent = 'Erro: ' + e.message;
+  }
+})();
+</script>
+</body>
+</html>

@@ -125,7 +125,7 @@ const AdminSetupForm = ({ onCreateAdmin }: { onCreateAdmin: (email: string, pass
 
 const AdminLoginForm = ({ onLogin, needsSetup }: { onLogin: (email: string, password: string) => Promise<{ success: boolean; error?: string; needsSetup?: boolean; diagnosticData?: any }>, needsSetup?: boolean }) => {
   const { t } = useLanguage();
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState("franklinmarceloferreiradelima@gmail.com");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [lastDiagnosticData, setLastDiagnosticData] = useState<any>(null);
@@ -237,7 +237,6 @@ End of Manual Diagnostic Report
                 placeholder="franklinmarceloferreiradelima@gmail.com"
                 autoComplete="email"
                 required
-                disabled
               />
             </div>
             <div>

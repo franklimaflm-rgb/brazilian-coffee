@@ -6,6 +6,30 @@ import { brokeredPreviewStorage } from './previewAuthStorage';
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
+// Clean up localStorage keys from other projects that may interfere with auth
+// This runs once on module load and removes any non-Brazilian-Coffee keys
+(function cleanForeignStorage() {
+  try {
+    const COFFEE_KEYS = ['sb-', 'supabase.auth', 'installPromptDismissed', 'language', '__lovable', 'sw-reset', 'theme', 'pwa-'];
+    const keysToRemove: string[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (!key) continue;
+      const isCoffeeKey = COFFEE_KEYS.some(prefix => key.startsWith(prefix));
+      const isMonitoreKey = key.startsWith('monitore') || key.startsWith('map-') || key.startsWith('app.') || key.startsWith('app-') || key.startsWith('panel:') || key === 'location-consent-v1' || key === 'i18nextLng' || key === 'map-style';
+      if (isMonitoreKey && !isCoffeeKey) {
+        keysToRemove.push(key);
+      }
+    }
+    keysToRemove.forEach(k => localStorage.removeItem(k));
+    if (keysToRemove.length > 0) {
+      console.log('[BrazilianCoffee] Cleaned foreign localStorage keys:', keysToRemove);
+    }
+  } catch (e) {
+    // Ignore errors in storage cleanup
+  }
+})();
+
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 

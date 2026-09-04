@@ -136,7 +136,7 @@ var list_my_orders_default = defineTool3({
 });
 
 // src/lib/mcp/index.ts
-var projectRef = "ymsqqetstluhxmrkugvg";
+var projectRef = "qxzfzhuuqbuwvpmuobuo";
 var mcp_default = defineMcp({
   name: "brazilian-coffee",
   title: "brazilian-coffee",

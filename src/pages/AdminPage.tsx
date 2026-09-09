@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAdmin, useAdminAuth, OrderStatus } from "@/hooks/useAdmin";
+import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -259,6 +260,26 @@ End of Manual Diagnostic Report
               ) : (
                 t('admin.login')
               )}
+            </Button>
+
+            <Button
+              type="button"
+              variant="link"
+              className="w-full text-sm text-muted-foreground hover:text-primary"
+              disabled={isLoading}
+              onClick={async () => {
+                if (!email) {
+                  toast.error('Informe o e-mail do administrador');
+                  return;
+                }
+                const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+                  redirectTo: `${window.location.origin}/reset-password`,
+                });
+                if (error) toast.error(error.message);
+                else toast.success('Enviamos um link de recuperação para o seu e-mail');
+              }}
+            >
+              Esqueci minha senha
             </Button>
 
             {/* Diagnostic Button */}

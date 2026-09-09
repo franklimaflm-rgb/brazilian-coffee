@@ -18,6 +18,7 @@ import NotFound from "./pages/NotFound";
 import HelpPage from "./pages/HelpPage";
 import InstallPage from "./pages/InstallPage";
 import AuthPage from "./pages/AuthPage";
+import ResetPassword from "./pages/ResetPassword";
 import OAuthConsent from "./pages/OAuthConsent";
 
 const queryClient = new QueryClient();
@@ -44,6 +45,7 @@ const App = () => (
             <Route path="/help" element={<HelpPage />} />
             <Route path="/install" element={<InstallPage />} />
             <Route path="/auth" element={<AuthPage />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

@@ -261,6 +261,26 @@ End of Manual Diagnostic Report
               )}
             </Button>
 
+            <Button
+              type="button"
+              variant="link"
+              className="w-full text-sm text-muted-foreground hover:text-primary"
+              disabled={isLoading}
+              onClick={async () => {
+                if (!email) {
+                  toast.error('Informe o e-mail do administrador');
+                  return;
+                }
+                const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+                  redirectTo: `${window.location.origin}/reset-password`,
+                });
+                if (error) toast.error(error.message);
+                else toast.success('Enviamos um link de recuperação para o seu e-mail');
+              }}
+            >
+              Esqueci minha senha
+            </Button>
+
             {/* Diagnostic Button */}
             <Button
               type="button"

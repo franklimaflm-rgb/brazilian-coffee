@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAdmin, useAdminAuth, OrderStatus } from "@/hooks/useAdmin";
+import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";

@@ -18,6 +18,7 @@ import NotFound from "./pages/NotFound";
 import HelpPage from "./pages/HelpPage";
 import InstallPage from "./pages/InstallPage";
 import AuthPage from "./pages/AuthPage";
+import ResetPassword from "./pages/ResetPassword";
 import OAuthConsent from "./pages/OAuthConsent";
 
 const queryClient = new QueryClient();

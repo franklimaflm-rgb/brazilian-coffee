@@ -29,6 +29,22 @@
     <meta name="twitter:description" content="Aprenda a fazer os melhores cafés do mundo com receitas detalhadas e técnicas profissionais." />
     <meta name="twitter:image" content="https://brazilian-coffee.lovable.app/og-image.jpg" />
     <script>
+      // Password recovery links may land on "/" or "/auth" (backend falls back to
+      // the site URL). Send them to the reset page before the app boots so the
+      // recovery session isn't swallowed by other pages.
+      (function () {
+        try {
+          var h = location.hash || '';
+          var q = location.search || '';
+          var isRecovery = /type=recovery/.test(h) || /type=recovery/.test(q);
+          var isRecoveryError = /error_code=/.test(h) && /(otp_expired|access_denied)/.test(h);
+          if ((isRecovery || isRecoveryError) && location.pathname !== '/reset-password') {
+            history.replaceState(null, '', '/reset-password' + q + h);
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <script>
       // Runs before any app bundle: nuke stale Service Workers / caches from
       // older builds that pointed at a decommissioned backend.
       (function () {

@@ -35,6 +35,7 @@ export interface OrderFormData {
   special_instructions?: string;
   delivery_fee: number;
   estimated_delivery_time: number;
+  referral_code?: string;
 }
 
 export interface OrderResult {
@@ -105,6 +106,7 @@ export const useOrders = () => {
           order_number: orderNumber,
           delivery_fee: validatedData.delivery_fee,
           delivery_instructions: validatedData.special_instructions || null,
+          referral_code: validatedData.referral_code || null,
         },
         _items: validatedData.items.map(item => ({
           coffee_product_id: item.coffee_product_id,

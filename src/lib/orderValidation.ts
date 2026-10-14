@@ -82,6 +82,7 @@ export const orderFormSchema = z.object({
     .int('Delivery time must be a whole number')
     .min(1, 'Delivery time must be at least 1 minute')
     .max(300, 'Delivery time exceeds maximum'),
+  referral_code: z.string().trim().max(20).regex(/^[A-Za-z0-9]*$/, 'Invalid referral code').optional(),
 });
 
 // Type exports

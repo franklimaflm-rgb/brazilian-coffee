@@ -172,6 +172,7 @@ export type Database = {
           created_at: string
           customer_id: string | null
           delivery_instructions: string | null
+          discount_amount: number
           id: string
           order_number: string
           status: Database["public"]["Enums"]["order_status"]
@@ -183,6 +184,7 @@ export type Database = {
           created_at?: string
           customer_id?: string | null
           delivery_instructions?: string | null
+          discount_amount?: number
           id?: string
           order_number: string
           status?: Database["public"]["Enums"]["order_status"]
@@ -194,6 +196,7 @@ export type Database = {
           created_at?: string
           customer_id?: string | null
           delivery_instructions?: string | null
+          discount_amount?: number
           id?: string
           order_number?: string
           status?: Database["public"]["Enums"]["order_status"]
@@ -213,6 +216,82 @@ export type Database = {
             columns: ["customer_id"]
             isOneToOne: false
             referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      referral_codes: {
+        Row: {
+          code: string
+          created_at: string
+          owner_email: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          owner_email: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          owner_email?: string
+        }
+        Relationships: []
+      }
+      referrals: {
+        Row: {
+          code: string
+          created_at: string
+          discount_amount: number
+          id: string
+          order_id: string | null
+          referred_email: string
+          referrer_email: string
+          reward_amount: number
+          reward_used_order_id: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          discount_amount?: number
+          id?: string
+          order_id?: string | null
+          referred_email: string
+          referrer_email: string
+          reward_amount?: number
+          reward_used_order_id?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          discount_amount?: number
+          id?: string
+          order_id?: string | null
+          referred_email?: string
+          referrer_email?: string
+          reward_amount?: number
+          reward_used_order_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referrals_code_fkey"
+            columns: ["code"]
+            isOneToOne: false
+            referencedRelation: "referral_codes"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "referrals_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referrals_reward_used_order_id_fkey"
+            columns: ["reward_used_order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
             referencedColumns: ["id"]
           },
         ]
@@ -243,6 +322,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_referral_code: {
+        Args: { _code: string; _email: string }
+        Returns: boolean
+      }
       create_guest_order: {
         Args: {
           _address_data: Json
@@ -252,6 +335,7 @@ export type Database = {
         }
         Returns: string
       }
+      get_or_create_referral_code: { Args: { _email: string }; Returns: string }
       get_order_by_number: {
         Args: { _email: string; _order_number: string }
         Returns: {
@@ -268,6 +352,13 @@ export type Database = {
           special_instructions: string
           status: Database["public"]["Enums"]["order_status"]
           total_amount: number
+        }[]
+      }
+      get_referral_stats: {
+        Args: { _code: string }
+        Returns: {
+          referrals_count: number
+          rewards_available: number
         }[]
       }
       has_role: {

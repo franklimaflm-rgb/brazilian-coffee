@@ -47,6 +47,11 @@ const DeliveryPage = () => {
   const { validateAddress, isValidating } = useDeliveryValidation();
   const { products, loading: productsLoading, fetchProducts } = useCoffeeProducts();
   const [searchParams] = useSearchParams();
+  const [referralCode, setReferralCode] = useState<string>(() => {
+    const fromUrl = searchParams.get('ref');
+    if (fromUrl) { try { localStorage.setItem('bc-ref', fromUrl.toUpperCase()); } catch { /* ignore */ } return fromUrl.toUpperCase(); }
+    try { return localStorage.getItem('bc-ref') || ''; } catch { return ''; }
+  });
 
   const [orderForm, setOrderForm] = useState<OrderForm>({
     name: "",
@@ -134,6 +139,7 @@ const DeliveryPage = () => {
       special_instructions: orderForm.specialInstructions,
       delivery_fee: addressValidation.deliveryFee || 0,
       estimated_delivery_time: addressValidation.estimatedTime || 30,
+      referral_code: referralCode.trim() || undefined,
     };
 
     const result = await submitOrder(orderData);
@@ -150,6 +156,7 @@ const DeliveryPage = () => {
         quantity: 1,
         specialInstructions: ""
       });
+      setReferralCode("");
       setAddressValidation(null);
     } else {
       toast.error(result.error || 'Failed to place order. Please try again.');
@@ -160,7 +167,9 @@ const DeliveryPage = () => {
   const selectedProduct = products.find(p => p.id === orderForm.coffee);
   const coffeePrice = selectedProduct?.price || 8.50;
   const deliveryFee = addressValidation?.deliveryFee || 0;
-  const totalPrice = (coffeePrice * orderForm.quantity) + deliveryFee;
+  const itemsSubtotal = coffeePrice * orderForm.quantity;
+  const referralDiscount = referralCode.trim() ? Math.round(itemsSubtotal * 10) / 100 : 0;
+  const totalPrice = itemsSubtotal - referralDiscount + deliveryFee;
   const estimatedTimeDisplay = addressValidation?.estimatedTime
     ? `${addressValidation.estimatedTime}-${addressValidation.estimatedTime + 10} ${language === 'pt-BR' ? 'minutos' : 'minutes'}`
     : "";
@@ -377,6 +386,22 @@ const DeliveryPage = () => {
                       />
                     </div>
 
+                    <div>
+                      <Label htmlFor="referral">{language === 'pt-BR' ? 'Código de indicação (opcional)' : 'Referral code (optional)'}</Label>
+                      <Input
+                        id="referral"
+                        value={referralCode}
+                        onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+                        placeholder="CAFEXXXXX"
+                        maxLength={20}
+                      />
+                      {referralCode && (
+                        <p className="text-sm text-muted-foreground mt-1">
+                          {language === 'pt-BR' ? '10% de desconto no primeiro pedido.' : '10% off your first order.'}
+                        </p>
+                      )}
+                    </div>
+
                     {/* Order Summary */}
                     {selectedCoffee && (
                       <div className="border-t pt-4 space-y-2">
@@ -384,6 +409,12 @@ const DeliveryPage = () => {
                           <span>{selectedCoffee.name[language]} x {orderForm.quantity}</span>
                           <span>£{(coffeePrice * orderForm.quantity).toFixed(2)}</span>
                         </div>
+                        {referralDiscount > 0 && (
+                          <div className="flex justify-between text-primary">
+                            <span>{language === 'pt-BR' ? 'Desconto de indicação' : 'Referral discount'}</span>
+                            <span>-£{referralDiscount.toFixed(2)}</span>
+                          </div>
+                        )}
                         <div className="flex justify-between">
                           <span>{t('delivery.orderForm.deliveryFee')}</span>
                           <span>£{deliveryFee.toFixed(2)}</span>

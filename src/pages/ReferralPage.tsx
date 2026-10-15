@@ -46,7 +46,7 @@ const ReferralPage = () => {
 
   return (
     <div className="min-h-[100dvh] bg-background">
-      <SEO title={pt ? "Indique e Ganhe | Brazilian Coffee" : "Refer a Friend | Brazilian Coffee"} description={pt ? "Indique amigos: eles ganham 10% e você ganha £3." : "Refer friends: they get 10% off, you get £3."} />
+      <SEO path="/indique" title={pt ? "Indique e Ganhe | Brazilian Coffee" : "Refer a Friend | Brazilian Coffee"} description={pt ? "Indique amigos: eles ganham 10% e você ganha £3." : "Refer friends: they get 10% off, you get £3."} />
       <Navigation />
       <main className="container mx-auto px-4 py-16 max-w-xl">
         <Card className="rounded-2xl">

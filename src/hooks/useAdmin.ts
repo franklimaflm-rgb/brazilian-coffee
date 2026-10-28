@@ -46,12 +46,9 @@ export const useAdmin = (isAuthenticated: boolean = false) => {
         .from('orders')
         .select(`
           *,
-          customers (
-            id,
-            name,
-            email,
-            phone
-          )
+          customers ( id, name, email, phone ),
+          addresses ( id, street, city, postal_code, country, latitude, longitude ),
+          order_items ( id, coffee_product_id, quantity, unit_price, total_price, coffee_products ( name ) )
         `)
         .order('created_at', { ascending: false });
 

@@ -88,8 +88,25 @@ const ResetPassword = () => {
       return;
     }
 
-    toast({ title: 'Senha alterada', description: 'Pronto! Você já está conectado com a nova senha.' });
-    navigate('/');
+    // Admins go straight back to their dashboard; customers go to the home page.
+    let destination = '/';
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: isAdmin } = await supabase.rpc('has_role', { _user_id: user.id, _role: 'admin' });
+        if (isAdmin === true) destination = '/ADMIN';
+      }
+    } catch {
+      // Role check failed — fall back to the home page.
+    }
+
+    toast({
+      title: 'Senha alterada',
+      description: destination === '/ADMIN'
+        ? 'Pronto! Abrindo o painel do administrador.'
+        : 'Pronto! Você já está conectado com a nova senha.',
+    });
+    navigate(destination, { replace: true });
   };
 
   const handleResend = async (e: React.FormEvent) => {

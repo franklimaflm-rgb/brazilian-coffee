@@ -1,3 +1,4 @@
+// @ts-nocheck -- run with `bun test`
 import { expect, test } from "bun:test";
 import { computeStats, type AdminOrder } from "./adminUtils";
 

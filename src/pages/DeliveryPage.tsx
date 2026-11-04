@@ -16,6 +16,8 @@ import { DeliveryMap } from "@/components/DeliveryMap";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { coffeesI18n } from "@/data/coffees-i18n";
 import { useOrders, useDeliveryValidation, useCoffeeProducts } from "@/hooks/useOrders";
+import { useStoreSettings } from "@/hooks/useStoreSettings";
+import { formatHours, isOpenAt, meetsMinimum, schemaOpeningHours } from "@/lib/storeSettings";
 import { toast } from "sonner";
 
 interface OrderForm {
@@ -46,6 +48,20 @@ const DeliveryPage = () => {
   const { submitOrder, isSubmitting } = useOrders();
   const { validateAddress, isValidating } = useDeliveryValidation();
   const { products, loading: productsLoading, fetchProducts } = useCoffeeProducts();
+  const { settings } = useStoreSettings();
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 60_000);
+    return () => clearInterval(id);
+  }, []);
+  const isOpen = isOpenAt(settings.opening_hours, now);
+  const hoursText = formatHours(settings.opening_hours, language === 'pt-BR' ? 'pt-BR' : 'en');
+  const closedMessage = language === 'pt-BR'
+    ? `Estamos fechados agora. Horário: ${hoursText}`
+    : `We're closed right now. Hours: ${hoursText}`;
+  const minOrderMessage = language === 'pt-BR'
+    ? `Pedido mínimo de £${settings.min_order_amount.toFixed(2)} (sem a entrega).`
+    : `Minimum order is £${settings.min_order_amount.toFixed(2)} (excluding delivery).`;
   const [searchParams] = useSearchParams();
   const [referralCode, setReferralCode] = useState<string>(() => {
     const fromUrl = searchParams.get('ref');
@@ -91,7 +107,7 @@ const DeliveryPage = () => {
       return;
     }
 
-    const result = await validateAddress(orderForm.address);
+    const result = await validateAddress(orderForm.address, settings);
     setAddressValidation({
       isValid: result.isValid,
       isWithinRange: result.isWithinRange,
@@ -116,6 +132,15 @@ const DeliveryPage = () => {
     const selectedProduct = products.find(p => p.id === orderForm.coffee);
     if (!selectedProduct) {
       toast.error(t('delivery.validation.coffeeRequired'));
+      return;
+    }
+
+    if (!isOpenAt(settings.opening_hours)) {
+      toast.error(closedMessage);
+      return;
+    }
+    if (!meetsMinimum(settings, selectedProduct.price * orderForm.quantity)) {
+      toast.error(minOrderMessage);
       return;
     }
 
@@ -159,7 +184,13 @@ const DeliveryPage = () => {
       setReferralCode("");
       setAddressValidation(null);
     } else {
-      toast.error(result.error || 'Failed to place order. Please try again.');
+      const err = result.error || '';
+      if (err.includes('STORE_CLOSED')) toast.error(closedMessage);
+      else if (err.includes('MIN_ORDER')) toast.error(minOrderMessage);
+      else if (err.includes('FEE_OUTDATED')) {
+        setAddressValidation(null);
+        toast.error(language === 'pt-BR' ? 'A taxa de entrega mudou. Verifique o endereço novamente.' : 'The delivery fee changed. Please check your address again.');
+      } else toast.error(err || 'Failed to place order. Please try again.');
     }
   };
 
@@ -170,6 +201,7 @@ const DeliveryPage = () => {
   const itemsSubtotal = coffeePrice * orderForm.quantity;
   const referralDiscount = referralCode.trim() ? Math.round(itemsSubtotal * 10) / 100 : 0;
   const totalPrice = itemsSubtotal - referralDiscount + deliveryFee;
+  const belowMinimum = !!selectedProduct && !meetsMinimum(settings, itemsSubtotal);
   const estimatedTimeDisplay = addressValidation?.estimatedTime
     ? `${addressValidation.estimatedTime}-${addressValidation.estimatedTime + 10} ${language === 'pt-BR' ? 'minutos' : 'minutes'}`
     : "";
@@ -200,7 +232,7 @@ const DeliveryPage = () => {
             longitude: -0.9533,
           },
           areaServed: "Market Harborough and surrounding villages (5km radius)",
-          openingHours: "Mo-Sa 08:00-18:00, Su 09:00-16:00",
+          openingHours: schemaOpeningHours(settings.opening_hours),
         }}
       />
       <Navigation />
@@ -229,7 +261,22 @@ const DeliveryPage = () => {
               <MapPin className="w-3 h-3 sm:w-4 sm:h-4" />
               <span>Lubenham, Market Harborough</span>
             </div>
+            <div className="flex items-center justify-center gap-2">
+              <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span>{hoursText}</span>
+            </div>
           </div>
+          {settings.min_order_amount > 0 && (
+            <p className="mt-2 text-xs sm:text-sm text-muted-foreground">
+              {minOrderMessage}
+            </p>
+          )}
+          {!isOpen && (
+            <div role="status" className="mt-4 mx-auto max-w-xl rounded-2xl border border-destructive/30 bg-destructive/10 text-destructive px-4 py-3 text-sm flex items-center justify-center gap-2">
+              <Clock className="w-4 h-4 shrink-0" />
+              <span>{closedMessage}</span>
+            </div>
+          )}
         </div>
 
         <div className="grid lg:grid-cols-2 landscape:grid-cols-2 gap-6 lg:gap-8 landscape:gap-4">
@@ -427,13 +474,16 @@ const DeliveryPage = () => {
                           <span>{t('delivery.orderForm.total')}</span>
                           <span>£{totalPrice.toFixed(2)}</span>
                         </div>
+                        {belowMinimum && (
+                          <p className="text-sm text-destructive">{minOrderMessage}</p>
+                        )}
                       </div>
                     )}
 
                     <Button
                       type="submit"
                       className="w-full"
-                      disabled={!orderForm.coffee || !addressValidation?.isWithinRange || isSubmitting}
+                      disabled={!orderForm.coffee || !addressValidation?.isWithinRange || isSubmitting || !isOpen || belowMinimum}
                     >
                       {isSubmitting ? (
                         <>

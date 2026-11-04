@@ -20,9 +20,12 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
+import { useStoreSettings } from "@/hooks/useStoreSettings";
+import { formatHours } from "@/lib/storeSettings";
 
 const HelpPage = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const { settings } = useStoreSettings();
   const [searchQuery, setSearchQuery] = useState("");
 
   const categories = [
@@ -278,7 +281,7 @@ const HelpPage = () => {
                   <div>
                     <p className="font-semibold">{t('help.contact.hours')}</p>
                     <p className="text-muted-foreground">
-                      {t('help.contact.hoursInfo')}
+                      {formatHours(settings.opening_hours, language === 'pt-BR' ? 'pt-BR' : 'en')}
                     </p>
                   </div>
                 </div>

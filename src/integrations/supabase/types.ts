@@ -296,6 +296,33 @@ export type Database = {
           },
         ]
       }
+      store_settings: {
+        Row: {
+          delivery_base_fee: number
+          delivery_fee_per_km: number
+          id: boolean
+          min_order_amount: number
+          opening_hours: Json
+          updated_at: string
+        }
+        Insert: {
+          delivery_base_fee?: number
+          delivery_fee_per_km?: number
+          id?: boolean
+          min_order_amount?: number
+          opening_hours?: Json
+          updated_at?: string
+        }
+        Update: {
+          delivery_base_fee?: number
+          delivery_fee_per_km?: number
+          id?: boolean
+          min_order_amount?: number
+          opening_hours?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -368,6 +395,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_store_open: { Args: { _at?: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "user"

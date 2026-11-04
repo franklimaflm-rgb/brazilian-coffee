@@ -15,6 +15,13 @@
       "when": 1793199538221,
       "tag": "0001_orders_realtime",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793818090798,
+      "tag": "0002_store_settings",
+      "breakpoints": true
     }
   ]
 }

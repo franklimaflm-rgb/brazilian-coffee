@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { orderFormSchema, type OrderFormData as ValidatedOrderFormData } from '@/lib/orderValidation';
+import { computeDeliveryFee } from '@/lib/storeSettings';
 
 // Simplified types for the hooks
 type OrderItem = {
@@ -261,7 +262,10 @@ export const useCoffeeProducts = () => {
 export const useDeliveryValidation = () => {
   const [isValidating, setIsValidating] = useState(false);
 
-  const validateAddress = async (address: string): Promise<{
+  const validateAddress = async (
+    address: string,
+    fees: { delivery_base_fee: number; delivery_fee_per_km: number } = { delivery_base_fee: 3, delivery_fee_per_km: 2 },
+  ): Promise<{
     isValid: boolean;
     isWithinRange: boolean;
     distance?: number;
@@ -281,16 +285,14 @@ export const useDeliveryValidation = () => {
 
       if (isInArea) {
         const distance = Math.random() * 4 + 1;
-        const baseFee = 3.00;
-        const feePerKm = 2.00;
-        const deliveryFee = baseFee + (distance * feePerKm);
+        const deliveryFee = computeDeliveryFee(fees, distance);
         const estimatedTime = Math.round(distance * 5 + 15);
 
         return {
           isValid: true,
           isWithinRange: true,
           distance,
-          deliveryFee: Math.round(deliveryFee * 100) / 100,
+          deliveryFee,
           estimatedTime,
           message: 'Address is within our delivery area!',
         };

@@ -9,6 +9,7 @@ import { OrdersTab } from "./OrdersTab";
 import { MenuTab } from "./MenuTab";
 import { CustomersTab } from "./CustomersTab";
 import { ReferralsTab } from "./ReferralsTab";
+import { SettingsTab } from "./SettingsTab";
 import type { AdminOrder } from "./adminUtils";
 
 const beep = () => {
@@ -70,11 +71,12 @@ export const AdminDashboard = ({ isAuthenticated }: { isAuthenticated: boolean }
             {error && <p className="text-sm text-destructive">Erro ao carregar pedidos: {error}</p>}
             <StatsCards orders={list} />
             <Tabs defaultValue="orders">
-              <TabsList className="w-full tablet:w-auto grid grid-cols-4 tablet:inline-flex">
+              <TabsList className="w-full tablet:w-auto h-auto grid grid-cols-3 tablet:inline-flex">
                 <TabsTrigger value="orders">Pedidos</TabsTrigger>
                 <TabsTrigger value="menu">Cardápio</TabsTrigger>
                 <TabsTrigger value="customers">Clientes</TabsTrigger>
                 <TabsTrigger value="referrals">Indicações</TabsTrigger>
+                <TabsTrigger value="settings">Configurações</TabsTrigger>
               </TabsList>
               <TabsContent value="orders" className="mt-4">
                 <OrdersTab orders={list} onStatus={(id, s) => updateOrderStatus(id, s as OrderStatus)} />
@@ -82,6 +84,7 @@ export const AdminDashboard = ({ isAuthenticated }: { isAuthenticated: boolean }
               <TabsContent value="menu" className="mt-4"><MenuTab /></TabsContent>
               <TabsContent value="customers" className="mt-4"><CustomersTab orders={list} /></TabsContent>
               <TabsContent value="referrals" className="mt-4"><ReferralsTab /></TabsContent>
+              <TabsContent value="settings" className="mt-4"><SettingsTab /></TabsContent>
             </Tabs>
           </>
         )}

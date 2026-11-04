@@ -1,9 +1,12 @@
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Coffee, Phone, Mail, MapPin, Clock, Facebook, Instagram, Twitter } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useStoreSettings } from "@/hooks/useStoreSettings";
+import { formatHours } from "@/lib/storeSettings";
 
 export const Footer = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const { settings } = useStoreSettings();
 
   return (
     <footer className="bg-card border-t border-border">
@@ -25,7 +28,7 @@ export const Footer = () => {
               </div>
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Clock className="w-4 h-4" />
-                <span>Mon-Sat: 8:00-18:00, Sun: 9:00-16:00</span>
+                <span>{formatHours(settings.opening_hours, language === 'pt-BR' ? 'pt-BR' : 'en')}</span>
               </div>
             </div>
           </div>

@@ -56,6 +56,12 @@ const DeliveryPage = () => {
   }, []);
   const isOpen = isOpenAt(settings.opening_hours, now);
   const hoursText = formatHours(settings.opening_hours, language === 'pt-BR' ? 'pt-BR' : 'en');
+  const closedMessage = language === 'pt-BR'
+    ? `Estamos fechados agora. Horário: ${hoursText}`
+    : `We're closed right now. Hours: ${hoursText}`;
+  const minOrderMessage = language === 'pt-BR'
+    ? `Pedido mínimo de £${settings.min_order_amount.toFixed(2)} (sem a entrega).`
+    : `Minimum order is £${settings.min_order_amount.toFixed(2)} (excluding delivery).`;
   const [searchParams] = useSearchParams();
   const [referralCode, setReferralCode] = useState<string>(() => {
     const fromUrl = searchParams.get('ref');
@@ -226,7 +232,7 @@ const DeliveryPage = () => {
             longitude: -0.9533,
           },
           areaServed: "Market Harborough and surrounding villages (5km radius)",
-          openingHours: "Mo-Sa 08:00-18:00, Su 09:00-16:00",
+          openingHours: schemaOpeningHours(settings.opening_hours),
         }}
       />
       <Navigation />
@@ -255,7 +261,22 @@ const DeliveryPage = () => {
               <MapPin className="w-3 h-3 sm:w-4 sm:h-4" />
               <span>Lubenham, Market Harborough</span>
             </div>
+            <div className="flex items-center justify-center gap-2">
+              <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span>{hoursText}</span>
+            </div>
           </div>
+          {settings.min_order_amount > 0 && (
+            <p className="mt-2 text-xs sm:text-sm text-muted-foreground">
+              {minOrderMessage}
+            </p>
+          )}
+          {!isOpen && (
+            <div role="status" className="mt-4 mx-auto max-w-xl rounded-2xl border border-destructive/30 bg-destructive/10 text-destructive px-4 py-3 text-sm flex items-center justify-center gap-2">
+              <Clock className="w-4 h-4 shrink-0" />
+              <span>{closedMessage}</span>
+            </div>
+          )}
         </div>
 
         <div className="grid lg:grid-cols-2 landscape:grid-cols-2 gap-6 lg:gap-8 landscape:gap-4">
@@ -453,13 +474,16 @@ const DeliveryPage = () => {
                           <span>{t('delivery.orderForm.total')}</span>
                           <span>£{totalPrice.toFixed(2)}</span>
                         </div>
+                        {belowMinimum && (
+                          <p className="text-sm text-destructive">{minOrderMessage}</p>
+                        )}
                       </div>
                     )}
 
                     <Button
                       type="submit"
                       className="w-full"
-                      disabled={!orderForm.coffee || !addressValidation?.isWithinRange || isSubmitting}
+                      disabled={!orderForm.coffee || !addressValidation?.isWithinRange || isSubmitting || !isOpen || belowMinimum}
                     >
                       {isSubmitting ? (
                         <>

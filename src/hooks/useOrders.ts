@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { orderFormSchema, type OrderFormData as ValidatedOrderFormData } from '@/lib/orderValidation';
+import { computeDeliveryFee } from '@/lib/storeSettings';
 
 // Simplified types for the hooks
 type OrderItem = {

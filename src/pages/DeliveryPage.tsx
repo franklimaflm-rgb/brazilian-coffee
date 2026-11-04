@@ -16,6 +16,8 @@ import { DeliveryMap } from "@/components/DeliveryMap";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { coffeesI18n } from "@/data/coffees-i18n";
 import { useOrders, useDeliveryValidation, useCoffeeProducts } from "@/hooks/useOrders";
+import { useStoreSettings } from "@/hooks/useStoreSettings";
+import { formatHours, isOpenAt, meetsMinimum, schemaOpeningHours } from "@/lib/storeSettings";
 import { toast } from "sonner";
 
 interface OrderForm {
@@ -46,6 +48,14 @@ const DeliveryPage = () => {
   const { submitOrder, isSubmitting } = useOrders();
   const { validateAddress, isValidating } = useDeliveryValidation();
   const { products, loading: productsLoading, fetchProducts } = useCoffeeProducts();
+  const { settings } = useStoreSettings();
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 60_000);
+    return () => clearInterval(id);
+  }, []);
+  const isOpen = isOpenAt(settings.opening_hours, now);
+  const hoursText = formatHours(settings.opening_hours, language === 'pt-BR' ? 'pt-BR' : 'en');
   const [searchParams] = useSearchParams();
   const [referralCode, setReferralCode] = useState<string>(() => {
     const fromUrl = searchParams.get('ref');
@@ -91,7 +101,7 @@ const DeliveryPage = () => {
       return;
     }
 
-    const result = await validateAddress(orderForm.address);
+    const result = await validateAddress(orderForm.address, settings);
     setAddressValidation({
       isValid: result.isValid,
       isWithinRange: result.isWithinRange,
@@ -116,6 +126,15 @@ const DeliveryPage = () => {
     const selectedProduct = products.find(p => p.id === orderForm.coffee);
     if (!selectedProduct) {
       toast.error(t('delivery.validation.coffeeRequired'));
+      return;
+    }
+
+    if (!isOpenAt(settings.opening_hours)) {
+      toast.error(closedMessage);
+      return;
+    }
+    if (!meetsMinimum(settings, selectedProduct.price * orderForm.quantity)) {
+      toast.error(minOrderMessage);
       return;
     }
 
@@ -159,7 +178,13 @@ const DeliveryPage = () => {
       setReferralCode("");
       setAddressValidation(null);
     } else {
-      toast.error(result.error || 'Failed to place order. Please try again.');
+      const err = result.error || '';
+      if (err.includes('STORE_CLOSED')) toast.error(closedMessage);
+      else if (err.includes('MIN_ORDER')) toast.error(minOrderMessage);
+      else if (err.includes('FEE_OUTDATED')) {
+        setAddressValidation(null);
+        toast.error(language === 'pt-BR' ? 'A taxa de entrega mudou. Verifique o endereço novamente.' : 'The delivery fee changed. Please check your address again.');
+      } else toast.error(err || 'Failed to place order. Please try again.');
     }
   };
 
@@ -170,6 +195,7 @@ const DeliveryPage = () => {
   const itemsSubtotal = coffeePrice * orderForm.quantity;
   const referralDiscount = referralCode.trim() ? Math.round(itemsSubtotal * 10) / 100 : 0;
   const totalPrice = itemsSubtotal - referralDiscount + deliveryFee;
+  const belowMinimum = !!selectedProduct && !meetsMinimum(settings, itemsSubtotal);
   const estimatedTimeDisplay = addressValidation?.estimatedTime
     ? `${addressValidation.estimatedTime}-${addressValidation.estimatedTime + 10} ${language === 'pt-BR' ? 'minutos' : 'minutes'}`
     : "";

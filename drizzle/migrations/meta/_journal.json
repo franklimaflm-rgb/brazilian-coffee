@@ -29,6 +29,20 @@
       "when": 1794571776419,
       "tag": "0003_store_settings_scoped_read",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1794576101638,
+      "tag": "0004_multi_store_platform",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1794576119201,
+      "tag": "0005_store_assets_read",
+      "breakpoints": true
     }
   ]
 }

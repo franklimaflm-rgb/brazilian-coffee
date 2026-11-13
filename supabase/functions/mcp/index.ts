@@ -71,7 +71,7 @@ var list_coffee_products_default = defineTool({
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   handler: async () => {
     const supabase = supabaseAnon();
-    const { data, error } = await supabase.from("coffee_products").select("id, name, description, price, available").eq("available", true).order("name");
+    const { data, error } = await supabase.from("coffee_products").select("id, name, description, price, available").eq("available", true).eq("store_id", "00000000-0000-0000-0000-000000000001").order("name");
     if (error) return { content: [{ type: "text", text: error.message }], isError: true };
     return {
       content: [{ type: "text", text: JSON.stringify(data ?? []) }],

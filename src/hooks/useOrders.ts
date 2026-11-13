@@ -1,3 +1,4 @@
+import { DEFAULT_STORE_ID } from "@/lib/platform";
 import { useState, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { orderFormSchema, type OrderFormData as ValidatedOrderFormData } from '@/lib/orderValidation';
@@ -217,7 +218,8 @@ export const useCoffeeProducts = () => {
       const { data: dbProducts, error } = await supabase
         .from('coffee_products')
         .select('*')
-        .eq('available', true);
+        .eq('available', true)
+        .eq('store_id', DEFAULT_STORE_ID);
       
       if (error) {
         console.warn('Database products not available, using static data:', error);

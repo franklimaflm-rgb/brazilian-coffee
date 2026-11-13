@@ -13,6 +13,7 @@ export default defineTool({
       .from("coffee_products")
       .select("id, name, description, price, available")
       .eq("available", true)
+      .eq("store_id", "00000000-0000-0000-0000-000000000001")
       .order("name");
     if (error) return { content: [{ type: "text", text: error.message }], isError: true };
     return {

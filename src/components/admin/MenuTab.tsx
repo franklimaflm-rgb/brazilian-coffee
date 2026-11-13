@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { Pencil, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { money } from "./adminUtils";
+import { DEFAULT_STORE_ID } from "@/lib/platform";
 
 type Product = { id: string; name: string; description: string | null; price: number; image_url: string | null; available: boolean };
 const empty: Product = { id: "", name: "", description: "", price: 0, image_url: "", available: true };
@@ -23,7 +24,7 @@ export const MenuTab = () => {
   const [saving, setSaving] = useState(false);
 
   const load = async () => {
-    const { data, error } = await supabase.from("coffee_products").select("id, name, description, price, image_url, available").order("name");
+    const { data, error } = await supabase.from("coffee_products").select("id, name, description, price, image_url, available").eq("store_id", DEFAULT_STORE_ID).order("name");
     if (error) toast.error("Não foi possível carregar o cardápio.");
     setItems((data as Product[]) ?? []);
   };

@@ -70,6 +70,7 @@ export type Database = {
           image_url: string | null
           name: string
           price: number
+          store_id: string
         }
         Insert: {
           available?: boolean
@@ -79,6 +80,7 @@ export type Database = {
           image_url?: string | null
           name: string
           price: number
+          store_id?: string
         }
         Update: {
           available?: boolean
@@ -88,6 +90,45 @@ export type Database = {
           image_url?: string | null
           name?: string
           price?: number
+          store_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coffee_products_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contact_submissions: {
+        Row: {
+          cafe_name: string | null
+          created_at: string
+          email: string
+          id: string
+          message: string
+          name: string
+          phone: string | null
+        }
+        Insert: {
+          cafe_name?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          name: string
+          phone?: string | null
+        }
+        Update: {
+          cafe_name?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+          phone?: string | null
         }
         Relationships: []
       }
@@ -98,6 +139,7 @@ export type Database = {
           id: string
           name: string
           phone: string | null
+          store_id: string
           updated_at: string
           user_id: string | null
         }
@@ -107,6 +149,7 @@ export type Database = {
           id?: string
           name: string
           phone?: string | null
+          store_id?: string
           updated_at?: string
           user_id?: string | null
         }
@@ -116,10 +159,19 @@ export type Database = {
           id?: string
           name?: string
           phone?: string | null
+          store_id?: string
           updated_at?: string
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "customers_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       order_items: {
         Row: {
@@ -176,6 +228,7 @@ export type Database = {
           id: string
           order_number: string
           status: Database["public"]["Enums"]["order_status"]
+          store_id: string
           total_amount: number
           updated_at: string
         }
@@ -188,6 +241,7 @@ export type Database = {
           id?: string
           order_number: string
           status?: Database["public"]["Enums"]["order_status"]
+          store_id?: string
           total_amount: number
           updated_at?: string
         }
@@ -200,6 +254,7 @@ export type Database = {
           id?: string
           order_number?: string
           status?: Database["public"]["Enums"]["order_status"]
+          store_id?: string
           total_amount?: number
           updated_at?: string
         }
@@ -216,6 +271,13 @@ export type Database = {
             columns: ["customer_id"]
             isOneToOne: false
             referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
             referencedColumns: ["id"]
           },
         ]
@@ -323,6 +385,63 @@ export type Database = {
         }
         Relationships: []
       }
+      stores: {
+        Row: {
+          active: boolean
+          address: string | null
+          created_at: string
+          delivery_fee: number
+          description: string | null
+          id: string
+          logo_url: string | null
+          min_order_amount: number
+          name: string
+          opening_hours: Json
+          owner_id: string | null
+          primary_color: string
+          slug: string
+          timezone: string
+          updated_at: string
+          whatsapp: string | null
+        }
+        Insert: {
+          active?: boolean
+          address?: string | null
+          created_at?: string
+          delivery_fee?: number
+          description?: string | null
+          id?: string
+          logo_url?: string | null
+          min_order_amount?: number
+          name: string
+          opening_hours?: Json
+          owner_id?: string | null
+          primary_color?: string
+          slug: string
+          timezone?: string
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Update: {
+          active?: boolean
+          address?: string | null
+          created_at?: string
+          delivery_fee?: number
+          description?: string | null
+          id?: string
+          logo_url?: string | null
+          min_order_amount?: number
+          name?: string
+          opening_hours?: Json
+          owner_id?: string | null
+          primary_color?: string
+          slug?: string
+          timezone?: string
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -362,6 +481,27 @@ export type Database = {
         }
         Returns: string
       }
+      create_store: {
+        Args: {
+          _address: string
+          _color: string
+          _description: string
+          _name: string
+          _slug: string
+          _whatsapp: string
+        }
+        Returns: string
+      }
+      create_store_order: {
+        Args: {
+          _address: Json
+          _customer: Json
+          _instructions: string
+          _items: Json
+          _store_id: string
+        }
+        Returns: string
+      }
       get_or_create_referral_code: { Args: { _email: string }; Returns: string }
       get_order_by_number: {
         Args: { _email: string; _order_number: string }
@@ -396,6 +536,11 @@ export type Database = {
         Returns: boolean
       }
       is_store_open: { Args: { _at?: string }; Returns: boolean }
+      is_store_owner: { Args: { _store_id: string }; Returns: boolean }
+      store_is_open: {
+        Args: { _at?: string; _store_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "admin" | "user"

@@ -1,3 +1,4 @@
+import { DEFAULT_STORE_ID } from "@/lib/platform";
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -34,6 +35,7 @@ export const useAdmin = (isAuthenticated: boolean = false) => {
       const { data: simpleData, error: simpleError } = await supabase
         .from('orders')
         .select('id, order_number, status, total_amount, created_at, updated_at, customer_id, address_id, delivery_instructions')
+        .eq('store_id', DEFAULT_STORE_ID)
         .order('created_at', { ascending: false });
 
       if (simpleError) {
@@ -50,6 +52,7 @@ export const useAdmin = (isAuthenticated: boolean = false) => {
           addresses ( id, street, city, postal_code, country, latitude, longitude ),
           order_items ( id, coffee_product_id, quantity, unit_price, total_price, coffee_products ( name ) )
         `)
+        .eq('store_id', DEFAULT_STORE_ID)
         .order('created_at', { ascending: false });
 
       if (joinError) {

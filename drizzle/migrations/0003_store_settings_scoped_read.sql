@@ -1,0 +1,2 @@
+DROP POLICY IF EXISTS "Anyone can view store settings" ON public.store_settings;
+CREATE POLICY "Anyone can view the store settings row" ON public.store_settings FOR SELECT TO anon, authenticated USING (id = true);

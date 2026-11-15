@@ -10,6 +10,7 @@ import { MenuTab } from "./MenuTab";
 import { CustomersTab } from "./CustomersTab";
 import { ReferralsTab } from "./ReferralsTab";
 import { SettingsTab } from "./SettingsTab";
+import { PlatformTab } from "./PlatformTab";
 import type { AdminOrder } from "./adminUtils";
 
 const beep = () => {
@@ -77,6 +78,7 @@ export const AdminDashboard = ({ isAuthenticated }: { isAuthenticated: boolean }
                 <TabsTrigger value="customers">Clientes</TabsTrigger>
                 <TabsTrigger value="referrals">Indicações</TabsTrigger>
                 <TabsTrigger value="settings">Configurações</TabsTrigger>
+                <TabsTrigger value="platform">Plataforma</TabsTrigger>
               </TabsList>
               <TabsContent value="orders" className="mt-4">
                 <OrdersTab orders={list} onStatus={(id, s) => updateOrderStatus(id, s as OrderStatus)} />
@@ -85,6 +87,7 @@ export const AdminDashboard = ({ isAuthenticated }: { isAuthenticated: boolean }
               <TabsContent value="customers" className="mt-4"><CustomersTab orders={list} /></TabsContent>
               <TabsContent value="referrals" className="mt-4"><ReferralsTab /></TabsContent>
               <TabsContent value="settings" className="mt-4"><SettingsTab /></TabsContent>
+              <TabsContent value="platform" className="mt-4"><PlatformTab /></TabsContent>
             </Tabs>
           </>
         )}

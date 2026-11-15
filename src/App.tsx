@@ -21,6 +21,10 @@ import InstallPage from "./pages/InstallPage";
 import AuthPage from "./pages/AuthPage";
 import ResetPassword from "./pages/ResetPassword";
 import OAuthConsent from "./pages/OAuthConsent";
+import ForCafesPage from "./pages/ForCafesPage";
+import CreateStorePage from "./pages/CreateStorePage";
+import StorePage from "./pages/StorePage";
+import OwnerPanel from "./pages/OwnerPanel";
 
 const queryClient = new QueryClient();
 
@@ -49,6 +53,10 @@ const App = () => (
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
+            <Route path="/para-cafes" element={<ForCafesPage />} />
+            <Route path="/criar-loja" element={<CreateStorePage />} />
+            <Route path="/painel" element={<OwnerPanel />} />
+            <Route path="/loja/:slug" element={<StorePage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
